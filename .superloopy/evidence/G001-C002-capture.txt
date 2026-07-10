@@ -1,0 +1,12 @@
+Superloopy command capture
+startedAt: 2026-07-10T00:29:27.547Z
+finishedAt: 2026-07-10T00:29:28.203Z
+cwd: /Users/dave/Documents/hanwha/hanwha-sf-pos
+status: pass
+exitCode: 0
+signal: null
+command: ["node","scripts/verify-build-idempotency.mjs"]
+[stdout]
+idempotent build: ok (bbe61f6ec935)
+
+[stderr]

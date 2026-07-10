@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.24.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --line:#b9bec3;--panel:#eef0f2;--hdr:#e7eaed;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{background:#dfe2e5;font-family:'Pretendard',sans-serif;color:#2d2d2d;-webkit-font-smoothing:antialiased;font-size:12px;}
+a{color:#0a72f2;text-decoration:none;}
+a:hover{color:#d15700;text-decoration:underline;}
+</style>
+</helmet>
+<div style="width:100%;height:100vh;display:flex;flex-direction:column;background:#dfe2e5;overflow:hidden;">
+
+  <dc-import name="Header" style="width:100%;flex-shrink:0" hint-size="100%,76px"></dc-import>
+
+  <div style="flex:1;display:flex;min-height:0;">
+
+    <dc-import name="SideNav" style="width:188px;flex-shrink:0" hint-size="188px,100%"></dc-import>
+
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
+
+  <!-- window tab bar -->
+  <div style="height:30px;background:#ffffff;border-bottom:1px solid #d8dbdf;display:flex;align-items:flex-end;padding-left:6px;flex-shrink:0;position:relative;">
+    <div style="display:flex;align-items:center;gap:12px;background:#f4f6f8;border:1px solid #c4c9ce;border-bottom:none;border-radius:4px 4px 0 0;padding:5px 12px 5px 14px;font-size:12px;font-weight:600;color:#2d2d2d;position:relative;top:1px;">의장 주간작업계획 수립<i class="ti ti-x" style="font-size:13px;color:#5a5f65;"></i></div>
+    <div style="position:absolute;right:8px;top:6px;color:#7a7f85;font-size:14px;">▾</div>
+  </div>
+
+  <!-- ===== 조회조건 ===== -->
+  <div style="background:var(--panel);border-bottom:1px solid #c4c9ce;flex-shrink:0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 12px;border-bottom:1px solid #d6dade;">
+      <span style="font-size:11px;color:#7a7f85;font-weight:600;">조회조건</span>
+      <span style="font-size:11px;color:#7a7f85;">화면확장</span>
+    </div>
+
+    <!-- row 1 -->
+    <div style="display:flex;align-items:center;padding:6px 12px 3px;gap:10px;">
+      <div style="width:560px;display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <span style="display:inline-block;width:4px;height:12px;background:#ed7100;border-radius:1px;"></span><span style="white-space:nowrap;">생산주</span>
+        <span style="display:inline-flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:2px;padding:3px 6px;width:88px;">2025-26<span style="color:#7a7f85;">▾</span></span>
+        <span style="display:inline-block;width:4px;height:12px;background:#2e9e57;border-radius:1px;margin-left:4px;"></span><span style="white-space:nowrap;">계획구간</span>
+        <span style="display:inline-flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:2px;padding:3px 6px;width:106px;font-variant-numeric:tabular-nums;">2025-07-07<span style="color:#7a7f85;">▾</span></span>
+        <span>~</span>
+        <span style="display:inline-flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:2px;padding:3px 6px;width:106px;font-variant-numeric:tabular-nums;">2025-08-10<span style="color:#7a7f85;">▾</span></span>
+        <span style="display:inline-block;width:4px;height:12px;background:#0a72f2;border-radius:1px;margin-left:4px;"></span><span style="white-space:nowrap;">수립차수</span>
+        <span style="display:inline-flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:2px;padding:3px 6px;width:52px;">0<span style="color:#7a7f85;">▾</span></span>
+      </div>
+
+      <div style="width:430px;display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <span style="display:inline-block;width:4px;height:12px;background:#0a72f2;border-radius:1px;"></span><span>정반 Case</span>
+        <span style="display:inline-flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:2px;padding:3px 6px;width:150px;">의장 기본 작업장<span style="color:#7a7f85;">▾</span></span>
+        <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:3px 8px;"><i class="ti ti-device-floppy" style="font-size:14px;color:#0a72f2;"></i>저장(차수)</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:3px 8px;"><i class="ti ti-notes" style="font-size:14px;color:#e0a12b;"></i>메모</span>
+      </div>
+
+      <div style="flex:1;display:flex;justify-content:flex-end;align-items:center;gap:6px;">
+        <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;"><i class="ti ti-zoom-check" style="font-size:15px;color:#0a72f2;"></i>조회</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;"><i class="ti ti-device-floppy" style="font-size:15px;color:#0a72f2;"></i>저장</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;"><i class="ti ti-clipboard-check" style="font-size:15px;color:#2e9e57;"></i>계획 확정</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;"><i class="ti ti-file-spreadsheet" style="font-size:15px;color:#1a8f45;"></i>엑셀</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;"><i class="ti ti-broadcast" style="font-size:15px;color:#ed7100;"></i>계획 배포</span>
+      </div>
+    </div>
+
+    <!-- row 2 -->
+    <div style="display:flex;align-items:center;padding:0 12px 7px;gap:10px;">
+      <div style="width:560px;display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <span style="display:inline-block;width:4px;height:12px;background:#0a72f2;border-radius:1px;"></span><span>호선</span>
+        <span style="display:inline-block;background:#fff;border:1px solid var(--line);border-radius:2px;padding:3px 6px;width:90px;height:24px;"></span>
+        <span style="display:inline-block;width:4px;height:12px;background:#0a72f2;border-radius:1px;margin-left:4px;"></span><span>블록</span>
+        <span style="display:inline-block;background:#fff;border:1px solid var(--line);border-radius:2px;padding:3px 6px;width:90px;height:24px;"></span>
+        <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:3px 10px;margin-left:2px;"><i class="ti ti-search" style="font-size:14px;color:#0a72f2;"></i>찾기</span>
+      </div>
+
+      <div style="width:430px;display:flex;align-items:center;gap:10px;flex-shrink:0;">
+        <span style="display:inline-block;width:4px;height:12px;background:#2e9e57;border-radius:1px;"></span><span>환경설정</span>
+        <label style="display:flex;align-items:center;gap:3px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:#ed7100;border:1px solid #c95d00;border-radius:2px;color:#fff;font-size:10px;">✓</span>주간작업물량</label>
+        <label style="display:flex;align-items:center;gap:3px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:#ed7100;border:1px solid #c95d00;border-radius:2px;color:#fff;font-size:10px;">✓</span>Gantt Chart</label>
+        <label style="display:flex;align-items:center;gap:3px;color:#7a7f85;"><span style="display:inline-block;width:14px;height:14px;background:#fff;border:1px solid var(--line);border-radius:2px;"></span>부하 그래프</label>
+        <label style="display:flex;align-items:center;gap:3px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:#ed7100;border:1px solid #c95d00;border-radius:2px;color:#fff;font-size:10px;">✓</span>정반블록배치</label>
+      </div>
+
+      <div style="flex:1;display:flex;justify-content:flex-end;align-items:center;gap:6px;color:#a8adb2;">
+        <span style="display:inline-flex;align-items:center;gap:4px;background:#eceef1;border:1px solid #cfd3d7;border-radius:3px;padding:4px 12px;"><i class="ti ti-git-compare" style="font-size:15px;"></i>계획비교</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;background:#eceef1;border:1px solid #cfd3d7;border-radius:3px;padding:4px 12px;"><i class="ti ti-adjustments" style="font-size:15px;"></i>최적화</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;background:#eceef1;border:1px solid #cfd3d7;border-radius:3px;padding:4px 12px;"><i class="ti ti-zoom-scan" style="font-size:15px;"></i>최적화 조회</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;background:#eceef1;border:1px solid #cfd3d7;border-radius:3px;padding:4px 12px;"><i class="ti ti-circle-check" style="font-size:15px;"></i>최적화 반영</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;background:#eceef1;border:1px solid #cfd3d7;border-radius:3px;padding:4px 12px;"><i class="ti ti-refresh" style="font-size:15px;"></i>물량초기화</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== main split: table + gantt ===== -->
+  <div style="flex:0.85;display:flex;min-height:0;border-bottom:1px solid #c4c9ce;">
+
+    <!-- left: 주간 작업 물량 -->
+    <div style="width:47%;display:flex;flex-direction:column;min-width:0;background:#fff;border-right:2px solid #b0b5ba;flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:14px;background:var(--hdr);border-bottom:1px solid #cfd3d7;padding:4px 8px;flex-shrink:0;font-size:11px;color:#3a3e43;">
+        <span style="font-weight:700;">주간 작업 물량</span>
+        <div style="display:flex;align-items:center;gap:12px;color:#3a3e43;">
+          <span style="display:flex;align-items:center;gap:3px;"><i class="ti ti-arrow-right" style="font-size:13px;color:#0a72f2;"></i>실행계획-&gt;주간계획</span>
+          <span style="display:flex;align-items:center;gap:3px;"><i class="ti ti-layout-distribute-horizontal" style="font-size:13px;color:#0a72f2;"></i>일정분할</span>
+          <span style="display:flex;align-items:center;gap:3px;color:#1a8f45;"><i class="ti ti-plus" style="font-size:13px;"></i>블록추가</span>
+          <span style="display:flex;align-items:center;gap:3px;color:#d63b3b;"><i class="ti ti-x" style="font-size:13px;"></i>블록삭제</span>
+          <span style="display:flex;align-items:center;gap:3px;color:#d63b3b;"><i class="ti ti-x" style="font-size:13px;"></i>계획삭제</span>
+          <span style="display:flex;align-items:center;gap:3px;"><i class="ti ti-edit" style="font-size:13px;color:#0a72f2;"></i>비고 컬럼명 변경</span>
+        </div>
+      </div>
+
+      <div style="flex:1;overflow:auto;min-height:0;">
+        <table style="border-collapse:collapse;font-size:12px;width:100%;white-space:nowrap;">
+          <thead>
+            <tr>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;position:sticky;top:0;width:16px;"></th>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;position:sticky;top:0;width:26px;"></th>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;padding:3px 4px;color:#4a4f55;font-weight:600;position:sticky;top:0;width:40px;">호기</th>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;padding:3px 4px;color:#4a4f55;font-weight:600;position:sticky;top:0;width:56px;line-height:1.2;">기준계획<br>착수일</th>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;padding:3px 4px;color:#4a4f55;font-weight:600;position:sticky;top:0;width:56px;line-height:1.2;">기준계획<br>완료일</th>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;padding:3px 4px;color:#4a4f55;font-weight:600;position:sticky;top:0;width:56px;line-height:1.2;">실적<br>착수일</th>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;padding:3px 4px;color:#4a4f55;font-weight:600;position:sticky;top:0;width:56px;line-height:1.2;">실적<br>완료일</th>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;padding:3px 4px;color:#4a4f55;font-weight:600;position:sticky;top:0;width:38px;line-height:1.2;">블록<br>L</th>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;padding:3px 4px;color:#4a4f55;font-weight:600;position:sticky;top:0;width:38px;line-height:1.2;">블록<br>B</th>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;padding:3px 4px;color:#4a4f55;font-weight:600;position:sticky;top:0;width:38px;line-height:1.2;">블록<br>H</th>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;padding:3px 4px;color:#4a4f55;font-weight:600;position:sticky;top:0;width:44px;line-height:1.2;">물량<br>단위</th>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;padding:3px 6px;color:#4a4f55;font-weight:600;position:sticky;top:0;width:84px;">부하물량</th>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;padding:3px 6px;color:#4a4f55;font-weight:600;position:sticky;top:0;width:62px;">목표시수</th>
+              <th style="background:var(--hdr);border:1px solid #d4d7da;padding:3px 6px;color:#4a4f55;font-weight:600;position:sticky;top:0;">작업정반</th>
+            </tr>
+            <tr>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;text-align:center;color:#8b9096;"><i class="ti ti-filter" style="font-size:11px;"></i></td>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;"></td>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;text-align:center;color:#b0b5ba;">=</td>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;text-align:center;color:#b0b5ba;">=</td>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;text-align:center;color:#b0b5ba;">=</td>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;text-align:center;color:#b0b5ba;">=</td>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;text-align:center;color:#b0b5ba;">=</td>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;text-align:center;color:#b0b5ba;">=</td>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;text-align:center;color:#b0b5ba;">=</td>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;text-align:center;color:#b0b5ba;">=</td>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;text-align:center;color:#2e9e57;font-weight:700;">ᴬᴮc</td>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;text-align:center;color:#b0b5ba;">=</td>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;text-align:center;color:#b0b5ba;">=</td>
+              <td style="background:#fbfcfd;border:1px solid #e4e6e8;"></td>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ ltrows }}" as="r" hint-placeholder-count="15">
+              <tr style="background: {{ r.bg }};">
+                <td style="border:1px solid #edeff1;text-align:center;color:#c0261d;font-size:11px;">{{ r.mark }}</td>
+                <td style="border:1px solid #edeff1;padding:3px 4px;text-align:center;color:#8b9096;">{{ r.idx }}</td>
+                <td style="border:1px solid #edeff1;padding:3px 4px;text-align:center;color:#2d2d2d;">{{ r.ho }}</td>
+                <td style="border:1px solid #edeff1;padding:3px 4px;text-align:center;color:#2d2d2d;font-variant-numeric:tabular-nums;">{{ r.d0 }}</td>
+                <td style="border:1px solid #edeff1;padding:3px 4px;text-align:center;color:#2d2d2d;font-variant-numeric:tabular-nums;">{{ r.d1 }}</td>
+                <td style="border:1px solid #edeff1;padding:3px 4px;text-align:center;color:#2d2d2d;font-variant-numeric:tabular-nums;">{{ r.d2 }}</td>
+                <td style="border:1px solid #edeff1;padding:3px 4px;text-align:center;color:#2d2d2d;font-variant-numeric:tabular-nums;">{{ r.d3 }}</td>
+                <td style="border:1px solid #edeff1;padding:3px 5px;text-align:right;color:#2d2d2d;font-variant-numeric:tabular-nums;">{{ r.l }}</td>
+                <td style="border:1px solid #edeff1;padding:3px 5px;text-align:right;color:#2d2d2d;font-variant-numeric:tabular-nums;">{{ r.p }}</td>
+                <td style="border:1px solid #edeff1;padding:3px 5px;text-align:right;color:#2d2d2d;font-variant-numeric:tabular-nums;">{{ r.h }}</td>
+                <td style="border:1px solid #edeff1;padding:3px 4px;text-align:center;color:#2d2d2d;">{{ r.unit }}</td>
+                <td style="border:1px solid #edeff1;padding:3px 8px;text-align:right;color:#2d2d2d;font-variant-numeric:tabular-nums;">{{ r.qty }}</td>
+                <td style="border:1px solid #edeff1;padding:3px 8px;text-align:right;color:#2d2d2d;font-variant-numeric:tabular-nums;">{{ r.load }}</td>
+                <td style="border:1px solid #edeff1;padding:3px 8px;text-align:left;color:#2d2d2d;">{{ r.state }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:6px;background:var(--hdr);border-top:1px solid #cfd3d7;padding:3px 8px;flex-shrink:0;font-size:11px;color:#4a4f55;">
+        <i class="ti ti-chevron-left-pipe" style="font-size:13px;"></i><i class="ti ti-chevron-left" style="font-size:13px;"></i>
+        <span style="border:1px solid #cfd3d7;background:#fff;border-radius:2px;padding:1px 8px;">Record 1 of 53</span>
+        <i class="ti ti-chevron-right" style="font-size:13px;"></i><i class="ti ti-chevron-right-pipe" style="font-size:13px;"></i>
+      </div>
+    </div>
+
+    <!-- right: Gantt Chart -->
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0;background:#fff;">
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--hdr);border-bottom:1px solid #cfd3d7;padding:4px 10px;flex-shrink:0;font-size:11px;color:#3a3e43;">
+        <span style="font-weight:700;">Gantt Chart</span>
+        <div style="display:flex;gap:16px;">
+          <span style="display:flex;align-items:center;gap:3px;"><i class="ti ti-typography" style="font-size:13px;color:#0a72f2;"></i>Text 설정</span>
+          <span style="display:flex;align-items:center;gap:3px;"><i class="ti ti-palette" style="font-size:13px;color:#ed7100;"></i>색상설정</span>
+        </div>
+      </div>
+
+      <div style="flex:1;overflow:auto;min-height:0;">
+        <div style="width:1032px;position:relative;">
+          <!-- date header -->
+          <div style="display:flex;position:sticky;top:0;z-index:4;background:var(--hdr);">
+            <div style="width:96px;flex-shrink:0;border:1px solid #cfd3d7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#3a3e43;">정반</div>
+            <sc-for list="{{ dates }}" as="d" hint-placeholder-count="13">
+              <div style="width:72px;flex-shrink:0;border-top:1px solid #cfd3d7;border-right:1px solid #cfd3d7; background: {{ d.hbg }};">
+                <div style="text-align:center;font-size:11px;font-weight:600;padding:3px 0;border-bottom:1px solid #cfd3d7; color: {{ d.color }};">{{ d.label }}</div>
+                <div style="display:flex;">
+                  <div style="width:24px;text-align:center;font-size:10px;padding:2px 0;border-right:1px solid #e4e6e8; color: {{ d.scolor }};">전</div>
+                  <div style="width:24px;text-align:center;font-size:10px;padding:2px 0;border-right:1px solid #e4e6e8; color: {{ d.scolor }};">후</div>
+                  <div style="width:24px;text-align:center;font-size:10px;padding:2px 0; color: {{ d.scolor }};">야</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <!-- body -->
+          <div style="position:relative;">
+            <sc-for list="{{ gantt }}" as="g" hint-placeholder-count="4">
+              <div style="display:flex;height:112px;border-bottom:1px solid #c4c8cd;">
+                <div style="width:96px;flex-shrink:0;border-right:1px solid #cfd3d7;border-left:1px solid #cfd3d7;display:flex;align-items:center;justify-content:center;font-size:13px;color:#3a3e43;background:#ffffff;">{{ g.label }}</div>
+                <div style="width:936px;flex-shrink:0;position:relative;background-image:repeating-linear-gradient(90deg,transparent 0 23px,#e9ebed 23px 24px),repeating-linear-gradient(90deg,transparent 0 71px,#ccd0d4 71px 72px);">
+                  <sc-for list="{{ weekend }}" as="w" hint-placeholder-count="4">
+                    <div style="position:absolute;top:0;bottom:0;width:72px;background:rgba(200,120,70,.08); left: {{ w.left }};"></div>
+                  </sc-for>
+                  <sc-for list="{{ g.bars }}" as="b" hint-placeholder-count="1">
+                    <div style="position:absolute;overflow:hidden;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;border:1px solid rgba(0,0,0,.22); top: {{ b.top }}; left: {{ b.left }}; width: {{ b.width }}; height: {{ b.height }}; background: {{ b.bg }}; color: {{ b.color }};">{{ b.label }}</div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+            <div style="position:absolute;top:0;bottom:0;left:600px;width:3px;background:#f10a00;z-index:5;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 정반 블록 배치 ===== -->
+  <div style="display:flex;flex-direction:column;flex:1.5;min-height:0;background:#000;">
+    <div style="background:var(--hdr);border-bottom:1px solid #cfd3d7;padding:3px 12px;flex-shrink:0;font-size:11px;color:#7a7f85;font-weight:600;">정반 블록 배치</div>
+
+    <!-- toolbar A -->
+    <div style="display:flex;align-items:center;gap:18px;background:var(--panel);border-bottom:1px solid #d6dade;padding:6px 14px;flex-shrink:0;">
+      <div style="display:flex;align-items:baseline;gap:22px;">
+        <span style="font-size:20px;font-weight:800;color:#e8451c;">기준일 : 07-07(월)</span>
+        <span style="font-size:18px;font-weight:800;color:#e8451c;">착수 : 2건</span>
+        <span style="font-size:18px;font-weight:800;color:#e8451c;">반출 : 2건</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-left:8px;font-size:12px;">
+        <span style="display:inline-block;width:4px;height:12px;background:#2e9e57;border-radius:1px;"></span><span>구분</span>
+        <div style="display:flex;align-items:center;gap:20px;background:#fff;border:1px solid var(--line);border-radius:4px;padding:5px 16px;">
+          <label style="display:flex;align-items:center;gap:4px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border:1px solid #8a8f95;border-radius:50%;"><span style="width:7px;height:7px;background:#ed7100;border-radius:50%;"></span></span>종일</label>
+          <label style="display:flex;align-items:center;gap:4px;color:#5a5f65;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border:1px solid #8a8f95;border-radius:50%;"><span style="width:7px;height:7px;background:#c6c9cc;border-radius:50%;"></span></span>전후야</label>
+        </div>
+        <label style="display:flex;align-items:center;gap:4px;color:#5a5f65;margin-left:6px;"><span style="display:inline-block;width:14px;height:14px;border:1px solid #8a8f95;border-radius:2px;background:#fff;"></span>호선-블록만 표기</label>
+      </div>
+      <div style="margin-left:auto;">
+        <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;"><i class="ti ti-settings" style="font-size:15px;color:#5a5f65;"></i>기타설정</span>
+      </div>
+    </div>
+
+    <!-- toolbar B -->
+    <div style="display:flex;align-items:center;gap:10px;background:var(--panel);border-bottom:1px solid #c4c9ce;padding:5px 14px;flex-shrink:0;font-size:12px;">
+      <span style="display:inline-block;width:4px;height:12px;background:#2e9e57;border-radius:1px;"></span><span>기준일</span>
+      <div style="display:flex;align-items:center;gap:1px;color:#3a3e43;">
+        <i class="ti ti-player-skip-back-filled" style="font-size:15px;"></i><i class="ti ti-player-track-prev-filled" style="font-size:15px;"></i><i class="ti ti-caret-left-filled" style="font-size:14px;"></i>
+      </div>
+      <span style="display:inline-flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:2px;padding:3px 6px;width:106px;font-variant-numeric:tabular-nums;">2025-07-07<span style="color:#7a7f85;">▾</span></span>
+      <div style="display:flex;align-items:center;gap:1px;color:#3a3e43;">
+        <i class="ti ti-caret-right-filled" style="font-size:14px;"></i><i class="ti ti-player-track-next-filled" style="font-size:15px;"></i><i class="ti ti-player-skip-forward-filled" style="font-size:15px;"></i>
+      </div>
+      <label style="display:flex;align-items:center;gap:3px;color:#5a5f65;margin-left:4px;"><span style="display:inline-block;width:13px;height:13px;border:1px solid #8a8f95;border-radius:50%;"></span>전</label>
+      <label style="display:flex;align-items:center;gap:3px;color:#5a5f65;"><span style="display:inline-block;width:13px;height:13px;border:1px solid #8a8f95;border-radius:50%;"></span>후</label>
+      <label style="display:flex;align-items:center;gap:3px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border:1px solid #8a8f95;border-radius:50%;"><span style="width:6px;height:6px;background:#ed7100;border-radius:50%;"></span></span>야</label>
+      <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:3px 10px;margin-left:4px;"><i class="ti ti-device-floppy" style="font-size:14px;color:#0a72f2;"></i>배치도 저장</span>
+      <span style="display:inline-block;width:4px;height:12px;background:#2e9e57;border-radius:1px;margin-left:6px;"></span><span>생산기간</span>
+      <span style="display:inline-flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:2px;padding:3px 6px;width:106px;font-variant-numeric:tabular-nums;">2025-07-07<span style="color:#7a7f85;">▾</span></span>
+      <span>~</span>
+      <span style="display:inline-flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:2px;padding:3px 6px;width:106px;font-variant-numeric:tabular-nums;">2025-08-10<span style="color:#7a7f85;">▾</span></span>
+      <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:3px 10px;"><i class="ti ti-device-floppy" style="font-size:14px;color:#0a72f2;"></i>배치도 저장(생산기간)</span>
+      <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:3px 10px;"><i class="ti ti-player-play-filled" style="font-size:14px;color:#1a8f45;"></i>Play(생산기간)</span>
+
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+        <span style="color:#5a5f65;">기준일</span>
+        <span style="background:#20c05a;color:#fff;font-weight:700;border-radius:3px;padding:3px 12px;">착수</span>
+        <span style="background:#b9bec3;color:#3a3e43;font-weight:700;border-radius:3px;padding:3px 12px;">진행</span>
+        <span style="background:#1a2fc0;color:#fff;font-weight:700;border-radius:3px;padding:3px 12px;">반출</span>
+        <span style="color:#e40c01;font-weight:800;padding:3px 8px;">실적</span>
+      </div>
+    </div>
+
+    <!-- black canvas -->
+    <div style="flex:1;min-height:0;background:#000;display:flex;padding:12px 0 12px 14px;gap:0;overflow:hidden;">
+      <div style="flex:1.9;border:1px solid #45494d;border-radius:3px;padding:10px 12px;display:flex;flex-direction:column;">
+        <div style="color:#e58a2a;font-size:14px;font-weight:800;margin-bottom:10px;">의장 기본 작업장</div>
+        <div style="display:flex;flex-direction:column;gap:14px;flex:1;min-height:0;">
+          <sc-for list="{{ bayrows }}" as="row" hint-placeholder-count="2">
+            <div style="display:flex;gap:12px;align-items:stretch;flex:1;min-height:0;">
+              <sc-for list="{{ row.bays }}" as="bay" hint-placeholder-count="5">
+                <div style="height:100%;border:1px solid #6a6f74;border-radius:3px;position:relative;flex-shrink:0; width: {{ bay.w }}; background: {{ bay.bg }};">
+                  <div style="position:absolute;top:4px;left:6px;font-size:9px;font-weight:600; color: {{ bay.tc }};">{{ bay.name }}</div>
+                  <sc-if value="{{ bay.split }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute;top:0;bottom:0;left:50%;width:1px;background:#6a6f74;"></div>
+                    <div style="position:absolute;top:4px;left:50%;margin-left:6px;font-size:9px;font-weight:600; color: {{ bay.tc }};">{{ bay.name2 }}</div>
+                  </sc-if>
+                  <sc-for list="{{ bay.blocks }}" as="bl" hint-placeholder-count="1">
+                    <div style="position:absolute;border:2px solid #f2f3f4; top: {{ bl.top }}; left: {{ bl.left }}; width: {{ bl.w }}; height: {{ bl.h }}; background: {{ bl.c }};"></div>
+                    <div style="position:absolute;font-size:6px;font-weight:700;color:#e40c01;white-space:nowrap; top: {{ bl.lt }}; left: {{ bl.ll }};">{{ bl.label }}</div>
+                  </sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+        <i class="ti ti-player-play-filled" style="font-size:68px;color:#eceef0;"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- status bar -->
+  <div style="height:22px;background:#20222a;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#d8dadd;flex-shrink:0;">의장 주간작업계획 수립(PPHA_C210)</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const meta = [
+      ['17','06/24','07/16','','','0.0','0.0','0.0','TMH','365.70','365.7','2Bay 서편'],
+      ['60','07/07','10/13','','','0.0','0.0','0.0','TMH','0.30','0.3','2Bay 서편'],
+      ['18','07/10','08/11','05/08','06/23','0.0','0.0','0.0','DMW','5168.07','232.4','2Bay 서편'],
+      ['18','07/10','08/11','05/08','06/23','20.0','10.0','0.0','DMW','4928.03','221.6','2Bay 동편'],
+      ['18','07/10','08/11','05/08','06/23','15.0','12.0','0.0','DMW','4927.13','221.6','2Bay 동편'],
+      ['18','07/10','08/11','05/08','06/23','15.0','10.0','0.0','DMW','6888.38','309.8','2Bay 동편'],
+      ['25','06/20','07/24','','','0.0','0.0','0.0','TMH','41305.5926','982.6','2Bay 동편'],
+      ['12','06/25','07/10','','','15.0','10.0','0.0','TMH','603.40','603.4','2Bay 동편'],
+      ['17','06/24','07/16','','','0.0','0.0','0.0','MEA','','4.1',''],
+      ['17','06/24','07/16','','','0.0','0.0','0.0','MEA','','4.1',''],
+      ['17','06/24','07/16','','','0.0','0.0','0.0','MEA','','4.1',''],
+      ['17','07/11','08/11','','','0.0','0.0','0.0','TMH','26480.8051','629.9',''],
+      ['17','07/11','08/11','','','0.0','0.0','0.0','TMH','0','0',''],
+      ['24','06/30','07/31','','','0.0','0.0','0.0','TMH','1494.30','1494.3',''],
+      ['17','06/28','07/08','','','20.0','10.0','0.0','TMH','955.0','955.9','2Bay 동편'],
+    ];
+    const ltrows = meta.map((m,i)=>({
+      idx: i+1, mark: '', ho:m[0], d0:m[1], d1:m[2], d2:m[3], d3:m[4],
+      l:m[5], p:m[6], h:m[7], unit:m[8], qty:m[9], load:m[10], state:m[11],
+      bg: i===0 ? '#a8c8ef' : '#ffffff',
+    }));
+
+    const RED = '#d63b3b';
+    const days = [
+      ['07-01(화)',0],['07-02(수)',0],['07-03(목)',0],['07-04(금)',0],
+      ['07-05(토)',1],['07-06(일)',1],['07-07(월)',0],['07-08(화)',0],
+      ['07-09(수)',0],['07-10(목)',0],['07-11(금)',0],['07-12(토)',1],['07-13(일)',1],
+    ];
+    const dates = days.map(d=>({ label:d[0], color: d[1]?RED:'#3a3e43', scolor: d[1]?RED:'#7a7f85', hbg: d[1]?'#f5e2d6':'#fbfcfd' }));
+    const weekend = [4,5,11,12].map(i=>({ left:(i*72)+'px' }));
+
+    const YEL='#ffe000', GRN='#6ed890', BLU='#1a2fc0';
+    const bd = 'rgba(0,0,0,.22)';
+    const gantt = [
+      { label:'2Bay 동편 1', bars:[
+        { top:'8px', left:'216px', width:'720px', height:'44px', bg:YEL, color:'#2d2d2d', label:'' },
+        { top:'60px', left:'216px', width:'720px', height:'44px', bg:YEL, color:'#2d2d2d', label:'' },
+      ]},
+      { label:'2Bay 동편 2', bars:[
+        { top:'4px', left:'504px', width:'432px', height:'104px', bg:YEL, color:'#2d2d2d', label:'' },
+        { top:'4px', left:'0px', width:'504px', height:'104px', bg:GRN, color:'#123', label:'2574-50C' },
+      ]},
+      { label:'2Bay 동편 3', bars:[
+        { top:'4px', left:'0px', width:'936px', height:'50px', bg:YEL, color:'#2d2d2d', label:'' },
+        { top:'58px', left:'0px', width:'468px', height:'50px', bg:BLU, color:'#fff', label:'2576-UN30' },
+        { top:'58px', left:'588px', width:'348px', height:'50px', bg:BLU, color:'#fff', label:'' },
+      ]},
+      { label:'2Bay 동편 4', bars:[
+        { top:'4px', left:'0px', width:'936px', height:'104px', bg:YEL, color:'#2d2d2d', label:'' },
+      ]},
+    ];
+
+    const DK='#85888c', LT='#b4b7bb';
+    const mk = (top,left,w,h,c,label,lt,ll)=>({top,left,w,h,c,label,lt,ll});
+    const bayrows = [
+      { bays:[
+        { name:'2Bay 동편 1', w:'128px', bg:DK, tc:'#e2e4e6', blocks:[
+          mk('18%','10px','48px','73%','#fff','2586-P00 07.04(月)~08.10','50%','8px'),
+          mk('18%','68px','48px','73%','#fff','','',''),
+        ]},
+        { name:'2Bay 동편 2', w:'128px', bg:DK, tc:'#e2e4e6', blocks:[
+          mk('16%','14px','100px','77%','#1a2fc0','2574-50C 08.30(月)~07.07','52%','16px'),
+        ]},
+        { name:'2Bay 동편 3', w:'128px', bg:DK, tc:'#e2e4e6', blocks:[
+          mk('18%','10px','48px','73%','#1a2fc0','','',''),
+          mk('18%','68px','48px','73%','#fff','2586-U04 07.01(月)~03.28','50%','60px'),
+        ]},
+        { name:'2Bay 동편 4', w:'128px', bg:DK, tc:'#e2e4e6', blocks:[
+          mk('15%','14px','100px','76%','#ffe000','2586-U006 06.30(月)~08.09','60%','16px'),
+        ]},
+        { name:'8Bay 동편 1', w:'150px', bg:DK, tc:'#e2e4e6', blocks:[] },
+      ]},
+      { bays:[
+        { name:'2Bay 서편 5', w:'128px', bg:DK, tc:'#e2e4e6', blocks:[
+          mk('27%','34px','58px','47%','#fff','2568-U01 07.01(月)~07.28','52%','20px'),
+        ]},
+        { name:'2Bay 서편 6', w:'128px', bg:DK, tc:'#e2e4e6', blocks:[
+          mk('27%','18px','58px','47%','#fff','2585-P01 07.01(月)~10.13','52%','4px'),
+        ]},
+        { name:'2Bay 서편 7', w:'128px', bg:LT, tc:'#5a5d60', blocks:[] },
+        { name:'2Bay 서편 8', w:'128px', bg:LT, tc:'#5a5d60', blocks:[] },
+        { name:'8Bay 서편 1', name2:'8Bay 서편 2', split:true, w:'242px', bg:LT, tc:'#5a5d60', blocks:[] },
+      ]},
+    ];
+
+    return { ltrows, dates, weekend, gantt, bayrows };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "createdAt": "2026-07-10T00:30:19.984Z",
+  "artifacts": [
+    ".superloopy/evidence/G001-C001-capture.txt",
+    ".superloopy/evidence/G001-C002-capture.txt"
+  ],
+  "summary": {
+    "goals": {
+      "total": 1,
+      "pending": 0,
+      "in_progress": 1,
+      "complete": 0,
+      "failed": 0,
+      "blocked": 0
+    },
+    "criteria": {
+      "total": 2,
+      "pass": 2,
+      "pending": 0,
+      "fail": 0,
+      "blocked": 0
+    },
+    "aggregateComplete": false
+  },
+  "notes": "기존 화면 스타일을 보존한 단일 문서 해시 라우팅 통합 완료. 시각 검토는 frontend/20260710-unified-navigation/VISUAL_QA.md에 기록"
+}

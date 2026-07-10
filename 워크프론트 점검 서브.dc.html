@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.24.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --orange-50:#ed7100;--orange-60:#d15700;
+  --gray-5:#f8f8f8;--gray-10:#f0f0f0;--gray-20:#e4e4e4;--gray-40:#c6c6c6;--gray-60:#717171;--gray-80:#2d2d2d;
+  --blue-dark:#0a72f2;--green-dark:#008233;--green-main:#2e9e57;--red-main:#f22922;
+  --side:#3b4046;--side-hdr:#4b5158;--side-search:#2b2f34;--titlebar:#22262c;--brown:#6e5c4c;--brown-active:#c0261d;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{background:#eef0f2;font-family:'Pretendard',sans-serif;color:var(--gray-80);-webkit-font-smoothing:antialiased;}
+a{color:var(--blue-dark);text-decoration:none;}
+a:hover{color:var(--orange-60);text-decoration:underline;}
+</style>
+</helmet>
+<div style="width:100%;height:100vh;display:flex;flex-direction:column;background:#eef0f2;overflow:hidden;">
+
+  <dc-import name="Header" style="width:100%;flex-shrink:0" hint-size="100%,76px"></dc-import>
+
+  <div style="flex:1;display:flex;min-height:0;">
+
+    <dc-import name="SideNav" pill="{{ true }}" style="width:188px;flex-shrink:0" hint-size="188px,100%"></dc-import>
+
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0;background:#eef0f2;">
+      <div style="height:30px;background:#fff;display:flex;align-items:flex-end;padding:0 0 0 6px;flex-shrink:0;border-bottom:1px solid #b6bbc0;">
+        <div style="background:#eef0f2;color:#2d2d2d;font-size:12px;font-weight:500;padding:6px 12px 7px 14px;border:1px solid #b6bbc0;border-bottom:1px solid #eef0f2;border-radius:3px 3px 0 0;display:flex;align-items:center;gap:16px;position:relative;top:1px;">워크프론트 점검<i class="ti ti-x" style="font-size:13px;color:#555;"></i></div>
+      </div>
+
+      <div style="flex:1;overflow:auto;padding:16px 20px;">
+        <div style="font-size:24px;font-weight:800;color:#222;margin-bottom:14px;">선각 W/F 점검</div>
+
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <div style="background:var(--brown-active);color:#fff;font-size:15px;font-weight:700;padding:11px 26px;border-radius:6px;white-space:nowrap;">선각 W/F 점검</div>
+          <div style="background:var(--brown);color:#fff;font-size:15px;font-weight:700;padding:11px 26px;border-radius:6px;white-space:nowrap;">의장 W/F 점검</div>
+          <div style="background:var(--brown);color:#fff;font-size:15px;font-weight:700;padding:11px 26px;border-radius:6px;white-space:nowrap;">도장 W/F 점검</div>
+          <div style="margin-left:auto;display:flex;gap:12px;">
+            <div style="background:#4a4f55;color:#fff;font-size:14px;font-weight:600;padding:11px 22px;border-radius:20px;white-space:nowrap;">W/F 점검 확정</div>
+            <div style="background:#4a4f55;color:#fff;font-size:14px;font-weight:600;padding:11px 22px;border-radius:20px;white-space:nowrap;">신호등 상태 변경</div>
+            <div style="background:#4a4f55;color:#fff;font-size:14px;font-weight:600;padding:11px 26px;border-radius:20px;white-space:nowrap;">저장</div>
+          </div>
+        </div>
+
+        <div style="display:flex;margin-bottom:0;">
+          <div style="background:var(--brown-active);color:#fff;font-size:15px;font-weight:700;padding:14px 26px;">계획</div>
+          <div style="background:#c9cdd1;color:#4a4f55;font-size:14px;font-weight:600;padding:9px 20px;display:flex;align-items:center;text-align:center;line-height:1.15;border-left:1px solid #b9bec3;">작업장<br>&amp;설비</div>
+          <div style="background:#c9cdd1;color:#4a4f55;font-size:15px;font-weight:600;padding:14px 26px;border-left:1px solid #b9bec3;display:flex;align-items:center;">인력</div>
+          <div style="background:#c9cdd1;color:#4a4f55;font-size:15px;font-weight:600;padding:14px 26px;border-left:1px solid #b9bec3;display:flex;align-items:center;">자재</div>
+          <div style="background:#c9cdd1;color:#4a4f55;font-size:15px;font-weight:600;padding:14px 26px;border-left:1px solid #b9bec3;display:flex;align-items:center;">도면</div>
+          <div style="background:#c9cdd1;color:#4a4f55;font-size:15px;font-weight:600;padding:14px 26px;border-left:1px solid #b9bec3;display:flex;align-items:center;">품질</div>
+          <div style="background:#c9cdd1;color:#4a4f55;font-size:15px;font-weight:600;padding:14px 26px;border-left:1px solid #b9bec3;display:flex;align-items:center;">안전</div>
+        </div>
+
+        <div style="display:flex;border:1px solid #c9cdd1;background:#fff;margin-top:14px;">
+          <div style="flex:1;overflow:auto;">
+            <table style="border-collapse:collapse;font-size:10.5px;width:100%;white-space:nowrap;">
+              <thead>
+                <tr>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 6px;font-weight:600;">
+                    <span onClick="{{ toggleAll }}" style="display:inline-flex;width:15px;height:15px;align-items:center;justify-content:center;border:1px solid #8a9099;border-radius:2px;box-shadow:inset 0 1px 1px rgba(0,0,0,.08);background: {{ allBoxBg }};cursor:pointer;vertical-align:middle;"><sc-if value="{{ allOn }}" hint-placeholder-val="{{ false }}"><i class="ti ti-check" style="font-size:11px;color:#fff;"></i></sc-if></span>
+                  </th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 6px;font-weight:600;">순번</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 8px;font-weight:600;">W/F점검<br>상태</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 8px;font-weight:600;">프로젝트</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 8px;font-weight:600;">블록</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 10px;font-weight:600;">실행계획<br>액티비티 번호</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 12px;font-weight:600;">액티비티 명칭</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 10px;font-weight:600;">작업지시 번호</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 16px;font-weight:600;">작업지시 내용</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 6px;font-weight:600;">실적<br>공정률(%)</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 6px;font-weight:600;">상태</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 8px;font-weight:600;">착수</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 8px;font-weight:600;">완료</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 8px;font-weight:600;">착수</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 8px;font-weight:600;">완료</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 8px;font-weight:600;">착수</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 8px;font-weight:600;">완료</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 8px;font-weight:600;">공종</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 8px;font-weight:600;">공정</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 8px;font-weight:600;">STAGE</th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 10px;font-weight:600;">배차번호<br><span style="font-size:9px;opacity:.8;">(물류오더, 물류번호)</span></th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 14px;font-weight:600;"></th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 14px;font-weight:600;"></th>
+                  <th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 14px;font-weight:600;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ rows }}" as="r" hint-placeholder-count="13">
+                  <tr>
+                    <td style="border:1px solid #e6e8ea;padding:4px 6px;text-align:center;height:24px;">
+                      <sc-if value="{{ r.box }}" hint-placeholder-val="{{ true }}"><span onClick="{{ r.toggle }}" style="display:inline-flex;width:15px;height:15px;align-items:center;justify-content:center;border:1px solid #8a9099;border-radius:2px;box-shadow:inset 0 1px 1px rgba(0,0,0,.08);background: {{ r.boxBg }};cursor:pointer;vertical-align:middle;"><sc-if value="{{ r.on }}" hint-placeholder-val="{{ false }}"><i class="ti ti-check" style="font-size:11px;color:#fff;"></i></sc-if></span></sc-if>
+                    </td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 6px;text-align:center;color:#3a3e43;">{{ r.sun }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 6px;text-align:center;">
+                      <sc-if value="{{ r.wfNeed }}" hint-placeholder-val="{{ false }}"><span style="color:#d63b3b;font-weight:700;">점검 필요</span></sc-if>
+                      <sc-if value="{{ r.wfConfirm }}" hint-placeholder-val="{{ false }}"><span style="color:#d63b3b;font-weight:700;">점검 확정</span></sc-if>
+                    </td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 8px;text-align:center;color:#3a3e43;">{{ r.proj }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 8px;text-align:center;color:#3a3e43;">{{ r.block }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 8px;text-align:left;color:#5a5f65;">{{ r.actNo }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 10px;text-align:left;color:#3a3e43;">{{ r.actName }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 10px;text-align:left;color:#3a3e43;">{{ r.rep }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 12px;text-align:left;color:#3a3e43;">{{ r.work }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 6px;text-align:center;color:#3a3e43;font-weight:600;">{{ r.rate }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 6px;text-align:center;">
+                      <sc-if value="{{ r.ok }}" hint-placeholder-val="{{ false }}"><span style="color:#1a8f45;font-weight:700;">정상</span></sc-if>
+                      <sc-if value="{{ r.bad }}" hint-placeholder-val="{{ false }}"><span style="color:#d63b3b;font-weight:700;">비정상</span></sc-if>
+                      <sc-if value="{{ r.none }}" hint-placeholder-val="{{ true }}"><span style="color:#9aa0a6;">-</span></sc-if>
+                    </td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 8px;text-align:center;color:#3a3e43;font-variant-numeric:tabular-nums;">{{ r.s1 }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 8px;text-align:center;color:#3a3e43;font-variant-numeric:tabular-nums;">{{ r.e1 }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 8px;text-align:center;color:#3a3e43;font-variant-numeric:tabular-nums;">{{ r.s2 }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 8px;text-align:center;color:#3a3e43;font-variant-numeric:tabular-nums;">{{ r.e2 }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 8px;text-align:center;color:#3a3e43;font-variant-numeric:tabular-nums;">{{ r.s3 }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 8px;text-align:center;color:#3a3e43;font-variant-numeric:tabular-nums;">{{ r.e3 }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 8px;text-align:center;color:#3a3e43;">{{ r.gong }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 8px;text-align:center;color:#3a3e43;">{{ r.type }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 8px;text-align:center;color:#3a3e43;">{{ r.etage }}</td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 10px;text-align:center;">
+                      <a href="#" style="color:#0a5cc0;text-decoration:underline;">{{ r.bae }}</a>
+                    </td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 14px;"></td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 14px;"></td>
+                    <td style="border:1px solid #e6e8ea;padding:4px 14px;"></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div style="height:22px;background:#1e1f22;border-top:1px solid #000;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#d8dadd;flex-shrink:0;">워크프론트 점검</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { checked: {} };
+  toggle(i){ this.setState(s=>{ const c={...s.checked}; c[i]=!c[i]; return {checked:c}; }); }
+  toggleAll(){ this.setState(s=>{ const all = this.rowsData.every((_,i)=>s.checked[i]); const c={}; this.rowsData.forEach((_,i)=>{ c[i]=!all; }); return {checked:c}; }); }
+  renderVals() {
+    const rowsData = [
+      {wfNeed:true, actNo:'2585S501AS10S10', actName:'소조립', rate:'100%', ok:true, s1:'2025-04-30', e1:'2025-05-08', s3:'2025-04-30', e3:'2025-05-07', gong:'S : 조립', type:'A : 조립', etage:'S : 소조', bae:'A0000001'},
+      {wfConfirm:true, actNo:'2585S501AM10M10', actName:'중조립', rate:'100%', ok:true, s1:'2025-05-19', e1:'2025-06-11', s3:'2025-05-14', e3:'2025-06-09', gong:'S : 조립', type:'A : 조립', etage:'M : 중조', bae:'A0000002'},
+      {rep:'2585S501AM10M10N00', work:'주판론지', rate:'100%', none:true, s1:'2025-05-13', e1:'2025-06-09', s3:'2025-05-14', e3:'2025-06-09'},
+      {rep:'2585S501AM10M10F01', work:'취부', rate:'100%', none:true, s1:'2025-05-13', e1:'2025-06-09', s3:'2025-05-14', e3:'2025-06-09'},
+      {rep:'2585S501AM10M10W02', work:'용접+사상', rate:'100%', none:true, s1:'2025-05-13', e1:'2025-06-09', s3:'2025-05-14', e3:'2025-06-09'},
+      {rep:'2585S501AM10M10Q03', work:'검사준비+NDE', rate:'100%', none:true, s1:'2025-05-13', e1:'2025-06-09', s3:'2025-05-14', e3:'2025-06-09'},
+      {rep:'2585S501AM10M10Q04', work:'검사', rate:'100%', none:true, s1:'2025-05-13', e1:'2025-06-09', s3:'2025-05-14', e3:'2025-06-09'},
+      {rep:'2585Z501SM1090001', work:'(발판) 2야드1 이동 사다리 설치', none:true, s1:'2025-06-06', e3:'2025-06-06'},
+      {rep:'2585Z501SM10A1021', work:'(발판) 중조설치', none:true, s1:'2025-06-03', e3:'2025-06-03'},
+      {rep:'2585Z501SM10A1022', work:'(발판) 러그 작업용 설치', none:true, s1:'2025-05-19'},
+      {rep:'2585Z501USM1090001', work:'(발판) 2야드1 이동 사다리 해체', none:true, s1:'2025-06-24', e3:'2025-06-24'},
+      {rep:'2585Z501USM10A1023', work:'(발판) 중조해체', none:true, s1:'2025-05-19'},
+      {rep:'2585Z501USM10A1024', work:'(발판) 러그 작업용 해체', none:true, s1:'2025-05-19'},
+      {blank:true},
+      {actNo:'2585WS01GC10F10', actName:'중조의장', bad:true, s1:'2025-06-10', e1:'2025-06-23', s3:'2025-06-13', e3:'2025-06-19', gong:'W : 의장', type:'G : 관철', etage:'C : 중조의장', bae:'A0000003'},
+      {rep:'2585WS01GC10F10F01', work:'SUPPORT/철의 설치', none:true, s1:'2025-06-12', e1:'2025-06-20', s3:'2025-06-13', e3:'2025-06-19'},
+      {rep:'2585WS01GC10F10F02', work:'PIPE 설치', none:true, s1:'2025-06-13', e1:'2025-06-20', s3:'2025-06-13', e3:'2025-06-19'},
+      {rep:'2585WS01GC10F10W03', work:'용접/사상', none:true, s1:'2025-06-13', e1:'2025-06-20', s3:'2025-06-13', e3:'2025-06-19'},
+      {blank:true},{blank:true},{blank:true},{blank:true},{blank:true},{blank:true},{blank:true},
+    ];
+    this.rowsData = rowsData;
+    const ck = this.state.checked;
+    const rows = rowsData.map((r,i)=>({ ...r, box: !r.blank, on: !!ck[i], boxBg: ck[i] ? '#0067c0' : '#fff', toggle: ()=>this.toggle(i) }));
+    const allOn = rowsData.length>0 && rowsData.every((_,i)=>ck[i]);
+    return { rows, allOn, allBoxBg: allOn ? '#0067c0' : '#fff', toggleAll: ()=>this.toggleAll() };
+  }
+}
+</script>
+</body>
+</html>

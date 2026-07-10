@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.24.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --orange-50:#ed7100;--orange-60:#d15700;
+  --gray-5:#f8f8f8;--gray-10:#f0f0f0;--gray-20:#e4e4e4;--gray-40:#c6c6c6;--gray-60:#717171;--gray-80:#2d2d2d;
+  --blue-dark:#0a72f2;--green-dark:#008233;--green-main:#2e9e57;--red-main:#f22922;
+  --side:#3b4046;--side-hdr:#4b5158;--side-search:#2b2f34;--titlebar:#22262c;--brown:#6e5c4c;--brown-active:#c0261d;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{background:#eef0f2;font-family:'Pretendard',sans-serif;color:var(--gray-80);-webkit-font-smoothing:antialiased;}
+a{color:var(--blue-dark);text-decoration:none;}
+a:hover{color:var(--orange-60);text-decoration:underline;}
+</style>
+</helmet>
+<div style="width:100%;height:100vh;display:flex;flex-direction:column;background:#eef0f2;overflow:hidden;">
+
+  <dc-import name="Header" style="width:100%;flex-shrink:0" hint-size="100%,76px"></dc-import>
+
+  <div style="flex:1;display:flex;min-height:0;">
+
+    <dc-import name="SideNav" pill="{{ true }}" style="width:188px;flex-shrink:0" hint-size="188px,100%"></dc-import>
+
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0;background:#eef0f2;">
+      <div style="height:30px;background:#fff;display:flex;align-items:flex-end;padding:0 0 0 6px;flex-shrink:0;border-bottom:1px solid #b6bbc0;">
+        <div style="background:#eef0f2;color:#2d2d2d;font-size:12px;font-weight:500;padding:6px 12px 7px 14px;border:1px solid #b6bbc0;border-bottom:1px solid #eef0f2;border-radius:3px 3px 0 0;display:flex;align-items:center;gap:16px;position:relative;top:1px;">워크프론트 점검<i class="ti ti-x" style="font-size:13px;color:#555;"></i></div>
+      </div>
+
+      <div style="flex:1;overflow:auto;padding:14px 18px;">
+        <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:12px;">
+          <span style="font-size:22px;font-weight:800;color:#222;">2026년 7월 1주차</span>
+          <span style="font-size:14px;color:#6a6e73;">(2026.07.06~07.12)</span>
+        </div>
+
+        <div style="display:flex;gap:22px;margin-bottom:14px;align-items:stretch;">
+          <div style="border:1px solid #cfd3d7;border-radius:4px;overflow:hidden;min-width:430px;background:#fff;">
+            <div style="background:#4a4f55;color:#fff;font-size:13px;font-weight:700;padding:7px 14px;">워크프론트 점검 상태</div>
+            <div style="display:flex;align-items:center;gap:38px;padding:14px 22px;">
+              <div style="font-size:14px;color:#3a3e43;">점검 필요 <a href="#" style="font-size:16px;font-weight:700;margin-left:8px;text-decoration:underline;">50</a></div>
+              <div style="font-size:14px;color:#3a3e43;">확정 <a href="#" style="font-size:16px;font-weight:700;margin-left:8px;text-decoration:underline;">48</a></div>
+              <div style="font-size:14px;color:#3a3e43;">미확정 <a href="#" style="font-size:16px;font-weight:700;margin-left:8px;text-decoration:underline;">2</a></div>
+            </div>
+          </div>
+          <div style="border:1px solid #cfd3d7;border-radius:4px;overflow:hidden;background:#fff;">
+            <div style="background:#4a4f55;color:#fff;font-size:13px;font-weight:700;padding:7px 14px;">신호등 상태</div>
+            <div style="display:flex;align-items:center;gap:20px;padding:12px 20px;">
+              <div style="display:flex;align-items:center;gap:9px;"><span style="background:#2e9e57;color:#fff;font-size:12px;font-weight:700;padding:5px 15px;border-radius:14px;">정상</span><a href="#" style="font-size:16px;font-weight:700;color:var(--green-dark);">48</a></div>
+              <div style="display:flex;align-items:center;gap:9px;"><span style="background:#e24a52;color:#fff;font-size:12px;font-weight:700;padding:5px 15px;border-radius:14px;">비정상</span><a href="#" style="font-size:16px;font-weight:700;color:#c62d2d;">48</a></div>
+              <div style="display:flex;align-items:center;gap:9px;"><span style="background:#ed7100;color:#fff;font-size:12px;font-weight:700;padding:5px 15px;border-radius:14px;">변경</span><a href="#" style="font-size:16px;font-weight:700;color:#c96100;">48</a></div>
+              <div style="display:flex;align-items:center;gap:9px;"><span style="background:#8b9096;color:#fff;font-size:12px;font-weight:700;padding:5px 15px;border-radius:14px;">미착수</span><a href="#" style="font-size:16px;font-weight:700;color:#6a6e73;">48</a></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;margin-bottom:14px;">
+          <div style="display:flex;gap:14px;">
+            <div style="text-align:center;"><div style="background:var(--brown);color:#fff;font-size:14px;font-weight:700;padding:9px 20px;border-radius:5px;">선각 W/F 점검</div><a href="#" style="display:inline-block;margin-top:7px;font-size:12px;text-decoration:underline;">점검 History</a></div>
+            <div style="text-align:center;"><div style="background:var(--brown);color:#fff;font-size:14px;font-weight:700;padding:9px 20px;border-radius:5px;">의장 W/F 점검</div><a href="#" style="display:inline-block;margin-top:7px;font-size:12px;text-decoration:underline;">점검 History</a></div>
+            <div style="text-align:center;"><div style="background:var(--brown);color:#fff;font-size:14px;font-weight:700;padding:9px 20px;border-radius:5px;">도장 W/F 점검</div><a href="#" style="display:inline-block;margin-top:7px;font-size:12px;text-decoration:underline;">점검 History</a></div>
+          </div>
+          <div style="margin-left:auto;text-align:right;">
+            <div style="font-size:11.5px;color:#7a7f85;">블록 조회조건: 조회일 기준 +3개월 안에 선적일이 들어오는 블록</div>
+            <div style="font-size:12px;color:#7a7f85;margin-top:20px;">Last Updated: 2026.06.22 08:00</div>
+          </div>
+        </div>
+
+        <div style="border:1px solid #c9cdd1;overflow:auto;background:#fff;">
+          <table style="border-collapse:collapse;font-size:10.5px;width:100%;white-space:nowrap;">
+            <thead>
+              <tr>
+                <th rowspan="2" style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:4px 8px;font-weight:600;">프로젝트</th>
+                <th rowspan="2" style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:4px 8px;font-weight:600;">구분</th>
+                <th rowspan="2" style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:4px 10px;font-weight:600;">블록</th>
+                <th rowspan="2" style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:4px 14px;font-weight:600;">PCG</th>
+                <th rowspan="2" style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:4px 16px;font-weight:600;">선주</th>
+                <th rowspan="2" style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:4px 16px;font-weight:600;line-height:1.3;">선적일<br><span style="font-size:9px;opacity:.8;">(계약기준 완료일)</span></th>
+                <sc-for list="{{ groups }}" as="g" hint-placeholder-count="7">
+                  <th colspan="4" style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:4px 8px;font-weight:600;">{{ g }}</th>
+                </sc-for>
+              </tr>
+              <tr>
+                <sc-for list="{{ groups }}" as="g" hint-placeholder-count="7">
+                  <th style="background:#2e9e57;color:#fff;border:1px solid #fff;padding:3px 7px;font-weight:600;">정상</th>
+                  <th style="background:#e24a52;color:#fff;border:1px solid #fff;padding:3px 7px;font-weight:600;">비정상</th>
+                  <th style="background:#ed7100;color:#fff;border:1px solid #fff;padding:3px 7px;font-weight:600;">변경</th>
+                  <th style="background:#8b9096;color:#fff;border:1px solid #fff;padding:3px 7px;font-weight:600;">미착수</th>
+                </sc-for>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ rows }}" as="r" hint-placeholder-count="14">
+                <tr>
+                  <td style="border:1px solid #e2e4e6;padding:4px 8px;text-align:center;color:#3a3e43;">{{ r.proj }}</td>
+                  <td style="border:1px solid #e2e4e6;padding:4px 8px;text-align:center;color:#3a3e43;">{{ r.gubun }}</td>
+                  <td style="border:1px solid #e2e4e6;padding:4px 10px;text-align:center;color:#3a3e43;">{{ r.block }}</td>
+                  <td style="border:1px solid #e2e4e6;padding:4px 12px;text-align:center;color:#3a3e43;">{{ r.piece }}</td>
+                  <td style="border:1px solid #e2e4e6;padding:4px 12px;"></td>
+                  <td style="border:1px solid #e2e4e6;padding:4px 12px;"></td>
+                  <sc-for list="{{ r.groups }}" as="c" hint-placeholder-count="7">
+                    <td style="border:1px solid #eceef0;padding:4px 7px;text-align:center;color:#2e9e57;font-weight:700;font-variant-numeric:tabular-nums;">{{ c.ok }}</td>
+                    <td style="border:1px solid #eceef0;padding:4px 7px;text-align:center;color:#d63b3b;font-weight:700;text-decoration:underline;font-variant-numeric:tabular-nums;">{{ c.bad }}</td>
+                    <td style="border:1px solid #eceef0;padding:4px 7px;text-align:center;color:#e08000;font-weight:700;font-variant-numeric:tabular-nums;">{{ c.chg }}</td>
+                    <td style="border:1px solid #eceef0;padding:4px 7px;text-align:center;color:#8b9096;font-variant-numeric:tabular-nums;">{{ c.non }}</td>
+                  </sc-for>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="font-size:11px;color:#7a7f85;margin-top:8px;">※ 조회된 블록 전체 건수 표현</div>
+      </div>
+
+    </div>
+  </div>
+  <div style="height:22px;background:#1e1f22;border-top:1px solid #000;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#d8dadd;flex-shrink:0;">워크프론트 점검</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const groups = ['계획','작업장','인력','자재','도면','품질','안전'];
+    const metas = [
+      ['2579','PE','50D','M/DECK'],
+      ['2579','단블록','511','M/DECK'],
+      ['2579','단블록','512','M/DECK'],
+      ['2594','PE','50A','M/DECK'],
+      ['2594','선PE','50X','M/DECK'],
+      ['2594','단블록','501','M/DECK'],
+      ['2594','단블록','502','M/DECK'],
+      ['2594','단블록','503','M/DECK'],
+      ['2594','PE','50B','M/DECK'],
+      ['2594','선PE','50Y','M/DECK'],
+      ['2594','단블록','504','M/DECK'],
+      ['2594','단블록','505','M/DECK'],
+      ['2594','단블록','506','M/DECK'],
+      ['2594','단블록','572','COMPANION WAY'],
+    ];
+    const oks=[20,18,20,18,20,18,20,18,20,18,20,18,20,18], bads=[10,12,10,12,8,12,8,12,8,12,8,12,8,12], chgs=[1,2], nons=[50];
+    const rows = metas.map((m,i)=>({
+      proj:m[0], gubun:m[1], block:m[2], piece:m[3],
+      groups: Array.from({length:7}, (_,g)=>({
+        ok: oks[(i+g)%oks.length],
+        bad: bads[(i*2+g)%bads.length],
+        chg: chgs[(i+g)%chgs.length],
+        non: nons[(i+g)%nons.length],
+      })),
+    }));
+    return { groups, rows };
+  }
+}
+</script>
+</body>
+</html>
