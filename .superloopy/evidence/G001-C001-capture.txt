@@ -1,6 +1,6 @@
 Superloopy command capture
-startedAt: 2026-07-10T00:29:06.021Z
-finishedAt: 2026-07-10T00:29:06.195Z
+startedAt: 2026-07-10T00:59:41.433Z
+finishedAt: 2026-07-10T00:59:41.592Z
 cwd: /Users/dave/Documents/hanwha/hanwha-sf-pos
 status: pass
 exitCode: 0
@@ -11,5 +11,7 @@ component syntax: ok
 routing bindings: ok
 single-document views: ok
 navigation state transitions: ok
+single-file hosting layout: ok
+external file dependencies: 0
 
 [stderr]

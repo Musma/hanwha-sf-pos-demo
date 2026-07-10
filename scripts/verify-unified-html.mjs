@@ -3,16 +3,27 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const targetName = '의장 주간작업계획 수립.html';
-const target = fs.readdirSync(root).find((file) => file.normalize('NFC') === targetName);
+const targetPath = path.join(root, 'index.html');
+if (!fs.existsSync(targetPath)) throw new Error('파일을 찾을 수 없습니다: index.html');
 
-if (!target) throw new Error(`파일을 찾을 수 없습니다: ${targetName}`);
-
-const bundle = fs.readFileSync(path.join(root, target), 'utf8');
+const bundle = fs.readFileSync(targetPath, 'utf8');
+const rootHtmlFiles = fs.readdirSync(root).filter((file) => file.endsWith('.html'));
+if (rootHtmlFiles.length !== 1 || rootHtmlFiles[0] !== 'index.html') {
+  throw new Error(`루트 HTML 구성이 올바르지 않습니다: ${rootHtmlFiles.join(', ')}`);
+}
+if (bundle.includes('http-equiv="refresh"')) throw new Error('index.html이 아직 리다이렉트 파일입니다.');
+if (!bundle.includes('<script type="__bundler/manifest">')) {
+  throw new Error('index.html에 자체 포함 리소스 번들이 없습니다.');
+}
 const templateMatch = bundle.match(/<script type="__bundler\/template">\s*([\s\S]*?)\s*<\/script>/);
 if (!templateMatch) throw new Error('번들 템플릿을 찾을 수 없습니다.');
 
 const template = JSON.parse(templateMatch[1]);
+const fileReferences = [...template.matchAll(/(?:src|href)="([^"]+)"/g)].map((match) => match[1]);
+const externalFileReferences = fileReferences.filter((reference) => /^(?:https?:|\.\.?\/)/.test(reference));
+if (externalFileReferences.length > 0) {
+  throw new Error(`외부 파일 의존성이 있습니다: ${externalFileReferences.join(', ')}`);
+}
 const componentMatch = template.match(
   /<script type="text\/x-dc" data-dc-script="">\s*(class Component extends DCLogic[\s\S]*?)<\/script>/,
 );
@@ -102,3 +113,5 @@ console.log('component syntax: ok');
 console.log('routing bindings: ok');
 console.log('single-document views: ok');
 console.log('navigation state transitions: ok');
+console.log('single-file hosting layout: ok');
+console.log('external file dependencies: 0');

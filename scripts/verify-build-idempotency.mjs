@@ -5,11 +5,8 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const targetName = '의장 주간작업계획 수립.html';
-const target = fs.readdirSync(root).find((file) => file.normalize('NFC') === targetName);
-if (!target) throw new Error(`파일을 찾을 수 없습니다: ${targetName}`);
-
-const targetPath = path.join(root, target);
+const targetPath = path.join(root, 'index.html');
+if (!fs.existsSync(targetPath)) throw new Error('파일을 찾을 수 없습니다: index.html');
 const buildPath = path.join(root, 'scripts', 'build-unified-html.mjs');
 const hash = () => crypto.createHash('sha256').update(fs.readFileSync(targetPath)).digest('hex');
 const runBuild = () => {
@@ -28,4 +25,3 @@ if (before !== afterFirstBuild || afterFirstBuild !== afterSecondBuild) {
 }
 
 console.log(`idempotent build: ok (${before.slice(0, 12)})`);
-

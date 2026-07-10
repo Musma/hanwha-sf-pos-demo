@@ -3,17 +3,19 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const files = fs.readdirSync(root);
+const pagesDir = path.join(root, 'prototype-pages');
+const files = fs.readdirSync(pagesDir);
 
 function findFile(normalizedName) {
   const found = files.find((file) => file.normalize('NFC') === normalizedName);
   if (!found) throw new Error(`파일을 찾을 수 없습니다: ${normalizedName}`);
-  return path.join(root, found);
+  return path.join(pagesDir, found);
 }
 
 const chairPath = findFile('의장 주간작업계획 수립.html');
 const workfrontMainPath = findFile('워크프론트 점검 메인.html');
 const workfrontDetailPath = findFile('워크프론트 점검 서브.html');
+const outputPath = path.join(root, 'index.html');
 
 function decodeBundle(filePath) {
   const bundle = fs.readFileSync(filePath, 'utf8');
@@ -286,6 +288,6 @@ unifiedTemplate = replaceComponentScript(unifiedTemplate, componentSource);
 const encodedTemplate = JSON.stringify(unifiedTemplate).replace(/<\/script/gi, '<\\/script');
 let output = chair.bundle.replace(chair.json, encodedTemplate);
 output = output.replace('<title>Bundled Page</title>', '<title>SF-POS</title>');
-fs.writeFileSync(chairPath, output);
+fs.writeFileSync(outputPath, output);
 
-console.log(`통합 HTML 생성 완료: ${path.basename(chairPath)}`);
+console.log(`통합 HTML 생성 완료: ${path.basename(outputPath)}`);

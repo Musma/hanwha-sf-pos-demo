@@ -1,8 +1,8 @@
 {
   "version": 1,
   "mode": "light",
-  "createdAt": "2026-07-10T00:28:18.949Z",
-  "updatedAt": "2026-07-10T00:30:21.494Z",
+  "createdAt": "2026-07-10T00:59:29.371Z",
+  "updatedAt": "2026-07-10T00:59:58.454Z",
   "briefPath": ".superloopy/brief.md",
   "evidencePath": ".superloopy/evidence",
   "goalsPath": ".superloopy/goals.json",
@@ -10,12 +10,12 @@
   "goals": [
     {
       "id": "G001",
-      "title": "세 개의 SF-POS 화면을 단일 HTML의 두 개 사이드바 메뉴와 워크프론트 상세 전환으로 통합",
-      "objective": "세 개의 SF-POS 화면을 단일 HTML의 두 개 사이드바 메뉴와 워크프론트 상세 전환으로 통합",
+      "title": "배포 가능한 단일 index.html을 루트에 두고 기존 SF-POS 화면 원본을 prototype-pages 폴더로 정리",
+      "objective": "배포 가능한 단일 index.html을 루트에 두고 기존 SF-POS 화면 원본을 prototype-pages 폴더로 정리",
       "status": "complete",
       "attempt": 1,
-      "createdAt": "2026-07-10T00:28:18.949Z",
-      "updatedAt": "2026-07-10T00:30:21.494Z",
+      "createdAt": "2026-07-10T00:59:29.371Z",
+      "updatedAt": "2026-07-10T00:59:58.454Z",
       "criteria": [
         {
           "id": "C001",
@@ -24,8 +24,8 @@
           "essential": true,
           "status": "pass",
           "artifact": ".superloopy/evidence/G001-C001-capture.txt",
-          "capturedAt": "2026-07-10T00:29:06.197Z",
-          "notes": "단일 문서에서 의장, 워크프론트 메인, 워크프론트 상세 상태 전환과 활성 사이드바 메뉴 두 개를 검증",
+          "capturedAt": "2026-07-10T00:59:41.594Z",
+          "notes": "루트 index.html 하나에 세 화면, 두 메뉴 라우팅, 상세 상태와 모든 리소스가 자체 포함됨을 검증",
           "command": [
             "node",
             "scripts/verify-unified-html.mjs"
@@ -39,8 +39,8 @@
           "essential": true,
           "status": "pass",
           "artifact": ".superloopy/evidence/G001-C002-capture.txt",
-          "capturedAt": "2026-07-10T00:29:28.206Z",
-          "notes": "통합 빌드를 반복 실행해도 결과 해시가 동일하고 중복 라우트가 생기지 않음을 검증",
+          "capturedAt": "2026-07-10T00:59:50.565Z",
+          "notes": "prototype-pages 원본에서 반복 빌드해도 루트 index.html 해시가 동일함을 검증",
           "command": [
             "node",
             "scripts/verify-build-idempotency.mjs"
@@ -48,22 +48,22 @@
           "exitCode": 0
         }
       ],
-      "startedAt": "2026-07-10T00:28:23.187Z",
-      "completedAt": "2026-07-10T00:30:21.494Z",
-      "evidence": "두 활성 사이드바 메뉴, 세 화면 상태 전환, 상세 체크 상태, 반복 빌드와 디자인 토큰 검증 통과"
+      "startedAt": "2026-07-10T00:59:35.309Z",
+      "completedAt": "2026-07-10T00:59:58.454Z",
+      "evidence": "루트 index.html 단일 파일 배포, 외부 파일 의존성 0, 원본 폴더 분리와 반복 빌드 검증 통과"
     }
   ],
   "aggregateCompletion": {
     "status": "complete",
-    "completedAt": "2026-07-10T00:30:21.494Z",
-    "evidence": "두 활성 사이드바 메뉴, 세 화면 상태 전환, 상세 체크 상태, 반복 빌드와 디자인 토큰 검증 통과",
+    "completedAt": "2026-07-10T00:59:58.454Z",
+    "evidence": "루트 index.html 단일 파일 배포, 외부 파일 의존성 0, 원본 폴더 분리와 반복 빌드 검증 통과",
     "qualityGate": {
       "status": "passed",
       "artifacts": [
         {
           "absolutePath": "/Users/dave/Documents/hanwha/hanwha-sf-pos/.superloopy/evidence/G001-C001-capture.txt",
           "relativePath": ".superloopy/evidence/G001-C001-capture.txt",
-          "size": 357
+          "size": 418
         },
         {
           "absolutePath": "/Users/dave/Documents/hanwha/hanwha-sf-pos/.superloopy/evidence/G001-C002-capture.txt",

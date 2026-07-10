@@ -2,16 +2,16 @@
   "version": 1,
   "sessionId": null,
   "auditsAccepted": 0,
-  "updatedAt": "2026-07-10T00:30:21.493Z",
+  "updatedAt": "2026-07-10T00:59:58.453Z",
   "criteria": [
     {
       "criterion": "G001/C001",
       "scenario": "Happy path works from the real user-facing surface.",
-      "inputHash": "b80548d4faf7776a2f2260e2892b478a544c729641a301da02298aef5dcc7578",
-      "sourceHash": "a7d0c818a6aeb6039a37357b945b85ce527c4771bcf29850f680836d9479ebe0",
+      "inputHash": "b97f1e14bcc958add79646b7c78777e69018e2ae1ad32b5ca0a6d8ec6512b0c8",
+      "sourceHash": "81641aa5fe386d8c2404ae1c4c9d2642b867dc719c5d715e2655a7266b832c83",
       "verdict": null,
       "failCount": 0,
-      "auditedAt": "2026-07-10T00:30:20.771Z",
+      "auditedAt": "2026-07-10T00:59:57.681Z",
       "command": [
         "node",
         "scripts/verify-unified-html.mjs"
@@ -19,7 +19,7 @@
       "rerunStatus": "pass",
       "rerunExitCode": 0,
       "rerunArtifact": ".superloopy/evidence/audit/G001-C001-rerun.txt",
-      "rerunArtifactHash": "e22ea4491f261d249e42426074fbaffdddae36198db2f3d018204b957bc695ce",
+      "rerunArtifactHash": "8e8b1a5e0d3f8802cd0ef10fe5bf647ccab4ec32578179555eeedf85f2670a0d",
       "floor": "pass",
       "verdictArtifact": null,
       "verdictHash": null
@@ -27,11 +27,11 @@
     {
       "criterion": "G001/C002",
       "scenario": "Riskiest edge or failure path is handled.",
-      "inputHash": "264758b2f10372e100b669d36efc16e08f2375e858b8080f7d989bf37f5129b9",
-      "sourceHash": "f5889d1940a83f0d6d000dc346f2935e54220e12f4381fc5568480ffa5cb5fbf",
+      "inputHash": "533b2b4cc26b7fa9e7a5ed8b80cd1a54f761a0565910102d0b9752b2bed96405",
+      "sourceHash": "f903cd020ac45fb5fa266e28c28e38c5ad719e50a734a8a3054c71bbd39490c5",
       "verdict": null,
       "failCount": 0,
-      "auditedAt": "2026-07-10T00:30:20.929Z",
+      "auditedAt": "2026-07-10T00:59:57.888Z",
       "command": [
         "node",
         "scripts/verify-build-idempotency.mjs"
@@ -39,7 +39,7 @@
       "rerunStatus": "pass",
       "rerunExitCode": 0,
       "rerunArtifact": ".superloopy/evidence/audit/G001-C002-rerun.txt",
-      "rerunArtifactHash": "55b3c7ad9c11444515060053247e79a5730ca4ba8be308f57cd5a31d775bb3c6",
+      "rerunArtifactHash": "b4aaa6a2613be16de35916bb80f7f5797c171efa0ea97a920ae1d96ecbc8c148",
       "floor": "pass",
       "verdictArtifact": null,
       "verdictHash": null

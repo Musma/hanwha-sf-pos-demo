@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.24.0/dist/tabler-icons.min.css">
+<style>
+:root{--side:#3b4046;--side-hdr:#4b5158;--side-search:#2b2f34;--orange-50:#ed7100;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Pretendard',sans-serif;-webkit-font-smoothing:antialiased;}
+</style>
+</helmet>
+<div style="width:188px;height:100%;background:var(--side);display:flex;flex-direction:column;position:relative;">
+  <div style="height:34px;background:var(--side-search);display:flex;align-items:center;padding:0 10px;gap:8px;border-bottom:1px solid #23272c;flex-shrink:0;">
+    <i class="ti ti-menu-2" style="color:#c6cbd1;font-size:16px;"></i>
+    <div style="flex:1;display:flex;align-items:center;gap:6px;color:#8b9198;font-size:11px;"><i class="ti ti-search" style="font-size:13px;"></i>Type keywords to</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;">
+    <sc-for list="{{ items }}" as="it" hint-placeholder-count="28">
+      <div style="{{ it.style }}">{{ it.label }}</div>
+    </sc-for>
+    <div style="height:56px;"></div>
+  </div>
+  <div style="height:36px;border-top:1px solid #2f3439;display:flex;align-items:center;gap:18px;padding:0 14px;color:#c6cbd1;font-size:17px;flex-shrink:0;">
+    <i class="ti ti-list"></i><i class="ti ti-star"></i>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:188,&quot;height&quot;:800},&quot;active&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;pill&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    // [label, type 'h'|'s', indent, dim]
+    const defs = [
+      ['실행계획 관리','h'],['소조','h'],['중조','h'],['주판문지','h'],['대조','h'],
+      ['대조 기본정보관리','s',14,false],['대조 작업계획 수립분석','s',14,false],['대조 주간작업계획 수립','s',20,false],
+      ['대조 주간작업계획 조회','s',20,true],['대조 장변배치도 조회','s',20,true],['대조 일일 계획 관리','s',20,true],
+      ['의장','h'],
+      ['의장 기본정보관리','s',14,false],['의장 Case별 Layout 관리','s',20,false],['의장 Case별 생산 실적','s',20,false],
+      ['의장 작업계획 수립분석','s',14,false],['의장 주간작업계획 수립','s',20,false],
+      ['의장 주간작업계획 조회','s',20,true],['의장 장변배치도 조회','s',20,true],['의장 일일 계획 관리','s',20,true],
+      ['도장','h'],
+      ['도장 기본정보관리','s',14,false],['도장 작업계획 수립분석','s',14,false],['도장 주간작업계획 수립','s',20,false],
+      ['도장 주간작업계획 조회','s',20,true],['도장 장변배치도 조회','s',20,true],['도장 일일 계획 관리','s',20,true],
+      ['워크프론트','h'],
+      ['워크프론트 점검','s',14,false],
+      ['PE','h'],['시스템 관리','h'],
+    ];
+    const active = this.props.active;
+    const hdr = 'background:#4b5158;color:#eef0f2;font-size:12.5px;font-weight:700;text-align:center;padding:8px 0;border-top:1px solid #2f3439;border-bottom:1px solid #2f3439;';
+    const items = defs.map(d=>{
+      const [label, type, indent, dim] = d;
+      let style;
+      if (type === 'h') {
+        style = hdr;
+      } else if (label === active) {
+        style = 'padding:6px 0 7px 20px;font-size:11px;color:#ffd9b0;font-weight:700;background:rgba(237,113,0,.18);border-left:3px solid #ed7100;';
+      } else if (dim) {
+        style = 'padding:5px 0 6px '+indent+'px;font-size:11px;color:#8b9096;font-style:italic;';
+      } else {
+        style = 'padding:5px 0 6px '+indent+'px;font-size:11px;color:#c3c8cd;';
+      }
+      return { label, style };
+    });
+    return { items, pill: this.props.pill === true || this.props.pill === 'true' };
+  }
+}
+</script>
+</body>
+</html>

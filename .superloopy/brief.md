@@ -1,1 +1,1 @@
-세 개의 SF-POS 화면을 단일 HTML의 두 개 사이드바 메뉴와 워크프론트 상세 전환으로 통합
+배포 가능한 단일 index.html을 루트에 두고 기존 SF-POS 화면 원본을 prototype-pages 폴더로 정리
