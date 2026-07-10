@@ -286,9 +286,103 @@ let workfrontDetailData = extractMethod(workfrontDetail.template, 'renderVals')
 workfrontDetailData = assertReplace(
   workfrontDetailData,
   "return { rows, allOn, allBoxBg: allOn ? '#0067c0' : '#fff', toggleAll: ()=>this.toggleAll(), sideItems: this.buildSideItems() };",
-  "return { detailRows: rows, allOn, allBoxBg: allOn ? '#0067c0' : '#fff', toggleAll: ()=>this.toggleAll() };",
+  `const detailChecks = {};
+    rows.forEach((row, i) => {
+      detailChecks['detailOn' + i] = row.on;
+      detailChecks['detailBoxBg' + i] = row.boxBg;
+      detailChecks['detailToggle' + i] = row.toggle;
+    });
+    return { ...detailChecks, detailRows: rows, allOn, allBoxBg: allOn ? '#0067c0' : '#fff', toggleAll: ()=>this.toggleAll() };`,
   '워크프론트 상세 데이터 반환값',
 );
+
+// ── 워크프론트 상세(선각 W/F 점검) 표: 시안 수치 반영 + 정적 전개 ──
+workfrontDetailData = assertReplace(
+  workfrontDetailData,
+  "{rep:'2585Z501SM1090001', work:'(발판) 2야드1 이동 사다리 설치', none:true, s1:'2025-06-06', e3:'2025-06-06'},",
+  "{rep:'2585Z501ISM1090001', work:'(발판) 2야드1 이동 사다리 설치', none:true, s1:'2025-06-06', e3:'2025-06-06'},",
+  '발판 사다리 설치 작업지시 번호',
+);
+workfrontDetailData = assertReplace(
+  workfrontDetailData,
+  "{rep:'2585Z501SM10A1021', work:'(발판) 중조설치', none:true, s1:'2025-06-03', e3:'2025-06-03'},",
+  "{rep:'2585Z501ISM10A1021', work:'(발판) 중조설치', none:true, s1:'2025-06-03', e3:'2025-06-03'},",
+  '발판 중조설치 작업지시 번호',
+);
+workfrontDetailData = assertReplace(
+  workfrontDetailData,
+  "{rep:'2585Z501SM10A1022', work:'(발판) 러그 작업용 설치', none:true, s1:'2025-05-19'},",
+  "{rep:'2585Z501ISM10A1022', work:'(발판) 러그 작업용 설치', none:true, s1:'2025-05-19'},",
+  '발판 러그 설치 작업지시 번호',
+);
+workfrontDetailData = assertReplace(
+  workfrontDetailData,
+  "{rep:'2585Z501USM1090001', work:'(발판) 2야드1 이동 사다리 해체', none:true, s1:'2025-06-24', e3:'2025-06-24'},",
+  "{rep:'2585Z501USM1090001', work:'(발판) 2야드1 이동 사다리 해체', none:true, s1:'2025-06-06', e3:'2025-06-06'},",
+  '발판 사다리 해체 일자',
+);
+workfrontDetailData = assertReplace(
+  workfrontDetailData,
+  "{rep:'2585Z501USM10A1023', work:'(발판) 중조해체', none:true, s1:'2025-05-19'},",
+  "{rep:'2585Z501USM10A1023', work:'(발판) 중조해체', none:true, s1:'2025-06-24', e3:'2025-06-24'},",
+  '발판 중조해체 일자',
+);
+
+const detailRowsSource = workfrontDetailData.slice(
+  workfrontDetailData.indexOf('const rowsData = [') + 'const rowsData ='.length,
+  workfrontDetailData.indexOf('];') + 1,
+);
+const detailRowsData = new Function(`return ${detailRowsSource};`)();
+
+workfrontDetailView = assertReplace(
+  workfrontDetailView,
+  'value="{{ r.wfConfirm }}" hint-placeholder-val="{{ false }}"><span style="color:#d63b3b;font-weight:700;">점검 확정</span>',
+  'value="{{ r.wfConfirm }}" hint-placeholder-val="{{ false }}"><span style="color:#0a5cc0;font-weight:700;">점검 확정</span>',
+  '점검 확정 상태 색상',
+);
+
+const wfdOrphanStart = workfrontDetailView.indexOf('<sc-for list="{{ detailRows }}"');
+const wfdTableStart = workfrontDetailView.indexOf('<table style="border-collapse:collapse;font-size:10.5px;');
+if (wfdOrphanStart < 0 || wfdTableStart < 0 || wfdOrphanStart > wfdTableStart) {
+  throw new Error('워크프론트 상세 표 구조를 찾지 못했습니다.');
+}
+const wfdOrphanBlock = workfrontDetailView.slice(wfdOrphanStart, wfdTableStart);
+if (!/^(?:<sc-for[^>]*>|<\/sc-for>|\s)+$/.test(wfdOrphanBlock)) {
+  throw new Error('워크프론트 상세 고아 sc-for 블록에 예상 밖의 내용이 있습니다.');
+}
+workfrontDetailView = assertReplace(workfrontDetailView, wfdOrphanBlock, '', '워크프론트 상세 고아 sc-for 제거');
+
+const wfdTbodyIdx = workfrontDetailView.indexOf('<tbody>');
+const wfdTrStart = workfrontDetailView.indexOf('<tr>', wfdTbodyIdx);
+const wfdTrEnd = workfrontDetailView.indexOf('</tr>', wfdTrStart) + '</tr>'.length;
+if (wfdTbodyIdx < 0 || wfdTrStart < 0) throw new Error('워크프론트 상세 행 템플릿을 찾지 못했습니다.');
+const wfdRowTpl = workfrontDetailView.slice(wfdTrStart, wfdTrEnd);
+
+// 체크박스 셀(sc-if 중첩)은 행 인덱스별 동적 바인딩으로 치환한다.
+const wfdCbOpenTag = '<sc-if value="{{ r.box }}" hint-placeholder-val="{{ true }}">';
+const wfdCbStart = wfdRowTpl.indexOf(wfdCbOpenTag);
+const wfdCbEndToken = '</sc-if></span></sc-if>';
+const wfdCbEnd = wfdRowTpl.indexOf(wfdCbEndToken, wfdCbStart) + wfdCbEndToken.length;
+if (wfdCbStart < 0 || wfdCbEnd <= wfdCbStart) throw new Error('워크프론트 상세 체크박스 셀을 찾지 못했습니다.');
+const wfdCbBlock = wfdRowTpl.slice(wfdCbStart, wfdCbEnd);
+const wfdCbInner = wfdCbBlock.slice(wfdCbOpenTag.length, wfdCbBlock.length - '</sc-if>'.length);
+const wfdRowTplHollow = wfdRowTpl.replace(wfdCbBlock, '__DETAIL_CHECKBOX__');
+
+const wfdStaticRows = detailRowsData
+  .map((r, i) => {
+    const checkbox = r.blank
+      ? ''
+      : wfdCbInner
+          .replace('{{ r.toggle }}', `{{ detailToggle${i} }}`)
+          .replace('{{ r.boxBg }}', `{{ detailBoxBg${i} }}`)
+          .replace('{{ r.on }}', `{{ detailOn${i} }}`);
+    return wfdRowTplHollow
+      .replace(/<sc-if value="\{\{ r\.(\w+) \}\}" hint-placeholder-val="\{\{ (?:true|false) \}\}">([\s\S]*?)<\/sc-if>/g, (match, key, inner) => (r[key] ? inner : ''))
+      .replace(/\{\{\s*r\.([A-Za-z0-9_$]+)\s*\}\}/g, (match, key) => String(r[key] ?? ''))
+      .replace('__DETAIL_CHECKBOX__', checkbox);
+  })
+  .join('\n                ');
+workfrontDetailView = assertReplace(workfrontDetailView, wfdRowTpl, wfdStaticRows, '워크프론트 상세 행 정적 전개');
 
 const toggleMethod = extractMethod(workfrontDetail.template, 'toggle');
 const toggleAllMethod = extractMethod(workfrontDetail.template, 'toggleAll');
