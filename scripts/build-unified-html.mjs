@@ -582,6 +582,54 @@ if (!unifiedTemplate.includes('[data-env]:focus-visible')) {
   );
 }
 
+// ── 디자인 폴리시: 데스크톱 애플리케이션 질감 ──
+// 공통 명령 버튼에 클래스를 부여해 hover/active 상태를 CSS로 제어한다.
+unifiedTemplate = unifiedTemplate.replaceAll(
+  '<span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);',
+  '<span class="sf-btn" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);',
+);
+// 간트 막대 라벨: 22px 굵은 글자를 표 밀도에 맞는 크기로 정돈한다.
+unifiedTemplate = unifiedTemplate.replaceAll(
+  'font-weight:800;font-size:22px;border:1px solid rgba(0,0,0,.22);',
+  'font-weight:700;font-size:13px;letter-spacing:.2px;border:1px solid rgba(0,0,0,.28);',
+);
+// 정반 블록 배치 툴바: 과대 타이포를 업무 화면 밀도에 맞춘다.
+unifiedTemplate = unifiedTemplate.replaceAll(
+  'font-size:20px;font-weight:800;color:#e8451c;',
+  'font-size:15px;font-weight:700;color:#e8451c;',
+);
+unifiedTemplate = unifiedTemplate.replaceAll(
+  'font-size:18px;font-weight:800;color:#e8451c;',
+  'font-size:14px;font-weight:700;color:#e8451c;',
+);
+
+const polishCss = `
+/* desktop-polish: 상태 변화는 즉시 전환(무애니메이션), 그림자 없이 명도만 사용 */
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:#b0b5ba;border:2px solid #e7eaed;border-radius:5px;}
+::-webkit-scrollbar-thumb:hover{background:#8a9099;}
+::-webkit-scrollbar-track{background:#e7eaed;}
+::-webkit-scrollbar-corner{background:#e7eaed;}
+*{scrollbar-width:thin;scrollbar-color:#b0b5ba #e7eaed;}
+::selection{background:#ed7100;color:#fff;}
+body{letter-spacing:-0.1px;}
+.sf-btn{cursor:pointer;user-select:none;}
+.sf-btn:hover{filter:brightness(.96);}
+.sf-btn:active{filter:brightness(.9);}
+[data-route]{user-select:none;}
+[data-route]:hover{filter:brightness(1.12);}
+[data-env]:hover{filter:brightness(.94);}
+tbody tr:hover td{background-color:rgba(10,114,242,.05);}
+`;
+if (!unifiedTemplate.includes('desktop-polish')) {
+  unifiedTemplate = assertReplace(
+    unifiedTemplate,
+    '[data-route]:focus-visible,[data-env]:focus-visible{outline:2px solid #0a72f2;outline-offset:-2px;}',
+    `[data-route]:focus-visible,[data-env]:focus-visible{outline:2px solid #0a72f2;outline-offset:-2px;}${polishCss}`,
+    '데스크톱 폴리시 스타일',
+  );
+}
+
 unifiedTemplate = replaceComponentScript(unifiedTemplate, componentSource);
 
 const encodedTemplate = JSON.stringify(unifiedTemplate).replace(/<\/script/gi, '<\\/script');
