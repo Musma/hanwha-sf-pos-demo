@@ -304,9 +304,12 @@ workfrontDetailData = assertReplace(
       detailChecks['detailBoxBg' + i] = row.boxBg;
       detailChecks['detailToggle' + i] = row.toggle;
     });
-    return { ...detailChecks, detailRows: rows, allOn, allBoxBg: allOn ? '#0067c0' : '#fff', toggleAll: ()=>this.toggleAll() };`,
+    const detailSelected = rows.filter((row) => row.on).length;
+    return { ...detailChecks, detailSelectedText: detailSelected + '건 선택됨', detailRows: rows, allOn, allBoxBg: allOn ? '#0067c0' : '#fff', toggleAll: ()=>this.toggleAll() };`,
   '워크프론트 상세 데이터 반환값',
 );
+// 자리 채움용 빈 행은 업그레이드 화면에서 제거한다.
+workfrontDetailData = workfrontDetailData.replaceAll('{blank:true},', '');
 
 // ── 워크프론트 상세(선각 W/F 점검) 표: 시안 수치 반영 + 정적 전개 ──
 workfrontDetailData = assertReplace(
@@ -346,55 +349,172 @@ const detailRowsSource = workfrontDetailData.slice(
 );
 const detailRowsData = new Function(`return ${detailRowsSource};`)();
 
-workfrontDetailView = assertReplace(
-  workfrontDetailView,
-  'value="{{ r.wfConfirm }}" hint-placeholder-val="{{ false }}"><span style="color:#d63b3b;font-weight:700;">점검 확정</span>',
-  'value="{{ r.wfConfirm }}" hint-placeholder-val="{{ false }}"><span style="color:#0a5cc0;font-weight:700;">점검 확정</span>',
-  '점검 확정 상태 색상',
-);
+// ── 선각 W/F 점검 화면 재구성 ──
+// 추출한 원본 마크업을 버리고, 동일한 데이터·바인딩 위에서 화면을 새로 작성한다.
+const detailCheckbox = (onclick, bg, on) =>
+  `<span onclick="${onclick}" style="display:inline-flex;width:15px;height:15px;align-items:center;justify-content:center;border:1px solid #8a9099;border-radius:2px;box-shadow:inset 0 1px 1px rgba(0,0,0,.08);background: ${bg};cursor:pointer;vertical-align:middle;"><sc-if value="${on}" hint-placeholder-val="{{ false }}"><i class="ti ti-check" style="font-size:11px;color:#fff;"></i></sc-if></span>`;
 
-const wfdOrphanStart = workfrontDetailView.indexOf('<sc-for list="{{ detailRows }}"');
-const wfdTableStart = workfrontDetailView.indexOf('<table style="border-collapse:collapse;font-size:10.5px;');
-if (wfdOrphanStart < 0 || wfdTableStart < 0 || wfdOrphanStart > wfdTableStart) {
-  throw new Error('워크프론트 상세 표 구조를 찾지 못했습니다.');
-}
-const wfdOrphanBlock = workfrontDetailView.slice(wfdOrphanStart, wfdTableStart);
-if (!/^(?:<sc-for[^>]*>|<\/sc-for>|\s)+$/.test(wfdOrphanBlock)) {
-  throw new Error('워크프론트 상세 고아 sc-for 블록에 예상 밖의 내용이 있습니다.');
-}
-workfrontDetailView = assertReplace(workfrontDetailView, wfdOrphanBlock, '', '워크프론트 상세 고아 sc-for 제거');
+const detailTh = (label, extra = '') =>
+  `<th style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:6px 8px;font-weight:600;position:sticky;top:0;z-index:2;white-space:nowrap;${extra}">${label}</th>`;
 
-const wfdTbodyIdx = workfrontDetailView.indexOf('<tbody>');
-const wfdTrStart = workfrontDetailView.indexOf('<tr>', wfdTbodyIdx);
-const wfdTrEnd = workfrontDetailView.indexOf('</tr>', wfdTrStart) + '</tr>'.length;
-if (wfdTbodyIdx < 0 || wfdTrStart < 0) throw new Error('워크프론트 상세 행 템플릿을 찾지 못했습니다.');
-const wfdRowTpl = workfrontDetailView.slice(wfdTrStart, wfdTrEnd);
+const detailWfBadge = (r) => {
+  if (r.wfNeed) return '<span style="display:inline-block;border:1px solid #d63b3b;color:#d63b3b;background:rgba(214,59,59,.07);font-size:10px;font-weight:700;padding:2px 7px;border-radius:2px;white-space:nowrap;">점검 필요</span>';
+  if (r.wfConfirm) return '<span style="display:inline-block;border:1px solid #0a5cc0;color:#0a5cc0;background:rgba(10,92,192,.07);font-size:10px;font-weight:700;padding:2px 7px;border-radius:2px;white-space:nowrap;">점검 확정</span>';
+  return '';
+};
 
-// 체크박스 셀(sc-if 중첩)은 행 인덱스별 동적 바인딩으로 치환한다.
-const wfdCbOpenTag = '<sc-if value="{{ r.box }}" hint-placeholder-val="{{ true }}">';
-const wfdCbStart = wfdRowTpl.indexOf(wfdCbOpenTag);
-const wfdCbEndToken = '</sc-if></span></sc-if>';
-const wfdCbEnd = wfdRowTpl.indexOf(wfdCbEndToken, wfdCbStart) + wfdCbEndToken.length;
-if (wfdCbStart < 0 || wfdCbEnd <= wfdCbStart) throw new Error('워크프론트 상세 체크박스 셀을 찾지 못했습니다.');
-const wfdCbBlock = wfdRowTpl.slice(wfdCbStart, wfdCbEnd);
-const wfdCbInner = wfdCbBlock.slice(wfdCbOpenTag.length, wfdCbBlock.length - '</sc-if>'.length);
-const wfdRowTplHollow = wfdRowTpl.replace(wfdCbBlock, '__DETAIL_CHECKBOX__');
+const detailStatusPill = (r) => {
+  if (r.ok) return '<span style="display:inline-block;background:#2e9e57;color:#fff;font-size:10px;font-weight:700;padding:2px 9px;border-radius:2px;">정상</span>';
+  if (r.bad) return '<span style="display:inline-block;background:#d63b3b;color:#fff;font-size:10px;font-weight:700;padding:2px 9px;border-radius:2px;">비정상</span>';
+  return '<span style="color:#9aa0a6;">-</span>';
+};
 
-const wfdStaticRows = detailRowsData
+const detailRateBar = (rate) => {
+  if (!rate) return '';
+  return `<span style="display:inline-flex;align-items:center;gap:6px;"><span style="display:inline-block;width:52px;height:7px;background:#e7eaed;border:1px solid #d4d7da;border-radius:4px;overflow:hidden;"><span style="display:block;width:${rate};height:100%;background:#2e9e57;"></span></span><span style="font-size:10px;font-weight:700;color:#1a8f45;font-variant-numeric:tabular-nums;">${rate}</span></span>`;
+};
+
+const detailBaeChip = (bae) => {
+  if (!bae) return '';
+  return `<a href="#" style="display:inline-block;background:rgba(10,114,242,.08);color:#0a5cc0;font-size:10.5px;font-weight:700;text-decoration:none;padding:2px 9px;border-radius:2px;">${bae}</a>`;
+};
+
+const detailActCount = detailRowsData.filter((r) => r.actNo).length;
+const detailRepCount = detailRowsData.filter((r) => r.rep).length;
+const detailOkCount = detailRowsData.filter((r) => r.ok).length;
+const detailBadCount = detailRowsData.filter((r) => r.bad).length;
+
+const detailKpiCard = (label, count, accent) =>
+  `<div style="min-width:148px;background:#fff;border:1px solid #c9cdd1;border-left:3px solid ${accent};border-radius:3px;padding:7px 14px 8px;">
+              <div style="font-size:11px;color:#7a7f85;">${label}</div>
+              <div style="font-size:19px;font-weight:800;color:#2d2d2d;line-height:1.25;font-variant-numeric:tabular-nums;">${count}<span style="font-size:11px;font-weight:600;color:#7a7f85;margin-left:2px;">건</span></div>
+            </div>`;
+
+const detailTabs = ['계획', '작업장&amp;설비', '인력', '자재', '도면', '품질', '안전']
+  .map((label, i) =>
+    i === 0
+      ? `<div style="padding:8px 22px 6px;font-size:13px;font-weight:700;color:#ed7100;border-bottom:3px solid #ed7100;margin-bottom:-2px;">${label}</div>`
+      : `<div style="padding:8px 22px 6px;font-size:13px;font-weight:600;color:#7a7f85;">${label}</div>`,
+  )
+  .join('\n            ');
+
+const dateTd = (value, groupStart) =>
+  `<td style="border:1px solid #e6e8ea;${groupStart ? 'border-left:2px solid #c9cdd1;' : ''}padding:5px 8px;text-align:center;color:#3a3e43;font-variant-numeric:tabular-nums;">${value ?? ''}</td>`;
+
+const detailStaticRows = detailRowsData
   .map((r, i) => {
-    const checkbox = r.blank
-      ? ''
-      : wfdCbInner
-          .replace('{{ r.toggle }}', `{{ detailToggle${i} }}`)
-          .replace('{{ r.boxBg }}', `{{ detailBoxBg${i} }}`)
-          .replace('{{ r.on }}', `{{ detailOn${i} }}`);
-    return wfdRowTplHollow
-      .replace(/<sc-if value="\{\{ r\.(\w+) \}\}" hint-placeholder-val="\{\{ (?:true|false) \}\}">([\s\S]*?)<\/sc-if>/g, (match, key, inner) => (r[key] ? inner : ''))
-      .replace(/\{\{\s*r\.([A-Za-z0-9_$]+)\s*\}\}/g, (match, key) => String(r[key] ?? ''))
-      .replace('__DETAIL_CHECKBOX__', checkbox);
+    const isParent = !!r.actNo;
+    const id = r.actNo || r.rep || '';
+    const block = id.startsWith('2585') ? id.slice(4, 8) : '';
+    const rowBg = isParent ? '#f4f6f8' : '#fff';
+    const checkbox = detailCheckbox(`{{ detailToggle${i} }}`, `{{ detailBoxBg${i} }}`, `{{ detailOn${i} }}`);
+    return `<tr style="background:${rowBg};">
+                  <td style="border:1px solid #e6e8ea;padding:4px 6px;text-align:center;height:26px;">${checkbox}</td>
+                  <td style="border:1px solid #e6e8ea;padding:5px 6px;text-align:center;color:#8b9096;font-variant-numeric:tabular-nums;">${i + 1}</td>
+                  <td style="border:1px solid #e6e8ea;padding:4px 6px;text-align:center;">${detailWfBadge(r)}</td>
+                  <td style="border:1px solid #e6e8ea;padding:5px 8px;text-align:center;color:#3a3e43;font-variant-numeric:tabular-nums;">2585</td>
+                  <td style="border:1px solid #e6e8ea;padding:5px 8px;text-align:center;color:#3a3e43;">${block}</td>
+                  <td style="border:1px solid #e6e8ea;padding:5px 8px;text-align:left;color:${isParent ? '#2d2d2d;font-weight:600' : '#5a5f65'};">${r.actNo ?? ''}</td>
+                  <td style="border:1px solid #e6e8ea;padding:5px 10px;text-align:left;color:#2d2d2d;${isParent ? 'font-weight:700;' : ''}">${r.actName ?? ''}</td>
+                  <td style="border:1px solid #e6e8ea;padding:5px 10px;text-align:left;color:#5a5f65;">${r.rep ?? ''}</td>
+                  <td style="border:1px solid #e6e8ea;padding:5px 12px;text-align:left;color:#3a3e43;">${r.work ?? ''}</td>
+                  <td style="border:1px solid #e6e8ea;padding:4px 10px;text-align:center;">${detailRateBar(r.rate)}</td>
+                  <td style="border:1px solid #e6e8ea;padding:4px 6px;text-align:center;">${detailStatusPill(r)}</td>
+                  ${dateTd(r.s1, true)}
+                  ${dateTd(r.e1)}
+                  ${dateTd(r.s2, true)}
+                  ${dateTd(r.e2)}
+                  ${dateTd(r.s3, true)}
+                  ${dateTd(r.e3)}
+                  <td style="border:1px solid #e6e8ea;border-left:2px solid #c9cdd1;padding:5px 8px;text-align:center;color:#3a3e43;">${r.gong ?? ''}</td>
+                  <td style="border:1px solid #e6e8ea;padding:5px 8px;text-align:center;color:#3a3e43;">${r.type ?? ''}</td>
+                  <td style="border:1px solid #e6e8ea;padding:5px 8px;text-align:center;color:#3a3e43;">${r.etage ?? ''}</td>
+                  <td style="border:1px solid #e6e8ea;border-left:2px solid #c9cdd1;padding:4px 10px;text-align:center;">${detailBaeChip(r.bae)}</td>
+                </tr>`;
   })
   .join('\n                ');
-workfrontDetailView = assertReplace(workfrontDetailView, wfdRowTpl, wfdStaticRows, '워크프론트 상세 행 정적 전개');
+
+workfrontDetailView = `<div style="flex:1;display:flex;flex-direction:column;min-width:0;background:#eef0f2;">
+      <div style="height:30px;background:#fff;display:flex;align-items:flex-end;padding:0 0 0 6px;flex-shrink:0;border-bottom:1px solid #b6bbc0;">
+        <div style="background:#eef0f2;color:#2d2d2d;font-size:12px;font-weight:500;padding:6px 12px 7px 14px;border:1px solid #b6bbc0;border-bottom:1px solid #eef0f2;border-radius:3px 3px 0 0;display:flex;align-items:center;gap:16px;position:relative;top:1px;">워크프론트 점검<i class="ti ti-x" style="font-size:13px;color:#555;"></i></div>
+      </div>
+
+      <div style="flex:1;display:flex;flex-direction:column;min-height:0;padding:14px 20px 12px;">
+        <div style="display:flex;align-items:baseline;gap:12px;flex-shrink:0;">
+          <div style="font-size:20px;font-weight:800;color:#222;">선각 W/F 점검</div>
+          <div style="font-size:12px;color:#7a7f85;">워크프론트 점검 · 2026년 7월 1주차 (2026.07.06~07.12)</div>
+          <div style="margin-left:auto;font-size:11px;color:#7a7f85;">Last Updated: 2026.06.22 08:00</div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;margin-top:12px;flex-shrink:0;">
+          <div style="display:inline-flex;border:1px solid #b9bec3;border-radius:4px;overflow:hidden;background:#fff;">
+            <div style="background:#ed7100;color:#fff;font-size:12.5px;font-weight:700;padding:7px 20px;">선각 W/F 점검</div>
+            <div style="color:#5a5f65;font-size:12.5px;font-weight:600;padding:7px 20px;border-left:1px solid #d8dbdf;">의장 W/F 점검</div>
+            <div style="color:#5a5f65;font-size:12.5px;font-weight:600;padding:7px 20px;border-left:1px solid #d8dbdf;">도장 W/F 점검</div>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:6px;">
+            <span class="sf-btn" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line,#b9bec3);border-radius:3px;padding:6px 14px;font-size:12px;"><i class="ti ti-adjustments" style="font-size:15px;color:#5a5f65;"></i>신호등 상태 변경</span>
+            <span class="sf-btn" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line,#b9bec3);border-radius:3px;padding:6px 14px;font-size:12px;"><i class="ti ti-device-floppy" style="font-size:15px;color:#0a72f2;"></i>저장</span>
+            <span class="sf-btn" style="display:inline-flex;align-items:center;gap:5px;background:#ed7100;border:1px solid #c95d00;color:#fff;border-radius:3px;padding:6px 16px;font-size:12px;font-weight:700;"><i class="ti ti-clipboard-check" style="font-size:15px;"></i>W/F 점검 확정</span>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:12px;flex-shrink:0;">
+          ${detailKpiCard('점검 대상 액티비티', detailActCount, '#ed7100')}
+          ${detailKpiCard('작업지시', detailRepCount, '#0a72f2')}
+          ${detailKpiCard('정상', detailOkCount, '#2e9e57')}
+          ${detailKpiCard('비정상', detailBadCount, '#d63b3b')}
+        </div>
+
+        <div style="display:flex;gap:2px;border-bottom:2px solid #d8dbdf;margin-top:14px;flex-shrink:0;">
+            ${detailTabs}
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;min-height:0;border:1px solid #c9cdd1;border-top:none;background:#fff;">
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#e7eaed;border-bottom:1px solid #cfd3d7;padding:5px 12px;flex-shrink:0;">
+            <span style="font-size:12px;font-weight:700;color:#3a3e43;">작업지시 점검 목록</span>
+            <span style="font-size:11px;color:#7a7f85;">액티비티 ${detailActCount}건 · 작업지시 ${detailRepCount}건 · 계획 | 변경 | 실적 일정 순</span>
+          </div>
+          <div style="flex:1;overflow:auto;min-height:0;">
+            <table style="border-collapse:collapse;font-size:11px;width:100%;white-space:nowrap;">
+              <thead>
+                <tr>
+                  ${detailTh(detailCheckbox('{{ toggleAll }}', '{{ allBoxBg }}', '{{ allOn }}'), 'padding:5px 6px;')}
+                  ${detailTh('순번')}
+                  ${detailTh('W/F점검<br>상태')}
+                  ${detailTh('프로젝트')}
+                  ${detailTh('블록')}
+                  ${detailTh('실행계획<br>액티비티 번호')}
+                  ${detailTh('액티비티 명칭')}
+                  ${detailTh('작업지시 번호')}
+                  ${detailTh('작업지시 내용', 'padding:6px 16px;')}
+                  ${detailTh('실적<br>공정률(%)')}
+                  ${detailTh('상태')}
+                  ${detailTh('계획 착수', 'border-left:2px solid #5a5f65;')}
+                  ${detailTh('계획 완료')}
+                  ${detailTh('변경 착수', 'border-left:2px solid #5a5f65;')}
+                  ${detailTh('변경 완료')}
+                  ${detailTh('실적 착수', 'border-left:2px solid #5a5f65;')}
+                  ${detailTh('실적 완료')}
+                  ${detailTh('공종', 'border-left:2px solid #5a5f65;')}
+                  ${detailTh('공정')}
+                  ${detailTh('STAGE')}
+                  ${detailTh('배차번호<br><span style="font-size:9px;opacity:.8;">(물류오더, 물류번호)</span>', 'border-left:2px solid #5a5f65;')}
+                </tr>
+              </thead>
+              <tbody>
+                ${detailStaticRows}
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#e7eaed;border-top:1px solid #cfd3d7;padding:4px 12px;flex-shrink:0;font-size:11px;color:#4a4f55;">
+            <span>총 ${detailRowsData.length}행</span>
+            <span style="font-weight:600;">{{ detailSelectedText }}</span>
+          </div>
+        </div>
+      </div>
+  <div style="height:22px;background:#1e1f22;border-top:1px solid #000;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#d8dadd;flex-shrink:0;">워크프론트 점검</div>
+    </div>`;
 
 const toggleMethod = extractMethod(workfrontDetail.template, 'toggle');
 const toggleAllMethod = extractMethod(workfrontDetail.template, 'toggleAll');
