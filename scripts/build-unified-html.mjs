@@ -98,6 +98,70 @@ const alreadyUnified = chair.template.includes('<!-- unified-navigation:start --
 let chairMain = alreadyUnified
   ? chair.template.match(/<!-- unified:chair:start -->([\s\S]*?)<!-- unified:chair:end -->/)[1].trim()
   : extractMain(chair.template);
+
+const envLabelsMarkup = `<label style="display:flex;align-items:center;gap:3px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:#ed7100;border:1px solid #c95d00;border-radius:2px;color:#fff;font-size:10px;">✓</span>주간작업물량</label>
+        <label style="display:flex;align-items:center;gap:3px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:#ed7100;border:1px solid #c95d00;border-radius:2px;color:#fff;font-size:10px;">✓</span>Gantt Chart</label>
+        <label style="display:flex;align-items:center;gap:3px;color:#7a7f85;"><span style="display:inline-block;width:14px;height:14px;background:#fff;border:1px solid var(--line);border-radius:2px;"></span>부하 그래프</label>
+        <label style="display:flex;align-items:center;gap:3px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:#ed7100;border:1px solid #c95d00;border-radius:2px;color:#fff;font-size:10px;">✓</span>정반블록배치</label>`;
+const envItemsMarkup = `<sc-for list="{{ envItems }}" as="ev" hint-placeholder-count="4">
+          <label data-env="{{ ev.key }}" role="checkbox" aria-checked="{{ ev.ariaChecked }}" tabIndex="0" onClick="{{ ev.onClick }}" onKeyDown="{{ ev.onKeyDown }}" style="{{ ev.labelStyle }}"><span style="{{ ev.boxStyle }}">{{ ev.tick }}</span>{{ ev.label }}</label>
+        </sc-for>`;
+
+if (!chairMain.includes('{{ envItems }}')) {
+  chairMain = assertReplace(chairMain, envLabelsMarkup, envItemsMarkup, '환경설정 체크박스');
+
+  // 표(tbody) 안의 sc-for는 HTML 파서의 foster parenting으로 테이블 밖으로
+  // 밀려나 동작하지 않으므로, 행을 빌드 시점에 정적으로 전개하고
+  // display 속성 바인딩으로 표시 여부를 제어한다.
+  const ltForStart = chairMain.indexOf('<sc-for list="{{ ltrows }}"');
+  if (ltForStart < 0) throw new Error('주간 작업 물량 목록을 찾지 못했습니다.');
+  const ltForEnd = chairMain.indexOf('</sc-for>', ltForStart) + '</sc-for>'.length;
+  const ltForBlock = chairMain.slice(ltForStart, ltForEnd);
+
+  const trStart = chairMain.indexOf('<tr style="background: {{ r.bg }};">');
+  if (trStart < 0) throw new Error('주간 작업 물량 행 템플릿을 찾지 못했습니다.');
+  const trEnd = chairMain.indexOf('</tr>', trStart) + '</tr>'.length;
+  const rowTemplateRaw = chairMain.slice(trStart, trEnd);
+  const rowTemplate = assertReplace(
+    rowTemplateRaw,
+    '<tr style="background: {{ r.bg }};">',
+    '<tr style="background: {{ r.bg }};display: {{ weeklyRowDisplay }};">',
+    '주간 작업 물량 행 표시 바인딩',
+  );
+  const chairRowSource = extractMethod(chair.template, alreadyUnified ? 'buildChairData' : 'renderVals')
+    .replace(/,\s*sideItems:\s*this\.buildSideItems\(\)/, '');
+  const chairRowData = new Function(`return (function ${chairRowSource})();`)();
+  const staticRows = chairRowData.ltrows
+    .map((r) => rowTemplate.replace(/\{\{\s*r\.([A-Za-z0-9_$]+)\s*\}\}/g, (_, k) => String(r[k] ?? '')))
+    .join('\n            ');
+
+  if (trStart > ltForStart && trStart < ltForEnd) {
+    // 행 템플릿이 sc-for 안에 있는 원본 형태
+    chairMain = assertReplace(chairMain, ltForBlock, staticRows, '주간 작업 물량 행 정적 전개');
+  } else {
+    // foster parenting이 반영되어 sc-for와 행 템플릿이 분리된 번들 형태
+    chairMain = assertReplace(chairMain, rowTemplateRaw, staticRows, '주간 작업 물량 행 정적 전개');
+    chairMain = assertReplace(chairMain, ltForBlock, '', '빈 주간 작업 물량 sc-for 제거');
+  }
+
+  const ganttMarker = '<div style="width:1032px;position:relative;">';
+  const ganttStart = chairMain.indexOf(ganttMarker);
+  if (ganttStart < 0) throw new Error('Gantt 본문을 찾지 못했습니다.');
+  const ganttBody = extractBalanced(chairMain, ganttStart, /<div\b[^>]*>/, /<\/div>/);
+  chairMain = assertReplace(
+    chairMain,
+    ganttBody,
+    `<sc-if value="{{ showGantt }}" hint-placeholder-val="{{ false }}">${ganttBody}</sc-if>`,
+    'Gantt 본문 조건부 표시',
+  );
+
+  chairMain = assertReplace(
+    chairMain,
+    '>Record 1 of 53</span>',
+    '>{{ ltRecordText }}</span>',
+    '주간 작업 물량 레코드 표시',
+  );
+}
 let workfrontMainView = extractMain(workfrontMain.template);
 let workfrontDetailView = extractMain(workfrontDetail.template);
 
@@ -176,6 +240,7 @@ const componentSource = `class Component extends DCLogic {
       ? window.location.hash.slice(1)
       : 'chair',
     checked: {},
+    env: { weekly: false, gantt: false, load: false, layout: true },
   };
 
   componentDidMount() {
@@ -206,15 +271,60 @@ const componentSource = `class Component extends DCLogic {
     }
   }
 
+  toggleEnv(key) {
+    this.setState({ env: { ...this.state.env, [key]: !this.state.env[key] } });
+  }
+
+  handleEnvKey(event, key) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.toggleEnv(key);
+    }
+  }
+
+  buildEnvItems() {
+    const defs = [
+      ['weekly', '주간작업물량'],
+      ['gantt', 'Gantt Chart'],
+      ['load', '부하 그래프'],
+      ['layout', '정반블록배치'],
+    ];
+    return defs.map(([key, label]) => {
+      const on = this.state.env[key];
+      return {
+        key,
+        label,
+        on,
+        ariaChecked: on ? 'true' : 'false',
+        tick: on ? '✓' : '',
+        boxStyle: on
+          ? 'display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:#ed7100;border:1px solid #c95d00;border-radius:2px;color:#fff;font-size:10px;'
+          : 'display:inline-flex;width:14px;height:14px;background:#fff;border:1px solid var(--line);border-radius:2px;',
+        labelStyle:
+          'display:flex;align-items:center;gap:3px;cursor:pointer;user-select:none;' +
+          (on ? '' : 'color:#7a7f85;'),
+        onClick: () => this.toggleEnv(key),
+        onKeyDown: (event) => this.handleEnvKey(event, key),
+      };
+    });
+  }
+
   ${toggleMethod}
   ${toggleAllMethod}
 
   renderVals() {
     const view = this.state.view;
+    const env = this.state.env;
+    const chairVals = this.buildChairData();
+    const weeklyTotal = chairVals.ltrows.length;
     return {
-      ...this.buildChairData(),
+      ...chairVals,
       ...this.buildWorkfrontMainData(),
       ...this.buildWorkfrontDetailData(),
+      envItems: this.buildEnvItems(),
+      weeklyRowDisplay: env.weekly ? '' : 'none',
+      showGantt: env.gantt,
+      ltRecordText: env.weekly ? \`Record 1 of \${weeklyTotal}\` : 'Record 0 of 0',
       isChair: view === 'chair',
       isWorkfrontMain: view === 'workfront-main',
       isWorkfrontDetail: view === 'workfront-detail',
@@ -280,6 +390,15 @@ if (!unifiedTemplate.includes('<title>SF-POS</title>')) {
 </style>
 <title>SF-POS</title>
 </helmet>`,
+  );
+}
+
+if (!unifiedTemplate.includes('[data-env]:focus-visible')) {
+  unifiedTemplate = assertReplace(
+    unifiedTemplate,
+    '[data-route]:focus-visible{outline:2px solid #0a72f2;outline-offset:-2px;}',
+    '[data-route]:focus-visible,[data-env]:focus-visible{outline:2px solid #0a72f2;outline-offset:-2px;}',
+    '포커스 링 스타일',
   );
 }
 

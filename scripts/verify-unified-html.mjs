@@ -42,6 +42,10 @@ const required = [
   "label === '워크프론트 점검'",
   "? 'chair'",
   "? 'workfront-main'",
+  '{{ envItems }}',
+  '{{ weeklyRowDisplay }}',
+  '{{ showGantt }}',
+  '{{ ltRecordText }}',
 ];
 
 for (const token of required) {
@@ -109,7 +113,34 @@ app.toggle(0);
 values = app.renderVals();
 if (!values.detailRows[0].on) throw new Error('워크프론트 상세 체크박스 상태가 유지되지 않습니다.');
 
+values = app.renderVals();
+if (values.weeklyRowDisplay !== 'none') throw new Error('초기 상태에서 주간 작업 물량 표가 표시되고 있습니다.');
+if (values.showGantt) throw new Error('초기 상태에서 Gantt Chart가 표시되고 있습니다.');
+if (values.ltRecordText !== 'Record 0 of 0') {
+  throw new Error(`초기 레코드 표시가 올바르지 않습니다: ${values.ltRecordText}`);
+}
+if (values.envItems.map((item) => item.key).join(',') !== 'weekly,gantt,load,layout') {
+  throw new Error('환경설정 체크박스 구성이 올바르지 않습니다.');
+}
+
+app.toggleEnv('weekly');
+values = app.renderVals();
+if (values.weeklyRowDisplay !== '') throw new Error('주간작업물량 선택 시 표 데이터가 표시되지 않습니다.');
+if (!values.envItems.find((item) => item.key === 'weekly').on) {
+  throw new Error('주간작업물량 체크박스가 활성 상태로 바뀌지 않습니다.');
+}
+if (!values.ltRecordText.startsWith('Record 1 of')) {
+  throw new Error(`레코드 표시가 올바르지 않습니다: ${values.ltRecordText}`);
+}
+
+app.toggleEnv('gantt');
+values = app.renderVals();
+if (!values.showGantt) throw new Error('Gantt Chart 선택 시 간트차트가 표시되지 않습니다.');
+app.toggleEnv('gantt');
+if (app.renderVals().showGantt) throw new Error('Gantt Chart 해제 시 간트차트가 사라지지 않습니다.');
+
 console.log('component syntax: ok');
+console.log('env checkbox toggles: ok');
 console.log('routing bindings: ok');
 console.log('single-document views: ok');
 console.log('navigation state transitions: ok');
