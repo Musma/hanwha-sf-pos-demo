@@ -552,7 +552,7 @@ const componentSource = `class Component extends DCLogic {
       ? window.location.hash.slice(1)
       : 'chair',
     checked: {},
-    env: { weekly: false, gantt: false, load: false, layout: true },
+    env: { weekly: true, gantt: true, load: false, layout: true },
   };
 
   componentDidMount() {

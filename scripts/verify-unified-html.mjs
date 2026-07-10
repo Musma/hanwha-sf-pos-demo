@@ -120,9 +120,9 @@ if (typeof values.detailToggle1 !== 'function') {
 }
 
 values = app.renderVals();
-if (values.weeklyRowDisplay !== 'none') throw new Error('초기 상태에서 주간 작업 물량 표가 표시되고 있습니다.');
-if (values.showGantt) throw new Error('초기 상태에서 Gantt Chart가 표시되고 있습니다.');
-if (values.ltRecordText !== 'Record 0 of 0') {
+if (values.weeklyRowDisplay !== '') throw new Error('초기 상태에서 주간 작업 물량 표가 표시되지 않습니다.');
+if (!values.showGantt) throw new Error('초기 상태에서 Gantt Chart가 표시되지 않습니다.');
+if (!values.ltRecordText.startsWith('Record 1 of')) {
   throw new Error(`초기 레코드 표시가 올바르지 않습니다: ${values.ltRecordText}`);
 }
 if (values.envItems.map((item) => item.key).join(',') !== 'weekly,gantt,load,layout') {
@@ -131,19 +131,21 @@ if (values.envItems.map((item) => item.key).join(',') !== 'weekly,gantt,load,lay
 
 app.toggleEnv('weekly');
 values = app.renderVals();
-if (values.weeklyRowDisplay !== '') throw new Error('주간작업물량 선택 시 표 데이터가 표시되지 않습니다.');
-if (!values.envItems.find((item) => item.key === 'weekly').on) {
-  throw new Error('주간작업물량 체크박스가 활성 상태로 바뀌지 않습니다.');
+if (values.weeklyRowDisplay !== 'none') throw new Error('주간작업물량 해제 시 표 데이터가 사라지지 않습니다.');
+if (values.envItems.find((item) => item.key === 'weekly').on) {
+  throw new Error('주간작업물량 체크박스가 해제 상태로 바뀌지 않습니다.');
 }
-if (!values.ltRecordText.startsWith('Record 1 of')) {
-  throw new Error(`레코드 표시가 올바르지 않습니다: ${values.ltRecordText}`);
+if (values.ltRecordText !== 'Record 0 of 0') {
+  throw new Error(`해제 시 레코드 표시가 올바르지 않습니다: ${values.ltRecordText}`);
 }
+app.toggleEnv('weekly');
+if (app.renderVals().weeklyRowDisplay !== '') throw new Error('주간작업물량 재선택 시 표 데이터가 표시되지 않습니다.');
 
 app.toggleEnv('gantt');
 values = app.renderVals();
-if (!values.showGantt) throw new Error('Gantt Chart 선택 시 간트차트가 표시되지 않습니다.');
+if (values.showGantt) throw new Error('Gantt Chart 해제 시 간트차트가 사라지지 않습니다.');
 app.toggleEnv('gantt');
-if (app.renderVals().showGantt) throw new Error('Gantt Chart 해제 시 간트차트가 사라지지 않습니다.');
+if (!app.renderVals().showGantt) throw new Error('Gantt Chart 재선택 시 간트차트가 표시되지 않습니다.');
 
 if (template.includes('<sc-for list="{{ wfRows }}"') || template.includes('<sc-for list="{{ wfGroups }}"')) {
   throw new Error('워크프론트 메인 표가 정적으로 전개되지 않았습니다.');
