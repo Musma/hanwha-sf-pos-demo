@@ -195,6 +195,92 @@ workfrontMainData = assertReplace(
   '워크프론트 메인 데이터 반환값',
 );
 
+// ── 워크프론트 메인 표: 시안 수치 반영 + 정적 전개 ──
+// 표 안의 sc-for는 foster parenting으로 동작하지 않으므로, 시안 기준
+// 데이터로 생성식을 교체한 뒤 헤더·행을 빌드 시점에 정적으로 전개한다.
+workfrontMainData = assertReplace(
+  workfrontMainData,
+  'const oks=[20,18,20,18,20,18,20,18,20,18,20,18,20,18], bads=[10,12,10,12,8,12,8,12,8,12,8,12,8,12], chgs=[1,2], nons=[50];',
+  `const okA=[20,18,22,10,25,26,27], badA=[10,12,8,20,5,4,3];
+    const okB=[18,20,10,22,26,25,25], badB=[12,10,20,8,4,5,5];`,
+  '워크프론트 물량 기준값',
+);
+workfrontMainData = assertReplace(
+  workfrontMainData,
+  `groups: Array.from({length:7}, (_,g)=>({
+        ok: oks[(i+g)%oks.length],
+        bad: bads[(i*2+g)%bads.length],
+        chg: chgs[(i+g)%chgs.length],
+        non: nons[(i+g)%nons.length],
+      })),`,
+  `groups: Array.from({length:7}, (_,g)=>({
+        ok: (i%2 ? okB : okA)[g],
+        bad: (i%2 ? badB : badA)[g],
+        chg: i%4 < 2 ? 1 : 2,
+        non: 50,
+      })),`,
+  '워크프론트 물량 생성식',
+);
+
+const wfMainVals = new Function(`return (function ${workfrontMainData})();`)();
+
+function renderBindings(tpl, scope) {
+  return tpl.replace(/\{\{\s*([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)\s*\}\}/g, (match, obj, key) => {
+    const source = scope[obj];
+    if (!source || source[key] === undefined) return match;
+    return String(source[key]);
+  });
+}
+
+const wfOrphanStart = workfrontMainView.indexOf('<sc-for list="{{ wfGroups }}"');
+const wfTableStart = workfrontMainView.indexOf('<table style="border-collapse:collapse;font-size:10.5px;');
+if (wfOrphanStart < 0 || wfTableStart < 0 || wfOrphanStart > wfTableStart) {
+  throw new Error('워크프론트 표 구조를 찾지 못했습니다.');
+}
+const wfOrphanBlock = workfrontMainView.slice(wfOrphanStart, wfTableStart);
+if (!/^(?:<sc-for[^>]*>|<\/sc-for>|\s)+$/.test(wfOrphanBlock)) {
+  throw new Error('워크프론트 고아 sc-for 블록에 예상 밖의 내용이 있습니다.');
+}
+workfrontMainView = assertReplace(workfrontMainView, wfOrphanBlock, '', '워크프론트 고아 sc-for 제거');
+
+const wfGroupTh = '<th colspan="4" style="background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:4px 8px;font-weight:600;">{{ g }}</th>';
+workfrontMainView = assertReplace(
+  workfrontMainView,
+  wfGroupTh,
+  wfMainVals.wfGroups.map((g) => wfGroupTh.replace('{{ g }}', g)).join('\n                '),
+  '워크프론트 그룹 헤더 전개',
+);
+
+const wfSubStart = workfrontMainView.indexOf('<th style="background:#2e9e57');
+const wfSubEndToken = '미착수</th>';
+const wfSubEnd = workfrontMainView.indexOf(wfSubEndToken, wfSubStart) + wfSubEndToken.length;
+if (wfSubStart < 0 || wfSubEnd <= wfSubStart) throw new Error('워크프론트 상태 헤더를 찾지 못했습니다.');
+const wfSubSet = workfrontMainView.slice(wfSubStart, wfSubEnd);
+workfrontMainView = assertReplace(
+  workfrontMainView,
+  wfSubSet,
+  Array.from({ length: 7 }, () => wfSubSet).join('\n                  '),
+  '워크프론트 상태 헤더 전개',
+);
+
+const wfTbodyIdx = workfrontMainView.indexOf('<tbody>');
+const wfTrStart = workfrontMainView.indexOf('<tr>', wfTbodyIdx);
+const wfTrEnd = workfrontMainView.indexOf('</tr>', wfTrStart) + '</tr>'.length;
+if (wfTbodyIdx < 0 || wfTrStart < 0) throw new Error('워크프론트 행 템플릿을 찾지 못했습니다.');
+const wfRowTpl = workfrontMainView.slice(wfTrStart, wfTrEnd);
+const wfCellStart = wfRowTpl.indexOf('<td style="border:1px solid #eceef0');
+const wfCellEndToken = '{{ c.non }}</td>';
+const wfCellEnd = wfRowTpl.indexOf(wfCellEndToken) + wfCellEndToken.length;
+if (wfCellStart < 0 || wfCellEnd <= wfCellStart) throw new Error('워크프론트 그룹 셀 템플릿을 찾지 못했습니다.');
+const wfGroupCellsTpl = wfRowTpl.slice(wfCellStart, wfCellEnd);
+const wfStaticRows = wfMainVals.wfRows
+  .map((r) => {
+    const cells = r.groups.map((c) => renderBindings(wfGroupCellsTpl, { c })).join('\n                    ');
+    return renderBindings(wfRowTpl.slice(0, wfCellStart) + cells + wfRowTpl.slice(wfCellEnd), { r });
+  })
+  .join('\n              ');
+workfrontMainView = assertReplace(workfrontMainView, wfRowTpl, wfStaticRows, '워크프론트 행 정적 전개');
+
 let workfrontDetailData = extractMethod(workfrontDetail.template, 'renderVals')
   .replace('renderVals()', 'buildWorkfrontDetailData()');
 workfrontDetailData = assertReplace(

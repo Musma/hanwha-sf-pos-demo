@@ -33,8 +33,7 @@ new Function(`class DCLogic {}\n${componentMatch[1]}`);
 
 const required = [
   '<!-- unified-navigation:start -->',
-  '{{ wfGroups }}',
-  '{{ wfRows }}',
+  '>COMPANION WAY</td>',
   '{{ detailRows }}',
   'data-route="workfront-detail"',
   "view: ['workfront-main', 'workfront-detail']",
@@ -138,6 +137,20 @@ values = app.renderVals();
 if (!values.showGantt) throw new Error('Gantt Chart 선택 시 간트차트가 표시되지 않습니다.');
 app.toggleEnv('gantt');
 if (app.renderVals().showGantt) throw new Error('Gantt Chart 해제 시 간트차트가 사라지지 않습니다.');
+
+if (template.includes('<sc-for list="{{ wfRows }}"') || template.includes('<sc-for list="{{ wfGroups }}"')) {
+  throw new Error('워크프론트 메인 표가 정적으로 전개되지 않았습니다.');
+}
+const wfOkRowA = values.wfRows[0].groups.map((group) => group.ok).join(',');
+const wfOkRowB = values.wfRows[1].groups.map((group) => group.ok).join(',');
+if (wfOkRowA !== '20,18,22,10,25,26,27') throw new Error(`워크프론트 정상 수치(홀수 행)가 시안과 다릅니다: ${wfOkRowA}`);
+if (wfOkRowB !== '18,20,10,22,26,25,25') throw new Error(`워크프론트 정상 수치(짝수 행)가 시안과 다릅니다: ${wfOkRowB}`);
+if (values.wfRows[0].groups[0].chg !== 1 || values.wfRows[2].groups[0].chg !== 2) {
+  throw new Error('워크프론트 변경 수치 주기가 시안과 다릅니다.');
+}
+if (values.wfRows.some((row) => row.groups.some((group) => group.non !== 50))) {
+  throw new Error('워크프론트 미착수 수치가 시안과 다릅니다.');
+}
 
 console.log('component syntax: ok');
 console.log('env checkbox toggles: ok');
