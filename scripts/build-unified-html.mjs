@@ -161,6 +161,16 @@ if (!chairMain.includes('{{ envItems }}')) {
     '>{{ ltRecordText }}</span>',
     '주간 작업 물량 레코드 표시',
   );
+
+  // 정반 블록 배치: 순검정 캔버스를 차분한 다크 톤으로, 6px 블록 라벨은
+  // 검정 배경에서 읽히도록 크기와 명도를 올린다.
+  chairMain = chairMain.replaceAll('background:#000;', 'background:#15171b;');
+  chairMain = assertReplace(
+    chairMain,
+    'font-size:6px;font-weight:700;color:#e40c01;',
+    'font-size:7px;font-weight:700;color:#ff5a4e;',
+    '정반 블록 라벨',
+  );
 }
 let workfrontMainView = extractMain(workfrontMain.template);
 let workfrontDetailView = extractMain(workfrontDetail.template);
@@ -185,6 +195,8 @@ workfrontMainView = assertReplace(workfrontMainView, detailButton, routedDetailB
 let chairData = extractMethod(chair.template, alreadyUnified ? 'buildChairData' : 'renderVals')
   .replace(alreadyUnified ? 'buildChairData()' : 'renderVals()', 'buildChairData()')
   .replace(/,\s*sideItems:\s*this\.buildSideItems\(\)/, '');
+// 간트 막대·정반 블록의 원색 노랑을 한 단계 차분한 노랑으로 완화한다.
+chairData = chairData.replaceAll("'#ffe000'", "'#f5d647'");
 
 let workfrontMainData = extractMethod(workfrontMain.template, 'renderVals')
   .replace('renderVals()', 'buildWorkfrontMainData()');

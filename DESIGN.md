@@ -26,6 +26,10 @@
 - `--color-workfront-active: #c0261d`: 워크프론트 활성 버튼
 - `--color-statusbar: #1e1f22`: 하단 상태 표시줄
 
+- `#f5d647`: 간트 막대·정반 블록의 계획(노랑) 상태색. 원색 `#ffe000`을 대체한다.
+- `#15171b`: 정반 블록 배치 캔버스 배경. 순검정 `#000000`을 대체한다.
+- `#ff5a4e`: 다크 캔버스 위 실적 라벨 텍스트. `#e40c01`을 대체한다.
+
 기존 세 화면을 시각 변경 없이 합치기 위해 아래 색상을 읽기 전용 호환 팔레트로 인정한다. 새 컴포넌트에는 위의 의미 기반 토큰을 우선 사용한다.
 
 `#000000 #0067c0 #008233 #0a5cc0 #0a72f2 #112233 #1a2fc0 #1a8f45 #1e1f22 #20222a #20c05a #222222 #22262c #23272c #2a1215 #2b2f34 #2d2d2d #2e9e57 #2f3237 #2f3439 #3a3e43 #3b4046 #3f4348 #45494d #4a4e53 #4a4f55 #4b5158 #555555 #5a5d60 #5a5f65 #5b6167 #5c2b2e #666666 #6a6e73 #6a6f74 #6e5c4c #6ed890 #7a7f85 #85888c #8a8f95 #8a9099 #8b9096 #8b9198 #999999 #9aa0a6 #a8adb2 #a8c8ef #aeb4bb #b0b5ba #b4b7bb #b6bbc0 #b9bec3 #c0261d #c3c8cd #c4c8cd #c4c9ce #c62d2d #c6c9cc #c6cbd1 #c7ccd2 #c95d00 #c96100 #c9cdd1 #ccd0d4 #cfd3d7 #d15700 #d4d7da #d63b3b #d6dade #d8dadd #d8dbdf #dfe2e5 #e08000 #e0a12b #e24a52 #e2e4e6 #e40c01 #e4e6e8 #e58a2a #e6e8ea #e7eaed #e8451c #e9ebed #e9edf1 #eceef0 #eceef1 #ed7100 #edeff1 #eef0f2 #f10a00 #f2f3f4 #f4f6f8 #f5e2d6 #fbfcfd #fcfdfe #ff8a80 #ffd9b0 #ffe000 #ffffff`
