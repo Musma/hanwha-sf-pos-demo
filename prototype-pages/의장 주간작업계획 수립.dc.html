@@ -67,7 +67,7 @@ a:hover{color:#d15700;text-decoration:underline;}
       <div style="flex:1;display:flex;justify-content:flex-end;align-items:center;gap:6px;">
         <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;"><i class="ti ti-zoom-check" style="font-size:15px;color:#0a72f2;"></i>조회</span>
         <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;"><i class="ti ti-device-floppy" style="font-size:15px;color:#0a72f2;"></i>저장</span>
-        <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;"><i class="ti ti-clipboard-check" style="font-size:15px;color:#2e9e57;"></i>계획 확정</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;" onClick="{{ openPlanLoadModal }}"><i class="ti ti-clipboard-check" style="font-size:15px;color:#2e9e57;"></i>계획 확정</span>
         <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;"><i class="ti ti-file-spreadsheet" style="font-size:15px;color:#1a8f45;"></i>엑셀</span>
         <span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;"><i class="ti ti-broadcast" style="font-size:15px;color:#ed7100;"></i>계획 배포</span>
       </div>
@@ -362,6 +362,90 @@ a:hover{color:#d15700;text-decoration:underline;}
     </div>
   </div>
 
+  <!-- 계획 불러오기 모달 -->
+  <div id="plan-load-modal" style="display:none;position:fixed;inset:0;background:rgba(32,34,42,.45);z-index:1000;align-items:center;justify-content:center;">
+    <div style="width:760px;max-width:92vw;max-height:86vh;display:flex;flex-direction:column;background:#f4f6f8;border:1px solid #8a9096;border-radius:5px 5px 0 0;box-shadow:0 14px 44px rgba(0,0,0,.4);overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:6px;background:linear-gradient(#fdfdfe,#e6eaef);border-bottom:1px solid #c4c9ce;padding:5px 8px;flex-shrink:0;">
+        <i class="ti ti-clipboard-list" style="font-size:15px;color:#2e9e57;"></i>
+        <span style="font-size:12px;font-weight:700;color:#2d2d2d;">계획 불러오기</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:3px;">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:20px;border:1px solid #c4c9ce;border-radius:3px;background:#fff;color:#5a5f65;"><i class="ti ti-minus" style="font-size:12px;"></i></span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:20px;border:1px solid #c4c9ce;border-radius:3px;background:#fff;color:#5a5f65;"><i class="ti ti-square" style="font-size:11px;"></i></span>
+          <span onClick="{{ closePlanLoadModal }}" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:20px;border:1px solid #d9a0a0;border-radius:3px;background:#fff;color:#d63b3b;cursor:pointer;"><i class="ti ti-x" style="font-size:13px;"></i></span>
+        </div>
+      </div>
+      <div style="padding:10px 14px 14px;display:flex;flex-direction:column;gap:8px;min-height:0;">
+        <div style="display:flex;justify-content:flex-end;">
+          <span onClick="{{ loadPlanConfirm }}" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 14px;cursor:pointer;"><i class="ti ti-download" style="font-size:15px;color:#0a72f2;"></i>불러오기</span>
+        </div>
+        <div style="border:1px solid #b0b5ba;background:#fff;overflow:auto;min-height:0;max-height:60vh;">
+          <table style="border-collapse:collapse;font-size:12px;width:100%;white-space:nowrap;">
+            <thead>
+              <tr>
+                <th style="background:#ffff00;border:1px solid #b9b9b9;padding:4px 8px;color:#111;font-weight:700;position:sticky;top:0;width:48px;">선택</th>
+                <th style="background:#ffff00;border:1px solid #b9b9b9;padding:4px 8px;color:#111;font-weight:700;position:sticky;top:0;">시나리오</th>
+                <th style="background:#ffff00;border:1px solid #b9b9b9;padding:4px 8px;color:#111;font-weight:700;position:sticky;top:0;width:100px;">생성자</th>
+                <th style="background:#ffff00;border:1px solid #b9b9b9;padding:4px 8px;color:#111;font-weight:700;position:sticky;top:0;width:150px;">생성일</th>
+              </tr>
+            </thead>
+            <tbody>
+            <tr onClick="{{ planPick0 }}" style="height:26px;cursor:pointer;">
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;"><span style="{{ planBox0 }}"></span></td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:left;color:#2d2d2d;">LLM 생성_시나리오_A20260723_1</td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;color:#2d2d2d;">LLM</td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;color:#2d2d2d;font-variant-numeric:tabular-nums;">2026-07-23 11:11</td>
+            </tr>
+            <tr onClick="{{ planPick1 }}" style="height:26px;cursor:pointer;">
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;"><span style="{{ planBox1 }}"></span></td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:left;color:#2d2d2d;">가안_25년 6월 장마 시나리오_250522</td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;color:#2d2d2d;">OOO책임</td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;color:#2d2d2d;font-variant-numeric:tabular-nums;"></td>
+            </tr>
+            <tr onClick="{{ planPick2 }}" style="height:26px;cursor:pointer;">
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;"><span style="{{ planBox2 }}"></span></td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:left;color:#2d2d2d;">가안_2333 호선 물량이관 시나리오_260509</td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;color:#2d2d2d;">OOO책임</td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;color:#2d2d2d;font-variant-numeric:tabular-nums;">2026-05-09 16:15</td>
+            </tr>
+            <tr onClick="{{ planPick3 }}" style="height:26px;cursor:pointer;">
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;"><span style="{{ planBox3 }}"></span></td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:left;color:#2d2d2d;">가안_25년 추석 워킹데이 조정 시나리오_250810</td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;color:#2d2d2d;">OOO책임</td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;color:#2d2d2d;font-variant-numeric:tabular-nums;">2025-08-10 16:15</td>
+            </tr>
+            <tr onClick="{{ planPick4 }}" style="height:26px;cursor:pointer;">
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;"><span style="{{ planBox4 }}"></span></td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:left;color:#2d2d2d;">LLM 생성_시나리오_A20260407_3</td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;color:#2d2d2d;">LLM</td>
+              <td style="border:1px solid #e0e2e4;padding:4px 8px;text-align:center;color:#2d2d2d;font-variant-numeric:tabular-nums;">2026-04-07 17:22</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 계획 불러오기 성공 알림 모달 -->
+  <div id="plan-load-success" style="display:none;position:fixed;inset:0;background:rgba(32,34,42,.45);z-index:1001;align-items:center;justify-content:center;">
+    <div style="width:340px;display:flex;flex-direction:column;background:#f4f6f8;border:1px solid #8a9096;border-radius:5px 5px 0 0;box-shadow:0 14px 44px rgba(0,0,0,.4);overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:6px;background:linear-gradient(#fdfdfe,#e6eaef);border-bottom:1px solid #c4c9ce;padding:5px 8px;flex-shrink:0;">
+        <i class="ti ti-info-circle" style="font-size:15px;color:#0a72f2;"></i>
+        <span style="font-size:12px;font-weight:700;color:#2d2d2d;">알림</span>
+        <div style="margin-left:auto;display:flex;align-items:center;">
+          <span onClick="{{ closePlanSuccess }}" style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:20px;border:1px solid #d9a0a0;border-radius:3px;background:#fff;color:#d63b3b;cursor:pointer;"><i class="ti ti-x" style="font-size:13px;"></i></span>
+        </div>
+      </div>
+      <div style="padding:24px 16px 18px;display:flex;flex-direction:column;align-items:center;gap:16px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="ti ti-circle-check" style="font-size:22px;color:#2e9e57;"></i>
+          <span style="font-size:13px;font-weight:700;color:#2d2d2d;">계획 불러오기 완료</span>
+        </div>
+        <span onClick="{{ closePlanSuccess }}" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 24px;cursor:pointer;">확인</span>
+      </div>
+    </div>
+  </div>
+
   <div style="height:22px;background:#20222a;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#d8dadd;flex-shrink:0;">의장 주간작업계획 수립(PPHA_C210)</div>
     </div>
   </div>
@@ -456,12 +540,23 @@ class Component extends DCLogic {
       ]},
     ];
 
-    const wwvModalDisplay = (display) => () => {
-      const el = document.getElementById('wwv-modal');
+    const modalDisplay = (id, display) => () => {
+      const el = document.getElementById(id);
       if (el) el.style.display = display;
     };
-    return { ltrows, dates, weekend, gantt, bayrows,
-      openWwvModal: wwvModalDisplay('flex'), closeWwvModal: wwvModalDisplay('none') };
+    const planSel = this.state && this.state.planSel !== undefined ? this.state.planSel : 0;
+    const planVals = {};
+    for (let i = 0; i < 5; i += 1) {
+      planVals['planBox' + i] = i === planSel
+        ? 'display:inline-block;width:13px;height:13px;background:#2d2d2d;border:1px solid #2d2d2d;'
+        : 'display:inline-block;width:13px;height:13px;background:#fff;border:1px solid #6a6f74;';
+      planVals['planPick' + i] = () => { if (this.setState) this.setState({ planSel: i }); };
+    }
+    return { ltrows, dates, weekend, gantt, bayrows, ...planVals,
+      openWwvModal: modalDisplay('wwv-modal', 'flex'), closeWwvModal: modalDisplay('wwv-modal', 'none'),
+      openPlanLoadModal: modalDisplay('plan-load-modal', 'flex'), closePlanLoadModal: modalDisplay('plan-load-modal', 'none'),
+      loadPlanConfirm: () => { modalDisplay('plan-load-modal', 'none')(); modalDisplay('plan-load-success', 'flex')(); },
+      closePlanSuccess: modalDisplay('plan-load-success', 'none') };
   }
 }
 </script>
