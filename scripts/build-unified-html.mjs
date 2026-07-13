@@ -853,6 +853,27 @@ if (!unifiedTemplate.includes('desktop-polish')) {
   );
 }
 
+// ── 부트 커버: 문서 교체 직후 ~ React 마운트 완료 사이의 흰 화면 방지 ──
+// 언패커가 documentElement를 통째로 교체하면 로더의 다크 화면이 사라지고,
+// 새 문서는 런타임이 #dc-root에 마운트할 때까지 빈 배경만 보인다. 로더와
+// 동일한 다크 커버를 새 문서에도 깔아두고, 마운트가 확인되면 페이드아웃한다.
+const bootCover = [
+  '<div id="__sf_boot_cover" style="position:fixed;inset:0;z-index:100000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:#17181b;opacity:1;transition:opacity .18s ease;">',
+  '<div style="font:italic 800 40px/1 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:-1px;color:#ed7100;">SF-POS</div>',
+  '<div style="width:26px;height:26px;border-radius:50%;border:3px solid rgba(255,255,255,.1);border-top-color:rgba(237,113,0,.75);animation:__sf_boot_spin .9s linear infinite;"></div>',
+  '</div>',
+  '<style>@keyframes __sf_boot_spin{to{transform:rotate(360deg)}}</style>',
+  '<script>(function(){',
+  'var cover=document.getElementById("__sf_boot_cover");if(!cover)return;var done=false;',
+  'function hide(){if(done)return;done=true;requestAnimationFrame(function(){requestAnimationFrame(function(){cover.style.opacity="0";setTimeout(function(){cover.remove();},220);});});}',
+  'var t=setInterval(function(){var r=document.getElementById("dc-root");if(r&&r.firstElementChild){clearInterval(t);hide();}},50);',
+  'setTimeout(function(){clearInterval(t);hide();},8000);',
+  '})();</script>',
+].join('');
+if (!unifiedTemplate.includes('__sf_boot_cover')) {
+  unifiedTemplate = assertReplace(unifiedTemplate, '<body>', `<body>${bootCover}`, '부트 커버');
+}
+
 unifiedTemplate = replaceComponentScript(unifiedTemplate, componentSource);
 
 const encodedTemplate = JSON.stringify(unifiedTemplate).replace(/<\/script/gi, '<\\/script');
