@@ -192,6 +192,10 @@ const detailButton = '<div style="background:var(--brown);color:#fff;font-size:1
 const routedDetailButton = '<div data-route="workfront-detail" role="button" tabIndex="0" onClick="{{ openWorkfrontDetail }}" onKeyDown="{{ openWorkfrontDetailKey }}" style="background:var(--brown);color:#fff;font-size:14px;font-weight:700;padding:9px 20px;border-radius:5px;cursor:pointer;">선각 W/F 점검</div>';
 workfrontMainView = assertReplace(workfrontMainView, detailButton, routedDetailButton, '워크프론트 상세 진입 버튼');
 
+const uijangButton = '<div style="background:var(--brown);color:#fff;font-size:14px;font-weight:700;padding:9px 20px;border-radius:5px;">의장 W/F 점검</div>';
+const routedUijangButton = '<div data-route="workfront-detail-uijang" role="button" tabIndex="0" onClick="{{ openWorkfrontDetailUijang }}" onKeyDown="{{ openWorkfrontDetailUijangKey }}" style="background:var(--brown);color:#fff;font-size:14px;font-weight:700;padding:9px 20px;border-radius:5px;cursor:pointer;">의장 W/F 점검</div>';
+workfrontMainView = assertReplace(workfrontMainView, uijangButton, routedUijangButton, '의장 워크프론트 상세 진입 버튼');
+
 let chairData = extractMethod(chair.template, alreadyUnified ? 'buildChairData' : 'renderVals')
   .replace(alreadyUnified ? 'buildChairData()' : 'renderVals()', 'buildChairData()')
   .replace(/,\s*sideItems:\s*this\.buildSideItems\(\)/, '');
@@ -516,6 +520,70 @@ workfrontDetailView = `<div style="flex:1;display:flex;flex-direction:column;min
   <div style="height:22px;background:#1e1f22;border-top:1px solid #000;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#d8dadd;flex-shrink:0;">워크프론트 점검</div>
     </div>`;
 
+// ── 의장 W/F 점검 화면: 선각 상세를 그대로 복제하고 제목과 활성 탭만 의장으로 바꾼다 ──
+let workfrontDetailUijangView = workfrontDetailView;
+workfrontDetailUijangView = assertReplace(
+  workfrontDetailUijangView,
+  '<div style="font-size:20px;font-weight:800;color:#222;">선각 W/F 점검</div>',
+  '<div style="font-size:20px;font-weight:800;color:#222;">의장 W/F 점검</div>',
+  '의장 상세 제목',
+);
+workfrontDetailUijangView = assertReplace(
+  workfrontDetailUijangView,
+  '<div style="background:#ed7100;color:#fff;font-size:12.5px;font-weight:700;padding:7px 20px;">선각 W/F 점검</div>',
+  '<div style="color:#5a5f65;font-size:12.5px;font-weight:600;padding:7px 20px;">선각 W/F 점검</div>',
+  '의장 상세 선각 탭 비활성',
+);
+workfrontDetailUijangView = assertReplace(
+  workfrontDetailUijangView,
+  '<div style="color:#5a5f65;font-size:12.5px;font-weight:600;padding:7px 20px;border-left:1px solid #d8dbdf;">의장 W/F 점검</div>',
+  '<div style="background:#ed7100;color:#fff;font-size:12.5px;font-weight:700;padding:7px 20px;border-left:1px solid #d8dbdf;">의장 W/F 점검</div>',
+  '의장 상세 의장 탭 활성',
+);
+
+// ── 의장 상세: 계획 ↔ 작업장&설비 탭 전환 ──
+// 계획/작업장&설비 탭을 클릭 가능하게 바꾸고, 작업장&설비 탭에는 계획 탭과
+// 동일한 표 인터페이스를 행 데이터만 비운 상태로 보여준다.
+workfrontDetailUijangView = assertReplace(
+  workfrontDetailUijangView,
+  '<div style="padding:8px 22px 6px;font-size:13px;font-weight:700;color:#ed7100;border-bottom:3px solid #ed7100;margin-bottom:-2px;">계획</div>',
+  '<div data-uijang-tab="plan" role="button" tabIndex="0" onClick="{{ uijangTabPlanClick }}" onKeyDown="{{ uijangTabPlanKey }}" style="{{ uijangPlanTabStyle }}">계획</div>',
+  '의장 상세 계획 탭 바인딩',
+);
+workfrontDetailUijangView = assertReplace(
+  workfrontDetailUijangView,
+  '<div style="padding:8px 22px 6px;font-size:13px;font-weight:600;color:#7a7f85;">작업장&amp;설비</div>',
+  '<div data-uijang-tab="facility" role="button" tabIndex="0" onClick="{{ uijangTabFacilityClick }}" onKeyDown="{{ uijangTabFacilityKey }}" style="{{ uijangFacilityTabStyle }}">작업장&amp;설비</div>',
+  '의장 상세 작업장&설비 탭 바인딩',
+);
+
+const uijangTableMarker = '<div style="flex:1;display:flex;flex-direction:column;min-height:0;border:1px solid #c9cdd1;border-top:none;background:#fff;">';
+const uijangTableStart = workfrontDetailUijangView.indexOf(uijangTableMarker);
+if (uijangTableStart < 0) throw new Error('의장 상세 표 블록을 찾지 못했습니다.');
+const uijangTableBlock = extractBalanced(workfrontDetailUijangView, uijangTableStart, /<div\b[^>]*>/, /<\/div>/);
+
+const uijangEmptyRows = Array.from(
+  { length: 15 },
+  () => `<tr style="height:26px;">${'<td style="border:1px solid #e6e8ea;"></td>'.repeat(21)}</tr>`,
+).join('\n                ');
+let uijangFacilityBlock = uijangTableBlock;
+uijangFacilityBlock = assertReplace(uijangFacilityBlock, detailStaticRows, uijangEmptyRows, '작업장&설비 탭 행 비우기');
+uijangFacilityBlock = assertReplace(
+  uijangFacilityBlock,
+  `<span>총 ${detailRowsData.length}행</span>`,
+  '<span>총 0행</span>',
+  '작업장&설비 탭 행 수 표시',
+);
+uijangFacilityBlock = assertReplace(uijangFacilityBlock, '{{ detailSelectedText }}', '0건 선택됨', '작업장&설비 탭 선택 수 표시');
+
+workfrontDetailUijangView = assertReplace(
+  workfrontDetailUijangView,
+  uijangTableBlock,
+  `<sc-if value="{{ isUijangPlanTab }}" hint-placeholder-val="{{ true }}">${uijangTableBlock}</sc-if>
+        <sc-if value="{{ isUijangFacilityTab }}" hint-placeholder-val="{{ false }}">${uijangFacilityBlock}</sc-if>`,
+  '의장 상세 탭 콘텐츠 분기',
+);
+
 const toggleMethod = extractMethod(workfrontDetail.template, 'toggle');
 const toggleAllMethod = extractMethod(workfrontDetail.template, 'toggleAll');
 
@@ -576,12 +644,13 @@ const sideItemsMethod = `buildSideItems() {
 
 const componentSource = `class Component extends DCLogic {
   state = {
-    view: ['chair', 'workfront-main', 'workfront-detail'].includes(window.location.hash.slice(1))
+    view: ['chair', 'workfront-main', 'workfront-detail', 'workfront-detail-uijang'].includes(window.location.hash.slice(1))
       ? window.location.hash.slice(1)
       : 'home',
     checked: {},
     env: { weekly: true, gantt: true, load: false, layout: true },
     openGroups: {},
+    uijangTab: 'plan',
   };
 
   ownerGroup(view) {
@@ -598,7 +667,7 @@ const componentSource = `class Component extends DCLogic {
   componentDidMount() {
     this.syncFromLocation = () => {
       const hash = window.location.hash.slice(1);
-      const view = ['chair', 'workfront-main', 'workfront-detail'].includes(hash) ? hash : 'home';
+      const view = ['chair', 'workfront-main', 'workfront-detail', 'workfront-detail-uijang'].includes(hash) ? hash : 'home';
       if (view !== this.state.view) {
         this.setState({ view, openGroups: this.openGroupsFor(view, this.state.openGroups) });
       }
@@ -637,6 +706,33 @@ const componentSource = `class Component extends DCLogic {
       event.preventDefault();
       this.navigate(route);
     }
+  }
+
+  setUijangTab(tab) {
+    if (tab !== this.state.uijangTab) this.setState({ uijangTab: tab });
+  }
+
+  handleUijangTabKey(event, tab) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.setUijangTab(tab);
+    }
+  }
+
+  buildUijangTabVals() {
+    const active = 'padding:8px 22px 6px;font-size:13px;font-weight:700;color:#ed7100;border-bottom:3px solid #ed7100;margin-bottom:-2px;cursor:pointer;user-select:none;';
+    const idle = 'padding:8px 22px 6px;font-size:13px;font-weight:600;color:#7a7f85;cursor:pointer;user-select:none;';
+    const onFacility = this.state.uijangTab === 'facility';
+    return {
+      isUijangPlanTab: !onFacility,
+      isUijangFacilityTab: onFacility,
+      uijangPlanTabStyle: onFacility ? idle : active,
+      uijangFacilityTabStyle: onFacility ? active : idle,
+      uijangTabPlanClick: () => this.setUijangTab('plan'),
+      uijangTabFacilityClick: () => this.setUijangTab('facility'),
+      uijangTabPlanKey: (event) => this.handleUijangTabKey(event, 'plan'),
+      uijangTabFacilityKey: (event) => this.handleUijangTabKey(event, 'facility'),
+    };
   }
 
   toggleEnv(key) {
@@ -697,10 +793,14 @@ const componentSource = `class Component extends DCLogic {
       isChair: view === 'chair',
       isWorkfrontMain: view === 'workfront-main',
       isWorkfrontDetail: view === 'workfront-detail',
+      isWorkfrontDetailUijang: view === 'workfront-detail-uijang',
+      ...this.buildUijangTabVals(),
       footerTitle: view === 'chair' ? '의장 주간작업계획 수립(PPHA_C210)' : view === 'home' ? 'SF-POS' : '워크프론트 점검',
       sideItems: this.buildSideItems(),
       openWorkfrontDetail: () => this.navigate('workfront-detail'),
       openWorkfrontDetailKey: (event) => this.handleRouteKey(event, 'workfront-detail'),
+      openWorkfrontDetailUijang: () => this.navigate('workfront-detail-uijang'),
+      openWorkfrontDetailUijangKey: (event) => this.handleRouteKey(event, 'workfront-detail-uijang'),
     };
   }
 
@@ -768,6 +868,9 @@ const unifiedViews = `<!-- unified-navigation:start -->
     </sc-if>
     <sc-if value="{{ isWorkfrontDetail }}" hint-placeholder-val="{{ false }}">
       ${workfrontDetailView}
+    </sc-if>
+    <sc-if value="{{ isWorkfrontDetailUijang }}" hint-placeholder-val="{{ false }}">
+      ${workfrontDetailUijangView}
     </sc-if>
     <!-- unified-navigation:end -->`;
 

@@ -37,7 +37,8 @@ const required = [
   '>2585Z501ISM1090001</td>',
   '{{ detailToggle0 }}',
   'data-route="workfront-detail"',
-  "view: ['chair', 'workfront-main', 'workfront-detail']",
+  'data-route="workfront-detail-uijang"',
+  "view: ['chair', 'workfront-main', 'workfront-detail', 'workfront-detail-uijang']",
   "'의장 주간작업계획 수립': 'chair'",
   "'워크프론트 점검': 'workfront-main'",
   '{{ envItems }}',
@@ -55,7 +56,7 @@ const routeMarkupCount = (template.match(/data-route=/g) || []).length;
 const componentCount = (template.match(/class Component extends DCLogic/g) || []).length;
 const navigationBlockCount = (template.match(/unified-navigation:start/g) || []).length;
 
-if (routeMarkupCount !== 2) throw new Error(`라우트 마크업 수가 올바르지 않습니다: ${routeMarkupCount}`);
+if (routeMarkupCount !== 3) throw new Error(`라우트 마크업 수가 올바르지 않습니다: ${routeMarkupCount}`);
 if (componentCount !== 1) throw new Error(`컴포넌트 수가 올바르지 않습니다: ${componentCount}`);
 if (navigationBlockCount !== 1) throw new Error(`통합 화면 블록 수가 올바르지 않습니다: ${navigationBlockCount}`);
 if (template.includes('buildSideItems() };')) throw new Error('잘못 중복된 사이드바 메서드가 있습니다.');
@@ -92,7 +93,7 @@ const enabledRoutes = values.sideItems.filter((item) => item.route).map((item) =
 if (enabledRoutes.join(',') !== 'chair,workfront-main') {
   throw new Error(`활성 사이드바 메뉴가 올바르지 않습니다: ${enabledRoutes.join(',')}`);
 }
-if (!values.isHome || values.isChair || values.isWorkfrontMain || values.isWorkfrontDetail) {
+if (!values.isHome || values.isChair || values.isWorkfrontMain || values.isWorkfrontDetail || values.isWorkfrontDetailUijang) {
   throw new Error('초기 화면이 SF-POS 메인이 아닙니다.');
 }
 const groupItems = values.sideItems.filter((item) => item.label.endsWith('▸') || item.label.endsWith('▾'));
@@ -136,6 +137,28 @@ values.openWorkfrontDetail();
 values = app.renderVals();
 if (!values.isWorkfrontDetail || app.state.view !== 'workfront-detail') {
   throw new Error('워크프론트 상세 전환에 실패했습니다.');
+}
+
+app.navigate('workfront-main');
+values = app.renderVals();
+values.openWorkfrontDetailUijang();
+values = app.renderVals();
+if (!values.isWorkfrontDetailUijang || app.state.view !== 'workfront-detail-uijang') {
+  throw new Error('의장 워크프론트 상세 전환에 실패했습니다.');
+}
+
+if (!values.isUijangPlanTab || values.isUijangFacilityTab) {
+  throw new Error('의장 상세 초기 탭이 계획이 아닙니다.');
+}
+values.uijangTabFacilityClick();
+values = app.renderVals();
+if (!values.isUijangFacilityTab || values.isUijangPlanTab) {
+  throw new Error('작업장&설비 탭 전환에 실패했습니다.');
+}
+values.uijangTabPlanClick();
+values = app.renderVals();
+if (!values.isUijangPlanTab) {
+  throw new Error('계획 탭 복귀에 실패했습니다.');
 }
 
 app.toggle(0);
