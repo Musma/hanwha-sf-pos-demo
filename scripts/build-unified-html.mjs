@@ -963,7 +963,7 @@ if (!unifiedTemplate.includes('desktop-polish')) {
 const bootCover = [
   '<div id="__sf_boot_cover" style="position:fixed;inset:0;z-index:100000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:#17181b;opacity:1;transition:opacity .18s ease;">',
   '<div style="font:italic 800 40px/1 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:-1px;color:#ed7100;">SF-POS</div>',
-  '<div style="width:26px;height:26px;border-radius:50%;border:3px solid rgba(255,255,255,.1);border-top-color:rgba(237,113,0,.75);animation:__sf_boot_spin .9s linear infinite;"></div>',
+  '<div style="box-sizing:border-box;width:26px;height:26px;border-radius:50%;border:3px solid rgba(255,255,255,.1);border-top-color:rgba(237,113,0,.75);animation:__sf_boot_spin .9s linear infinite;"></div>',
   '</div>',
   '<style>@keyframes __sf_boot_spin{to{transform:rotate(360deg)}}</style>',
   '<script>(function(){',
