@@ -518,62 +518,118 @@ workfrontDetailView = `<div style="flex:1;display:flex;flex-direction:column;min
 
 const toggleMethod = extractMethod(workfrontDetail.template, 'toggle');
 const toggleAllMethod = extractMethod(workfrontDetail.template, 'toggleAll');
-let sideItemsMethod = extractMethod(chair.template, 'buildSideItems');
-if (!alreadyUnified) {
-  sideItemsMethod = sideItemsMethod.replace(
-    "const active = '의장 주간작업계획 수립';",
-    "const active = this.state.view === 'chair' ? '의장 주간작업계획 수립' : '워크프론트 점검';",
-  );
-  sideItemsMethod = assertReplace(
-    sideItemsMethod,
-    '      return { label, style };',
-    `      const route = label === '의장 주간작업계획 수립'
-        ? 'chair'
-        : label === '워크프론트 점검'
-          ? 'workfront-main'
-          : undefined;
-      if (route) style += 'cursor:pointer;';
-      return {
-        label,
-        style,
-        route,
-        role: route ? 'button' : undefined,
-        tabIndex: route ? 0 : undefined,
-        onClick: route ? () => this.navigate(route) : undefined,
-        onKeyDown: route ? (event) => this.handleRouteKey(event, route) : undefined,
-      };`,
-    '사이드바 라우트 반환값',
-  );
-}
+
+// 사이드바: 대메뉴 10개 아코디언. 목록 길이를 고정하고 하위 메뉴는
+// display 스타일 바인딩으로만 숨겨 구조 변경 없이 토글한다.
+const sideItemsMethod = `buildSideItems() {
+    const routes = { '의장 주간작업계획 수립': 'chair', '워크프론트 점검': 'workfront-main' };
+    const groups = [
+      ['실행계획 관리', [['실행계획 조회', 14], ['실행계획 배포 현황', 14]]],
+      ['소조', [['소조 기본정보관리', 14], ['소조 Case별 Layout 관리', 20], ['소조 Case별 생산 달력', 20], ['소조 작업계획 수립분석', 14], ['소조 주간작업계획 수립', 20], ['소조 주간작업계획 조회', 20, true], ['소조 정반배치도 조회', 20, true], ['소조 일일 계획 관리', 20, true]]],
+      ['중조', [['중조 기본정보관리', 14], ['중조 Case별 Layout 관리', 20], ['중조 Case별 생산 달력', 20], ['중조 작업계획 수립분석', 14], ['중조 주간작업계획 수립', 20], ['중조 주간작업계획 조회', 20, true], ['중조 정반배치도 조회', 20, true], ['중조 일일 계획 관리', 20, true]]],
+      ['주판론지', [['주판론지 기본정보관리', 14], ['주판론지 작업계획 수립분석', 14], ['주판론지 일일 계획 관리', 20, true]]],
+      ['대조', [['대조 기본정보관리', 14], ['대조 작업계획 수립분석', 14], ['대조 주간작업계획 수립', 20], ['대조 주간작업계획 조회', 20, true], ['대조 장반배치도 조회', 20, true], ['대조 일일 계획 관리', 20, true]]],
+      ['의장', [['의장 기본정보관리', 14], ['의장 Case별 Layout 관리', 20], ['의장 Case별 생산 실적', 20], ['의장 작업계획 수립분석', 14], ['의장 주간작업계획 수립', 20], ['의장 주간작업계획 조회', 20, true], ['의장 장반배치도 조회', 20, true], ['의장 일일 계획 관리', 20, true]]],
+      ['도장', [['도장 기본정보관리', 14], ['도장 작업계획 수립분석', 14], ['도장 주간작업계획 수립', 20], ['도장 주간작업계획 조회', 20, true], ['도장 장반배치도 조회', 20, true], ['도장 일일 계획 관리', 20, true]]],
+      ['PE', [['PE 기본정보관리', 14], ['PE 작업계획 수립분석', 14], ['PE 일일 계획 관리', 20, true]]],
+      ['워크프론트', [['워크프론트 점검', 14]]],
+      ['시스템 관리', [['공통코드 관리', 14], ['사용자 관리', 14], ['메뉴 관리', 14], ['롤 관리', 14], ['프로그램 사용 현황', 14], ['프로그램 사용 집계', 14]]],
+    ];
+    const view = this.state.view;
+    const active = view === 'chair' ? '의장 주간작업계획 수립' : view.startsWith('workfront') ? '워크프론트 점검' : '';
+    const items = [];
+    for (const [group, children] of groups) {
+      const open = !!this.state.openGroups[group];
+      items.push({
+        label: group + (open ? ' ▾' : ' ▸'),
+        style: 'background:#4b5158;color:#eef0f2;font-size:12.5px;font-weight:700;text-align:center;padding:8px 0;border-top:1px solid #2f3439;border-bottom:1px solid #2f3439;cursor:pointer;user-select:none;',
+        role: 'button',
+        tabIndex: 0,
+        onClick: () => this.toggleGroup(group),
+        onKeyDown: (event) => this.handleGroupKey(event, group),
+      });
+      for (const [label, indent, dim] of children) {
+        const route = routes[label];
+        const hidden = open ? '' : 'display:none;';
+        let style;
+        if (label === active) {
+          style = hidden + 'padding:6px 0 7px 20px;font-size:11px;color:#ffd9b0;font-weight:700;background:rgba(237,113,0,.18);border-left:3px solid #ed7100;';
+        } else if (dim) {
+          style = hidden + 'padding:5px 0 6px ' + indent + 'px;font-size:11px;color:#8b9096;font-style:italic;';
+        } else {
+          style = hidden + 'padding:5px 0 6px ' + indent + 'px;font-size:11px;color:#c3c8cd;';
+        }
+        if (route) style += 'cursor:pointer;';
+        items.push({
+          label,
+          style,
+          route,
+          role: route ? 'button' : undefined,
+          tabIndex: route ? 0 : undefined,
+          onClick: route ? () => this.navigate(route) : undefined,
+          onKeyDown: route ? (event) => this.handleRouteKey(event, route) : undefined,
+        });
+      }
+    }
+    return items;
+  }`;
 
 const componentSource = `class Component extends DCLogic {
   state = {
-    view: ['workfront-main', 'workfront-detail'].includes(window.location.hash.slice(1))
+    view: ['chair', 'workfront-main', 'workfront-detail'].includes(window.location.hash.slice(1))
       ? window.location.hash.slice(1)
-      : 'chair',
+      : 'home',
     checked: {},
     env: { weekly: true, gantt: true, load: false, layout: true },
+    openGroups: {},
   };
+
+  ownerGroup(view) {
+    if (view === 'chair') return '의장';
+    if (view.startsWith('workfront')) return '워크프론트';
+    return null;
+  }
+
+  openGroupsFor(view, openGroups) {
+    const owner = this.ownerGroup(view);
+    return owner ? { ...openGroups, [owner]: true } : openGroups;
+  }
 
   componentDidMount() {
     this.syncFromLocation = () => {
       const hash = window.location.hash.slice(1);
-      const view = ['workfront-main', 'workfront-detail'].includes(hash) ? hash : 'chair';
-      if (view !== this.state.view) this.setState({ view });
+      const view = ['chair', 'workfront-main', 'workfront-detail'].includes(hash) ? hash : 'home';
+      if (view !== this.state.view) {
+        this.setState({ view, openGroups: this.openGroupsFor(view, this.state.openGroups) });
+      }
     };
     window.addEventListener('popstate', this.syncFromLocation);
+    if (this.state.view !== 'home') {
+      this.setState({ openGroups: this.openGroupsFor(this.state.view, this.state.openGroups) });
+    }
   }
 
   componentWillUnmount() {
     window.removeEventListener('popstate', this.syncFromLocation);
   }
 
+  toggleGroup(name) {
+    this.setState({ openGroups: { ...this.state.openGroups, [name]: !this.state.openGroups[name] } });
+  }
+
+  handleGroupKey(event, name) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.toggleGroup(name);
+    }
+  }
+
   navigate(view) {
     if (view === this.state.view) return;
     const url = new URL(window.location.href);
-    url.hash = view === 'chair' ? '' : view;
+    url.hash = view === 'home' ? '' : view;
     window.history.pushState({}, '', url);
-    this.setState({ view });
+    this.setState({ view, openGroups: this.openGroupsFor(view, this.state.openGroups) });
   }
 
   handleRouteKey(event, route) {
@@ -637,10 +693,11 @@ const componentSource = `class Component extends DCLogic {
       weeklyRowDisplay: env.weekly ? '' : 'none',
       showGantt: env.gantt,
       ltRecordText: env.weekly ? \`Record 1 of \${weeklyTotal}\` : 'Record 0 of 0',
+      isHome: view === 'home',
       isChair: view === 'chair',
       isWorkfrontMain: view === 'workfront-main',
       isWorkfrontDetail: view === 'workfront-detail',
-      footerTitle: view === 'chair' ? '의장 주간작업계획 수립(PPHA_C210)' : '워크프론트 점검',
+      footerTitle: view === 'chair' ? '의장 주간작업계획 수립(PPHA_C210)' : view === 'home' ? 'SF-POS' : '워크프론트 점검',
       sideItems: this.buildSideItems(),
       openWorkfrontDetail: () => this.navigate('workfront-detail'),
       openWorkfrontDetailKey: (event) => this.handleRouteKey(event, 'workfront-detail'),
@@ -666,8 +723,44 @@ if (alreadyUnified) {
   unifiedTemplate = assertReplace(unifiedTemplate, chairMain, '__UNIFIED_VIEWS__', '의장 본문');
 }
 
+// ── SF-POS 메인(홈) 화면 ──
+const homeCard = (icon, line1, line2) =>
+  `<div style="width:190px;background:#fafbfc;border:1px solid #eceef0;border-radius:3px;padding:30px 0 20px;text-align:center;">
+              <i class="ti ${icon}" style="font-size:44px;color:#3a3e43;"></i>
+              <div style="font-size:13px;color:#5a5f65;font-weight:600;line-height:1.45;margin-top:14px;">${line1}<br>${line2}</div>
+              <div style="width:26px;height:3px;background:#ed7100;margin:14px auto 0;"></div>
+            </div>`;
+
+const homeView = `<div style="flex:1;display:flex;flex-direction:column;min-width:0;background:#fff;">
+      <div style="flex:1;position:relative;min-height:0;overflow:hidden;">
+        <div style="position:absolute;inset:0;background:linear-gradient(115deg,#f4f7f9 0%,#e9eff4 55%,#d9e4ec 100%);"></div>
+        <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(58,90,120,.055) 0 1px,transparent 1px 36px),repeating-linear-gradient(90deg,rgba(58,90,120,.055) 0 1px,transparent 1px 36px);"></div>
+        <div style="position:absolute;right:-40px;top:6%;width:46%;height:88%;border:1px solid rgba(58,90,120,.22);background:rgba(255,255,255,.28);transform:skewY(-6deg);"></div>
+        <div style="position:absolute;right:6%;top:22%;width:26%;height:46%;border:1px solid rgba(58,90,120,.3);background:rgba(255,255,255,.4);transform:skewY(-6deg);"></div>
+        <div style="position:absolute;right:10%;top:30%;width:9%;height:14%;border:1px solid rgba(237,113,0,.55);background:rgba(237,113,0,.10);transform:skewY(-6deg);"></div>
+        <div style="position:absolute;right:22%;top:48%;width:7%;height:11%;border:1px solid rgba(10,114,242,.4);background:rgba(10,114,242,.08);transform:skewY(-6deg);"></div>
+        <div style="position:absolute;right:4%;bottom:6%;font-size:120px;font-weight:800;letter-spacing:-4px;color:rgba(58,90,120,.06);line-height:1;">SF-POS</div>
+        <div style="position:absolute;inset:0;background:linear-gradient(100deg,#ffffff 0%,#ffffff 30%,rgba(255,255,255,0) 62%);"></div>
+
+        <div style="position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 72px;">
+          <div style="font-size:46px;font-weight:800;letter-spacing:-1px;color:#2d2d2d;line-height:1;">SF-POS</div>
+          <div style="width:46px;height:3px;background:#ed7100;margin:18px 0 20px;"></div>
+          <div style="font-size:17px;color:#9aa0a6;line-height:1.55;">Smart Factory<br>Assembly Placement and Planning Operation System</div>
+          <div style="display:flex;gap:16px;margin-top:46px;">
+            ${homeCard('ti-robot', 'Assembly', 'Management')}
+            ${homeCard('ti-calendar-stats', 'Planning', 'Management')}
+            ${homeCard('ti-settings', 'System', 'Management')}
+          </div>
+        </div>
+      </div>
+  <div style="height:22px;background:#1e1f22;border-top:1px solid #000;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#d8dadd;flex-shrink:0;">SF-POS 메인</div>
+    </div>`;
+
 const unifiedViews = `<!-- unified-navigation:start -->
-    <sc-if value="{{ isChair }}" hint-placeholder-val="{{ true }}">
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+      ${homeView}
+    </sc-if>
+    <sc-if value="{{ isChair }}" hint-placeholder-val="{{ false }}">
       <!-- unified:chair:start -->
       ${chairMain}
       <!-- unified:chair:end -->

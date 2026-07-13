@@ -37,15 +37,14 @@ const required = [
   '>2585Z501ISM1090001</td>',
   '{{ detailToggle0 }}',
   'data-route="workfront-detail"',
-  "view: ['workfront-main', 'workfront-detail']",
-  "label === '의장 주간작업계획 수립'",
-  "label === '워크프론트 점검'",
-  "? 'chair'",
-  "? 'workfront-main'",
+  "view: ['chair', 'workfront-main', 'workfront-detail']",
+  "'의장 주간작업계획 수립': 'chair'",
+  "'워크프론트 점검': 'workfront-main'",
   '{{ envItems }}',
   '{{ weeklyRowDisplay }}',
   '{{ showGantt }}',
   '{{ ltRecordText }}',
+  '{{ isHome }}',
 ];
 
 for (const token of required) {
@@ -93,8 +92,38 @@ const enabledRoutes = values.sideItems.filter((item) => item.route).map((item) =
 if (enabledRoutes.join(',') !== 'chair,workfront-main') {
   throw new Error(`활성 사이드바 메뉴가 올바르지 않습니다: ${enabledRoutes.join(',')}`);
 }
-if (!values.isChair || values.isWorkfrontMain || values.isWorkfrontDetail) {
-  throw new Error('초기 화면이 의장 주간작업계획 수립이 아닙니다.');
+if (!values.isHome || values.isChair || values.isWorkfrontMain || values.isWorkfrontDetail) {
+  throw new Error('초기 화면이 SF-POS 메인이 아닙니다.');
+}
+const groupItems = values.sideItems.filter((item) => item.label.endsWith('▸') || item.label.endsWith('▾'));
+if (groupItems.length !== 10) {
+  throw new Error(`사이드바 대메뉴 수가 올바르지 않습니다: ${groupItems.length}`);
+}
+if (!groupItems.every((item) => item.label.endsWith('▸'))) {
+  throw new Error('초기 상태에서 닫혀 있지 않은 대메뉴가 있습니다.');
+}
+const chairRouteItem = values.sideItems.find((item) => item.route === 'chair');
+if (!chairRouteItem.style.includes('display:none;')) {
+  throw new Error('닫힌 대메뉴의 하위 메뉴가 숨겨지지 않았습니다.');
+}
+
+app.toggleGroup('의장');
+values = app.renderVals();
+if (values.sideItems.find((item) => item.route === 'chair').style.includes('display:none;')) {
+  throw new Error('의장 대메뉴를 펼쳐도 하위 메뉴가 보이지 않습니다.');
+}
+app.toggleGroup('의장');
+if (!app.renderVals().sideItems.find((item) => item.route === 'chair').style.includes('display:none;')) {
+  throw new Error('의장 대메뉴를 접어도 하위 메뉴가 사라지지 않습니다.');
+}
+
+app.navigate('chair');
+values = app.renderVals();
+if (!values.isChair || app.state.view !== 'chair') {
+  throw new Error('의장 주간작업계획 수립 전환에 실패했습니다.');
+}
+if (!app.state.openGroups['의장']) {
+  throw new Error('의장 화면 진입 시 의장 대메뉴가 자동으로 펼쳐지지 않습니다.');
 }
 
 app.navigate('workfront-main');
