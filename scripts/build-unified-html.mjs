@@ -724,29 +724,27 @@ if (alreadyUnified) {
 }
 
 // ── SF-POS 메인(홈) 화면 ──
+const heroPath = path.join(pagesDir, 'assets', 'main-hero.jpg');
+if (!fs.existsSync(heroPath)) throw new Error('메인 히어로 이미지가 없습니다: prototype-pages/assets/main-hero.jpg');
+const heroDataUri = `data:image/jpeg;base64,${fs.readFileSync(heroPath).toString('base64')}`;
+
 const homeCard = (icon, line1, line2) =>
-  `<div style="width:190px;background:#fafbfc;border:1px solid #eceef0;border-radius:3px;padding:30px 0 20px;text-align:center;">
-              <i class="ti ${icon}" style="font-size:44px;color:#3a3e43;"></i>
-              <div style="font-size:13px;color:#5a5f65;font-weight:600;line-height:1.45;margin-top:14px;">${line1}<br>${line2}</div>
-              <div style="width:26px;height:3px;background:#ed7100;margin:14px auto 0;"></div>
+  `<div style="width:152px;background:#f7f8f9;padding:30px 0 18px;text-align:center;">
+              <i class="ti ${icon}" style="font-size:46px;color:#c96100;"></i>
+              <div style="font-size:13px;color:#5a5f65;line-height:1.5;margin-top:16px;">${line1}<br>${line2}</div>
+              <div style="width:24px;height:3px;background:#ed7100;margin:16px auto 0;"></div>
             </div>`;
 
 const homeView = `<div style="flex:1;display:flex;flex-direction:column;min-width:0;background:#fff;">
       <div style="flex:1;position:relative;min-height:0;overflow:hidden;">
-        <div style="position:absolute;inset:0;background:linear-gradient(115deg,#f4f7f9 0%,#e9eff4 55%,#d9e4ec 100%);"></div>
-        <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(58,90,120,.055) 0 1px,transparent 1px 36px),repeating-linear-gradient(90deg,rgba(58,90,120,.055) 0 1px,transparent 1px 36px);"></div>
-        <div style="position:absolute;right:-40px;top:6%;width:46%;height:88%;border:1px solid rgba(58,90,120,.22);background:rgba(255,255,255,.28);transform:skewY(-6deg);"></div>
-        <div style="position:absolute;right:6%;top:22%;width:26%;height:46%;border:1px solid rgba(58,90,120,.3);background:rgba(255,255,255,.4);transform:skewY(-6deg);"></div>
-        <div style="position:absolute;right:10%;top:30%;width:9%;height:14%;border:1px solid rgba(237,113,0,.55);background:rgba(237,113,0,.10);transform:skewY(-6deg);"></div>
-        <div style="position:absolute;right:22%;top:48%;width:7%;height:11%;border:1px solid rgba(10,114,242,.4);background:rgba(10,114,242,.08);transform:skewY(-6deg);"></div>
-        <div style="position:absolute;right:4%;bottom:6%;font-size:120px;font-weight:800;letter-spacing:-4px;color:rgba(58,90,120,.06);line-height:1;">SF-POS</div>
-        <div style="position:absolute;inset:0;background:linear-gradient(100deg,#ffffff 0%,#ffffff 30%,rgba(255,255,255,0) 62%);"></div>
+        <img src="${heroDataUri}" alt="" style="position:absolute;top:0;right:0;width:68%;height:100%;object-fit:cover;object-position:center;">
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,#ffffff 0%,#ffffff 40%,rgba(255,255,255,.6) 56%,rgba(255,255,255,0) 76%);"></div>
 
-        <div style="position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 72px;">
-          <div style="font-size:46px;font-weight:800;letter-spacing:-1px;color:#2d2d2d;line-height:1;">SF-POS</div>
-          <div style="width:46px;height:3px;background:#ed7100;margin:18px 0 20px;"></div>
-          <div style="font-size:17px;color:#9aa0a6;line-height:1.55;">Smart Factory<br>Assembly Placement and Planning Operation System</div>
-          <div style="display:flex;gap:16px;margin-top:46px;">
+        <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:56px 0 0 64px;">
+          <div style="font-size:54px;font-weight:800;letter-spacing:-1.5px;color:#1e1e1e;line-height:1;">SF-POS</div>
+          <div style="width:36px;height:3px;background:#c9cdd1;margin:22px 0 24px;"></div>
+          <div style="font-size:18px;color:#b0b5ba;line-height:1.6;">Smart Factory<br>Assembly Placement and Planning Operation System</div>
+          <div style="display:flex;gap:14px;margin-top:44px;">
             ${homeCard('ti-robot', 'Assembly', 'Management')}
             ${homeCard('ti-calendar-stats', 'Planning', 'Management')}
             ${homeCard('ti-settings', 'System', 'Management')}
