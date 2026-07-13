@@ -858,6 +858,38 @@ unifiedTemplate = replaceComponentScript(unifiedTemplate, componentSource);
 const encodedTemplate = JSON.stringify(unifiedTemplate).replace(/<\/script/gi, '<\\/script');
 let output = chair.bundle.replace(chair.json, encodedTemplate);
 output = output.replace('<title>Bundled Page</title>', '<title>SF-POS</title>');
+
+// ── 로딩 화면: 색 블록 SVG 스케치 → 다크 배경 + 은은한 스피너 ──
+output = assertReplace(
+  output,
+  'body { background: #dfe2e5; display: flex;',
+  'body { background: #17181b; display: flex;',
+  '로딩 화면 body 배경',
+);
+output = assertReplace(
+  output,
+  '#__bundler_loading { position: fixed; bottom: 20px; right: 20px; font: 13px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; color: #666; background: #fff; padding: 8px 14px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.12); z-index: 10000; }',
+  '#__bundler_loading { position: fixed; bottom: 20px; right: 20px; font: 13px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; color: #9aa0a6; background: #232529; padding: 8px 14px; border-radius: 8px; z-index: 10000; }',
+  '로딩 상태 토스트 스타일',
+);
+output = assertReplace(
+  output,
+  '#__bundler_thumbnail { position: fixed; inset: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #dfe2e5; z-index: 9999; }\n    #__bundler_thumbnail svg { width: 100%; height: 100%; object-fit: contain; }',
+  [
+    '#__bundler_thumbnail { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; background: #17181b; z-index: 9999; }',
+    '    #__bundler_thumbnail .__bundler_logo { font: italic 800 40px/1 -apple-system, BlinkMacSystemFont, sans-serif; letter-spacing: -1px; color: #ed7100; }',
+    '    #__bundler_thumbnail .__bundler_spinner { width: 26px; height: 26px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.1); border-top-color: rgba(237,113,0,0.75); animation: __bundler_spin 0.9s linear infinite; }',
+    '    @keyframes __bundler_spin { to { transform: rotate(360deg); } }',
+  ].join('\n'),
+  '로딩 썸네일 스타일',
+);
+const thumbnailPattern = /<div id="__bundler_thumbnail">\s*<svg[\s\S]*?<\/svg>\s*<\/div>/;
+if (!thumbnailPattern.test(output)) throw new Error('교체 대상을 찾을 수 없습니다: 로딩 썸네일 마크업');
+output = output.replace(
+  thumbnailPattern,
+  '<div id="__bundler_thumbnail"><div class="__bundler_logo">SF-POS</div><div class="__bundler_spinner"></div></div>',
+);
+
 fs.writeFileSync(outputPath, output);
 
 console.log(`통합 HTML 생성 완료: ${path.basename(outputPath)}`);
