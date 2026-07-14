@@ -160,6 +160,21 @@ values = app.renderVals();
 if (!values.isUijangPlanTab) {
   throw new Error('계획 탭 복귀에 실패했습니다.');
 }
+values.uijangReview1Click();
+values = app.renderVals();
+if (values.uijangReview1Pressed !== 'true' || !values.uijangReview1RowStyle.includes('#fff2df') || !values.uijangReview1CellStyle.includes('#ffd7a8')) {
+  throw new Error('검토 요소 1의 행·날짜 셀 강조가 동작하지 않습니다.');
+}
+values.uijangReview2Click();
+values = app.renderVals();
+if (values.uijangReview1Pressed !== 'false' || values.uijangReview2Pressed !== 'true' || !values.uijangReview2CellStyle.includes('#cfe7ff')) {
+  throw new Error('검토 요소 2의 행·날짜 셀 강조가 동작하지 않습니다.');
+}
+values.uijangReview2Click();
+values = app.renderVals();
+if (values.uijangReview2Pressed !== 'false') {
+  throw new Error('검토 요소 강조 해제가 동작하지 않습니다.');
+}
 
 app.toggle(0);
 values = app.renderVals();
@@ -229,6 +244,13 @@ const uijangSampleMarkers = [
   '납기일까지 버퍼가 충분치 않아, 내업 작업으로 검토',
   '인력을 더 투입하여, 비오기 전 작업 완료 검토',
   'overflow:auto;max-height:390px;',
+  'data-review-factor="1"',
+  'data-review-factor="2"',
+  'data-uijang-row="3"',
+  'data-uijang-row="5"',
+  'data-review-cell="plan-end"',
+  'data-review-cell="post-start"',
+  'data-review-cell="due"',
 ];
 if (uijangSampleMarkers.some((marker) => !template.includes(marker))) {
   throw new Error('의장 W/F 점검 샘플 데이터가 올바르게 생성되지 않았습니다.');

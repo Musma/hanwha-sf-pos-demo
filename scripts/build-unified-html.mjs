@@ -646,12 +646,16 @@ const uijangRowsData = [
 ];
 const uijangHeaderStyle = 'background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:6px 8px;font-weight:600;white-space:nowrap;line-height:1.25;';
 const uijangGroupHeaderStyle = 'background:#2f3237;color:#fff;border:1px solid #4a4e53;border-top:3px solid #ed7100;padding:4px 8px;font-weight:700;';
-const uijangCell = (value, align = 'center', groupStart = false) =>
-  `<td style="border:1px solid #e6e8ea;${groupStart ? 'border-left:2px solid #c9cdd1;' : ''}padding:5px 8px;text-align:${align};color:#3a3e43;font-variant-numeric:tabular-nums;">${value ?? ''}</td>`;
+const uijangCell = (value, align = 'center', groupStart = false, emphasisStyle = '', dataRole = '') =>
+  `<td${dataRole ? ` data-review-cell="${dataRole}"` : ''} style="border:1px solid #e6e8ea;${groupStart ? 'border-left:2px solid #c9cdd1;' : ''}padding:5px 8px;text-align:${align};color:#3a3e43;font-variant-numeric:tabular-nums;${emphasisStyle}">${value ?? ''}</td>`;
 const uijangStatusPill = (status) => status
   ? `<span style="display:inline-block;background:#7a7f85;color:#fff;font-size:10px;font-weight:700;padding:2px 9px;border-radius:2px;">${status}</span>`
   : '<span style="color:#9aa0a6;">-</span>';
-const uijangStaticRows = uijangRowsData.map((r, i) => `<tr style="height:26px;background:${r.child ? '#fff' : '#f4f6f8'};">
+const uijangStaticRows = uijangRowsData.map((r, i) => {
+  const reviewGroup = i === 2 || i === 3 ? 1 : i === 4 ? 2 : 0;
+  const rowStyle = reviewGroup ? `{{ uijangReview${reviewGroup}RowStyle }}` : `background:${r.child ? '#fff' : '#f4f6f8'};`;
+  const keyCellStyle = reviewGroup ? `{{ uijangReview${reviewGroup}CellStyle }}` : '';
+  return `<tr data-uijang-row="${r.seq}" style="height:26px;${rowStyle}">
                   <td style="border:1px solid #e6e8ea;padding:4px 6px;text-align:center;height:26px;">${detailCheckbox(`{{ detailToggle${i} }}`, `{{ detailBoxBg${i} }}`, `{{ detailOn${i} }}`)}</td>
                   ${uijangCell(r.seq)}
                   ${uijangCell(r.wf === '점검 필요' ? detailWfBadge({ wfNeed:true }) : '')}
@@ -666,13 +670,14 @@ const uijangStaticRows = uijangRowsData.map((r, i) => `<tr style="height:26px;ba
                   ${uijangCell(r.preRate)}
                   ${uijangCell(r.preEnd)}
                   ${uijangCell(r.planStart, 'center', true)}
-                  ${uijangCell(r.planEnd)}
-                  ${uijangCell(r.postStart, 'center', true)}
+                  ${uijangCell(r.planEnd, 'center', false, keyCellStyle, 'plan-end')}
+                  ${uijangCell(r.postStart, 'center', true, keyCellStyle, 'post-start')}
                   ${uijangCell(r.actualStart, 'center', true)}
                   ${uijangCell(r.actualEnd)}
-                  ${uijangCell(r.due, 'center', true)}
+                  ${uijangCell(r.due, 'center', true, keyCellStyle, 'due')}
                   ${uijangCell(r.workplace, 'left', true)}
-                </tr>`).join('\n                ');
+                </tr>`;
+}).join('\n                ');
 
 const uijangTableBlock = `<div style="display:flex;flex-direction:column;border:1px solid #c9cdd1;border-top:none;background:#fff;flex-shrink:0;">
           <div style="display:flex;align-items:center;justify-content:space-between;background:#e7eaed;border-bottom:1px solid #cfd3d7;padding:5px 12px;flex-shrink:0;">
@@ -725,11 +730,11 @@ const uijangReviewPanel = `<div style="margin-top:10px;background:#fff;border:1p
             <span style="font-size:10.5px;color:#7a7f85;">의장 W/F 점검 결과에 따른 사전 검토 항목</span>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:9px 10px;">
-            <div style="display:flex;align-items:center;gap:10px;min-width:0;background:#fffaf6;border:1px solid #f0d2b8;border-left:3px solid #ed7100;border-radius:3px;padding:9px 11px;">
+            <div data-review-factor="1" role="button" tabIndex="0" aria-pressed="{{ uijangReview1Pressed }}" onClick="{{ uijangReview1Click }}" onKeyDown="{{ uijangReview1Key }}" style="{{ uijangReview1ButtonStyle }}">
               <span style="display:inline-flex;align-items:center;justify-content:center;min-width:82px;height:26px;background:#ed7100;color:#fff;border-radius:2px;font-size:11px;font-weight:800;">검토 요소 1</span>
               <span style="font-size:12px;font-weight:600;color:#3a3e43;line-height:1.4;">납기일까지 버퍼가 충분치 않아, 내업 작업으로 검토</span>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;min-width:0;background:#f7fbff;border:1px solid #c9dcef;border-left:3px solid #0a72f2;border-radius:3px;padding:9px 11px;">
+            <div data-review-factor="2" role="button" tabIndex="0" aria-pressed="{{ uijangReview2Pressed }}" onClick="{{ uijangReview2Click }}" onKeyDown="{{ uijangReview2Key }}" style="{{ uijangReview2ButtonStyle }}">
               <span style="display:inline-flex;align-items:center;justify-content:center;min-width:82px;height:26px;background:#0a72f2;color:#fff;border-radius:2px;font-size:11px;font-weight:800;">검토 요소 2</span>
               <span style="font-size:12px;font-weight:600;color:#3a3e43;line-height:1.4;">인력을 더 투입하여, 비오기 전 작업 완료 검토</span>
             </div>
@@ -831,6 +836,7 @@ const componentSource = `class Component extends DCLogic {
     env: { weekly: true, gantt: true, load: false, layout: true },
     openGroups: {},
     uijangTab: 'plan',
+    uijangReview: null,
   };
 
   ownerGroup(view) {
@@ -899,10 +905,24 @@ const componentSource = `class Component extends DCLogic {
     }
   }
 
+  toggleUijangReview(review) {
+    this.setState({ uijangReview: this.state.uijangReview === review ? null : review });
+  }
+
+  handleUijangReviewKey(event, review) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.toggleUijangReview(review);
+    }
+  }
+
   buildUijangTabVals() {
     const active = 'padding:8px 22px 6px;font-size:13px;font-weight:700;color:#ed7100;border-bottom:3px solid #ed7100;margin-bottom:-2px;cursor:pointer;user-select:none;';
     const idle = 'padding:8px 22px 6px;font-size:13px;font-weight:600;color:#7a7f85;cursor:pointer;user-select:none;';
     const onFacility = this.state.uijangTab === 'facility';
+    const review1On = this.state.uijangReview === 'review1';
+    const review2On = this.state.uijangReview === 'review2';
+    const reviewButtonBase = 'display:flex;align-items:center;gap:10px;min-width:0;border-radius:3px;padding:9px 11px;cursor:pointer;user-select:none;transition:background .15s,border-color .15s,box-shadow .15s;';
     return {
       isUijangPlanTab: !onFacility,
       isUijangFacilityTab: onFacility,
@@ -912,6 +932,30 @@ const componentSource = `class Component extends DCLogic {
       uijangTabFacilityClick: () => this.setUijangTab('facility'),
       uijangTabPlanKey: (event) => this.handleUijangTabKey(event, 'plan'),
       uijangTabFacilityKey: (event) => this.handleUijangTabKey(event, 'facility'),
+      uijangReview1Pressed: review1On ? 'true' : 'false',
+      uijangReview2Pressed: review2On ? 'true' : 'false',
+      uijangReview1ButtonStyle: reviewButtonBase + (review1On
+        ? 'background:#fff1e5;border:1px solid #ed7100;border-left:3px solid #ed7100;box-shadow:0 0 0 2px rgba(237,113,0,.16);'
+        : 'background:#fffaf6;border:1px solid #f0d2b8;border-left:3px solid #ed7100;'),
+      uijangReview2ButtonStyle: reviewButtonBase + (review2On
+        ? 'background:#eaf4ff;border:1px solid #0a72f2;border-left:3px solid #0a72f2;box-shadow:0 0 0 2px rgba(10,114,242,.14);'
+        : 'background:#f7fbff;border:1px solid #c9dcef;border-left:3px solid #0a72f2;'),
+      uijangReview1RowStyle: review1On
+        ? 'background:#fff2df;box-shadow:inset 3px 0 0 #ed7100;'
+        : 'background:#f4f6f8;',
+      uijangReview2RowStyle: review2On
+        ? 'background:#eaf4ff;box-shadow:inset 3px 0 0 #0a72f2;'
+        : 'background:#f4f6f8;',
+      uijangReview1CellStyle: review1On
+        ? 'background:#ffd7a8;color:#7d3700;font-weight:800;box-shadow:inset 0 0 0 1px #ed7100;'
+        : '',
+      uijangReview2CellStyle: review2On
+        ? 'background:#cfe7ff;color:#064f9f;font-weight:800;box-shadow:inset 0 0 0 1px #0a72f2;'
+        : '',
+      uijangReview1Click: () => this.toggleUijangReview('review1'),
+      uijangReview2Click: () => this.toggleUijangReview('review2'),
+      uijangReview1Key: (event) => this.handleUijangReviewKey(event, 'review1'),
+      uijangReview2Key: (event) => this.handleUijangReviewKey(event, 'review2'),
     };
   }
 
