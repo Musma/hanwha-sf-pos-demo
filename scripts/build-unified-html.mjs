@@ -124,7 +124,7 @@ const weeklyVolumeRows = [
 const weeklyVolumeHeader = weeklyVolumeColumns
   .map((label) => {
     const content = label === '내입/외업<br>구분'
-      ? `<span style="display:inline-flex;align-items:center;justify-content:center;gap:5px;"><span>${label}</span><span id="weekly-volume-sort-button" data-weekly-sort="" role="button" tabIndex="0" aria-label="내업 외업 정렬: 기본 순서" title="내업/외업 정렬" onClick="{{ weeklyVolumeSortClick }}" onKeyDown="{{ weeklyVolumeSortKey }}" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#fff;border:1px solid #b9b9b9;border-radius:3px;color:#4a4f55;cursor:pointer;"><i id="weekly-volume-sort-icon" class="ti ti-arrows-sort" style="font-size:14px;"></i></span></span>`
+      ? `<span style="display:inline-flex;align-items:center;justify-content:center;gap:4px;"><span>${label}</span><span id="weekly-volume-sort-button" data-weekly-sort="" role="button" tabIndex="0" aria-label="내업 외업 정렬: 기본 순서" title="정렬: 기본 순서" onClick="{{ weeklyVolumeSortClick }}" onKeyDown="{{ weeklyVolumeSortKey }}" style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:22px;background:transparent;border:0;border-radius:2px;color:#333;cursor:pointer;font-family:Arial,sans-serif;font-size:16px;font-weight:700;line-height:1;"><span id="weekly-volume-sort-icon" aria-hidden="true">↕</span></span></span>`
       : label;
     const attrs = label === '내입/외업<br>구분' ? ' id="weekly-volume-work-type-header" aria-sort="none"' : '';
     return `<th${attrs} style="background:#ffff00;border:1px solid #b9b9b9;padding:3px 6px;color:#111;font-weight:700;line-height:1.25;position:sticky;top:0;">${content}</th>`;
@@ -1115,7 +1115,9 @@ const componentSource = `class Component extends DCLogic {
   ${toggleAllMethod}
 
   toggleWeeklyVolumeSort() {
-    const nextMode = this.weeklyVolumeSortMode === 'desc' ? 'asc' : 'desc';
+    const nextMode = this.weeklyVolumeSortMode === 'desc'
+      ? 'asc'
+      : this.weeklyVolumeSortMode === 'asc' ? 'none' : 'desc';
     this.weeklyVolumeSortMode = nextMode;
     const tbody = document.getElementById('weekly-volume-table-body');
     const icon = document.getElementById('weekly-volume-sort-icon');
@@ -1125,17 +1127,22 @@ const componentSource = `class Component extends DCLogic {
     const priority = nextMode === 'desc' ? { '내업': 0, '외업': 1 } : { '외업': 0, '내업': 1 };
     const rows = Array.from(tbody.querySelectorAll('tr[data-work-type]'));
     rows.sort((left, right) => {
-      const typeOrder = priority[left.dataset.workType] - priority[right.dataset.workType];
+      const typeOrder = nextMode === 'none'
+        ? 0
+        : priority[left.dataset.workType] - priority[right.dataset.workType];
       return typeOrder || Number(left.dataset.originalOrder) - Number(right.dataset.originalOrder);
     });
     rows.forEach((row) => tbody.appendChild(row));
-    if (icon) icon.className = nextMode === 'desc' ? 'ti ti-sort-descending' : 'ti ti-sort-ascending';
-    if (header) header.setAttribute('aria-sort', nextMode === 'desc' ? 'descending' : 'ascending');
+    if (icon) icon.textContent = nextMode === 'desc' ? '↓' : nextMode === 'asc' ? '↑' : '↕';
+    if (header) header.setAttribute('aria-sort', nextMode === 'desc' ? 'descending' : nextMode === 'asc' ? 'ascending' : 'none');
     if (button) {
-      button.setAttribute('aria-label', nextMode === 'desc'
+      const label = nextMode === 'desc'
         ? '내업 우선 정렬됨: 클릭하면 외업 우선으로 변경'
-        : '외업 우선 정렬됨: 클릭하면 내업 우선으로 변경');
-      button.setAttribute('title', nextMode === 'desc' ? '내업 → 외업' : '외업 → 내업');
+        : nextMode === 'asc'
+          ? '외업 우선 정렬됨: 클릭하면 기본 순서로 변경'
+          : '내업 외업 정렬: 기본 순서';
+      button.setAttribute('aria-label', label);
+      button.setAttribute('title', nextMode === 'desc' ? '내업 → 외업' : nextMode === 'asc' ? '외업 → 내업' : '정렬: 기본 순서');
     }
   }
 
@@ -1334,6 +1341,8 @@ body{letter-spacing:-0.1px;}
 [data-route]{user-select:none;}
 [data-route]:hover{filter:brightness(1.12);}
 [data-env]:hover{filter:brightness(.94);}
+[data-weekly-sort]:hover{background:rgba(0,0,0,.08)!important;}
+[data-weekly-sort]:active{background:rgba(0,0,0,.14)!important;}
 tbody tr:hover td{background-color:rgba(10,114,242,.05);}
 `;
 if (!unifiedTemplate.includes('desktop-polish')) {
