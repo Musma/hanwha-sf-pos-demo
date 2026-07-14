@@ -182,6 +182,84 @@ chairMain = assertReplace(
   '계획 불러오기 진행 오버레이',
 );
 
+const planDeployButton = '<span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;"><i class="ti ti-broadcast" style="font-size:15px;color:#ed7100;"></i>계획 배포</span>';
+const interactivePlanDeployButton = '<span data-plan-deploy-open="" role="button" tabIndex="0" aria-haspopup="dialog" onClick="{{ openPlanDeployModal }}" onKeyDown="{{ openPlanDeployModalKey }}" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 12px;cursor:pointer;"><i class="ti ti-broadcast" style="font-size:15px;color:#ed7100;"></i>계획 배포</span>';
+chairMain = assertReplace(chairMain, planDeployButton, interactivePlanDeployButton, '계획 배포 버튼');
+
+const planDeployModals = `  <!-- 계획 배포 확인 모달 -->
+  <div id="plan-deploy-confirm" role="dialog" aria-modal="true" aria-labelledby="plan-deploy-confirm-title" style="display:none;position:fixed;inset:0;background:rgba(32,34,42,.45);z-index:1002;align-items:center;justify-content:center;">
+    <div style="width:360px;display:flex;flex-direction:column;background:#f4f6f8;border:1px solid #8a9096;border-radius:5px 5px 0 0;box-shadow:0 14px 44px rgba(0,0,0,.4);overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:6px;background:linear-gradient(#fdfdfe,#e6eaef);border-bottom:1px solid #c4c9ce;padding:5px 8px;">
+        <i class="ti ti-broadcast" style="font-size:15px;color:#ed7100;"></i>
+        <span id="plan-deploy-confirm-title" style="font-size:12px;font-weight:700;color:#2d2d2d;">계획 배포</span>
+        <span role="button" tabIndex="0" aria-label="계획 배포 창 닫기" onClick="{{ closePlanDeployModal }}" style="margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:24px;height:20px;border:1px solid #d9a0a0;border-radius:3px;background:#fff;color:#d63b3b;cursor:pointer;"><i class="ti ti-x" style="font-size:13px;"></i></span>
+      </div>
+      <div style="padding:25px 22px 20px;display:flex;flex-direction:column;align-items:center;gap:21px;">
+        <div style="display:flex;align-items:center;gap:9px;">
+          <i class="ti ti-help-circle" style="font-size:22px;color:#ed7100;"></i>
+          <span style="font-size:14px;font-weight:700;color:#2d2d2d;">계획을 배포하시겠습니까?</span>
+        </div>
+        <div style="display:flex;justify-content:center;gap:8px;width:100%;">
+          <span data-plan-deploy-confirm="" role="button" tabIndex="0" onClick="{{ deployPlanConfirm }}" style="min-width:84px;display:inline-flex;align-items:center;justify-content:center;gap:4px;background:linear-gradient(#f68b27,#ed7100);border:1px solid #cb5d00;border-radius:3px;padding:6px 18px;color:#fff;font-weight:700;cursor:pointer;"><i class="ti ti-broadcast" style="font-size:14px;"></i>배포</span>
+          <span data-plan-deploy-edit="" role="button" tabIndex="0" onClick="{{ closePlanDeployModal }}" style="min-width:84px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:6px 18px;color:#3a3e43;font-weight:700;cursor:pointer;">수정</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 계획 배포 진행 오버레이 -->
+  <div id="plan-deploy-progress" role="dialog" aria-modal="true" aria-label="계획 배포 중" style="display:none;position:fixed;inset:0;background:rgba(238,240,242,.84);backdrop-filter:blur(1.5px);z-index:1100;align-items:center;justify-content:center;">
+    <style>@keyframes plan-deploy-spin{to{transform:rotate(360deg)}}</style>
+    <div style="width:420px;background:#fff;border:1px solid #aeb4ba;border-radius:6px;box-shadow:0 16px 48px rgba(32,34,42,.22);overflow:hidden;">
+      <div style="height:4px;background:#ed7100;"></div>
+      <div style="padding:24px 26px 22px;">
+        <div style="display:flex;align-items:center;gap:13px;">
+          <span style="width:28px;height:28px;border:3px solid #dfe4e8;border-top-color:#ed7100;border-radius:50%;animation:plan-deploy-spin .8s linear infinite;flex-shrink:0;"></span>
+          <div>
+            <div style="font-size:14px;font-weight:800;color:#2d2d2d;">계획을 배포하고 있습니다</div>
+            <div id="plan-deploy-progress-status" aria-live="polite" style="margin-top:3px;font-size:11px;color:#7a7f85;">배포 대상을 준비하고 있습니다.</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:20px;">
+          <div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="plan-deploy-progress-track" style="flex:1;height:10px;background:#e7eaed;border:1px solid #d1d5d9;border-radius:6px;overflow:hidden;">
+            <div id="plan-deploy-progress-bar" style="width:0%;height:100%;background:linear-gradient(90deg,#ed7100,#f5a33f);border-radius:5px;transition:width .28s ease;"></div>
+          </div>
+          <span id="plan-deploy-progress-text" style="width:36px;text-align:right;font-size:11px;font-weight:800;color:#d76400;font-variant-numeric:tabular-nums;">0%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;margin-top:13px;padding-top:12px;border-top:1px solid #eceef0;font-size:10.5px;color:#8a9096;">
+          <i class="ti ti-broadcast" style="font-size:13px;color:#ed7100;"></i>
+          계획 데이터와 작업 일정을 대상 시스템에 배포합니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 계획 배포 완료 알림 모달 -->
+  <div id="plan-deploy-success" role="dialog" aria-modal="true" aria-label="계획 배포 완료" style="display:none;position:fixed;inset:0;background:rgba(32,34,42,.45);z-index:1003;align-items:center;justify-content:center;">
+    <div style="width:340px;display:flex;flex-direction:column;background:#f4f6f8;border:1px solid #8a9096;border-radius:5px 5px 0 0;box-shadow:0 14px 44px rgba(0,0,0,.4);overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:6px;background:linear-gradient(#fdfdfe,#e6eaef);border-bottom:1px solid #c4c9ce;padding:5px 8px;">
+        <i class="ti ti-info-circle" style="font-size:15px;color:#0a72f2;"></i>
+        <span style="font-size:12px;font-weight:700;color:#2d2d2d;">알림</span>
+        <span role="button" tabIndex="0" aria-label="배포 완료 창 닫기" onClick="{{ closePlanDeploySuccess }}" style="margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:24px;height:20px;border:1px solid #d9a0a0;border-radius:3px;background:#fff;color:#d63b3b;cursor:pointer;"><i class="ti ti-x" style="font-size:13px;"></i></span>
+      </div>
+      <div style="padding:24px 16px 18px;display:flex;flex-direction:column;align-items:center;gap:16px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="ti ti-circle-check" style="font-size:22px;color:#2e9e57;"></i>
+          <span style="font-size:13px;font-weight:700;color:#2d2d2d;">배포 완료되었습니다.</span>
+        </div>
+        <span role="button" tabIndex="0" onClick="{{ closePlanDeploySuccess }}" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line);border-radius:3px;padding:4px 24px;cursor:pointer;">확인</span>
+      </div>
+    </div>
+  </div>
+
+`;
+chairMain = assertReplace(
+  chairMain,
+  '  <!-- 계획 불러오기 모달 -->',
+  planDeployModals + '  <!-- 계획 불러오기 모달 -->',
+  '계획 배포 모달 흐름',
+);
+
 const envLabelsMarkup = `<label style="display:flex;align-items:center;gap:3px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:#ed7100;border:1px solid #c95d00;border-radius:2px;color:#fff;font-size:10px;">✓</span>주간작업물량</label>
         <label style="display:flex;align-items:center;gap:3px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:#ed7100;border:1px solid #c95d00;border-radius:2px;color:#fff;font-size:10px;">✓</span>Gantt Chart</label>
         <label style="display:flex;align-items:center;gap:3px;color:#7a7f85;"><span style="display:inline-block;width:14px;height:14px;background:#fff;border:1px solid var(--line);border-radius:2px;"></span>부하 그래프</label>
@@ -355,6 +433,46 @@ chairData = assertReplace(
         }, 1240);
       },`,
   '계획 불러오기 진행 흐름',
+);
+chairData = assertReplace(
+  chairData,
+  "      closePlanSuccess: modalDisplay('plan-load-success', 'none') };",
+  `      closePlanSuccess: modalDisplay('plan-load-success', 'none'),
+      openPlanDeployModal: modalDisplay('plan-deploy-confirm', 'flex'),
+      openPlanDeployModalKey: (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          modalDisplay('plan-deploy-confirm', 'flex')();
+        }
+      },
+      closePlanDeployModal: modalDisplay('plan-deploy-confirm', 'none'),
+      deployPlanConfirm: () => {
+        modalDisplay('plan-deploy-confirm', 'none')();
+        modalDisplay('plan-deploy-progress', 'flex')();
+        const bar = document.getElementById('plan-deploy-progress-bar');
+        const track = document.getElementById('plan-deploy-progress-track');
+        const text = document.getElementById('plan-deploy-progress-text');
+        const status = document.getElementById('plan-deploy-progress-status');
+        const updateProgress = (value, message) => {
+          if (bar) bar.style.width = value + '%';
+          if (track) track.setAttribute('aria-valuenow', String(value));
+          if (text) text.textContent = value + '%';
+          if (status) status.textContent = message;
+        };
+        updateProgress(8, '배포 대상을 준비하고 있습니다.');
+        window.setTimeout(() => updateProgress(34, '계획 데이터를 패키징하고 있습니다.'), 260);
+        window.setTimeout(() => updateProgress(62, '대상 시스템으로 계획을 전송하고 있습니다.'), 560);
+        window.setTimeout(() => updateProgress(86, '배포 결과를 확인하고 있습니다.'), 900);
+        window.setTimeout(() => {
+          updateProgress(100, '계획 배포가 완료되었습니다.');
+          window.setTimeout(() => {
+            modalDisplay('plan-deploy-progress', 'none')();
+            modalDisplay('plan-deploy-success', 'flex')();
+          }, 280);
+        }, 1240);
+      },
+      closePlanDeploySuccess: modalDisplay('plan-deploy-success', 'none') };`,
+  '계획 배포 진행 흐름',
 );
 
 let workfrontMainData = extractMethod(workfrontMain.template, 'renderVals')
