@@ -600,14 +600,14 @@ workfrontDetailUijangView = assertReplace(
 workfrontDetailUijangView = assertReplace(
   workfrontDetailUijangView,
   detailKpiCard('정상', detailOkCount, '#2e9e57'),
-  detailKpiCard('정상', 0, '#2e9e57'),
-  '의장 상세 정상 건수',
+  detailKpiCard('점검 필요', 8, '#d63b3b'),
+  '의장 상세 점검 필요 건수',
 );
 workfrontDetailUijangView = assertReplace(
   workfrontDetailUijangView,
   detailKpiCard('비정상', detailBadCount, '#d63b3b'),
-  detailKpiCard('비정상', 0, '#d63b3b'),
-  '의장 상세 비정상 건수',
+  detailKpiCard('미착수', 8, '#7a7f85'),
+  '의장 상세 미착수 건수',
 );
 
 // ── 의장 상세: 계획 ↔ 작업장&설비 탭 전환 ──

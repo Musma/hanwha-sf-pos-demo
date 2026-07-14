@@ -229,6 +229,12 @@ const uijangSampleMarkers = [
 if (uijangSampleMarkers.some((marker) => !template.includes(marker))) {
   throw new Error('의장 W/F 점검 샘플 데이터가 올바르게 생성되지 않았습니다.');
 }
+for (const label of ['점검 필요', '미착수']) {
+  const metric = template.match(new RegExp(`<div style="font-size:11px;color:#7a7f85;">${label}</div>\\s*<div[^>]*>(\\d+)`));
+  if (!metric || metric[1] !== '8') {
+    throw new Error(`의장 W/F 점검 ${label} 상태 건수가 샘플 데이터와 다릅니다.`);
+  }
+}
 const wfOkRowA = values.wfRows[0].groups.map((group) => group.ok).join(',');
 const wfOkRowB = values.wfRows[1].groups.map((group) => group.ok).join(',');
 if (wfOkRowA !== '20,18,22,10,25,26,27') throw new Error(`워크프론트 정상 수치(홀수 행)가 시안과 다릅니다: ${wfOkRowA}`);
