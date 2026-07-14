@@ -351,7 +351,10 @@ workfrontDetailData = assertReplace(
       detailChecks['detailToggle' + i] = row.toggle;
     });
     const detailSelected = rows.filter((row) => row.on).length;
-    return { ...detailChecks, detailSelectedText: detailSelected + '건 선택됨', detailRows: rows, allOn, allBoxBg: allOn ? '#0067c0' : '#fff', toggleAll: ()=>this.toggleAll() };`,
+    const uijangAllOn = rows.slice(0, 11).every((row) => row.on);
+    const uijangSelected = rows.slice(0, 11).filter((row) => row.on).length;
+    return { ...detailChecks, detailSelectedText: detailSelected + '건 선택됨', detailRows: rows, allOn, allBoxBg: allOn ? '#0067c0' : '#fff', toggleAll: ()=>this.toggleAll(),
+      uijangAllOn, uijangAllBoxBg: uijangAllOn ? '#0067c0' : '#fff', uijangToggleAll: ()=>this.toggleUijangAll(), uijangSelectedText: uijangSelected + '건 선택됨' };`,
   '워크프론트 상세 데이터 반환값',
 );
 // 자리 채움용 빈 행은 업그레이드 화면에서 제거한다.
@@ -641,30 +644,34 @@ const uijangRowsData = [
   { seq:'-', wf:'-', project:'2602', block:'508', rep:'S241W511GC10F10F02', work:'PIPE 설치', rate:'0%', preRate:'-', planStart:'08/03', planEnd:'08/07', actualStart:'-', actualEnd:'-', due:'10/15', child:true },
   { seq:'-', wf:'-', project:'2602', block:'508', rep:'S241W511GC10F10W03', work:'용접/사상', rate:'0%', preRate:'-', planStart:'08/07', planEnd:'08/10', actualStart:'-', actualEnd:'-', due:'10/15', child:true },
 ];
-const uijangHeaderStyle = 'background:#2f3237;color:#fff;border:1px solid #696d72;padding:5px 7px;font-weight:700;white-space:nowrap;line-height:1.25;';
-const uijangGroupHeaderStyle = 'background:#f87317;color:#fff;border:1px solid #d85e0d;padding:3px 7px;font-weight:700;';
-const uijangCell = (value, align = 'center') =>
-  `<td style="border:1px solid #9da1a5;padding:3px 7px;text-align:${align};color:#2d2d2d;font-variant-numeric:tabular-nums;">${value ?? ''}</td>`;
-const uijangStaticRows = uijangRowsData.map((r) => `<tr style="height:23px;background:${r.child ? '#c7c8ca' : '#fff'};">
+const uijangHeaderStyle = 'background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:6px 8px;font-weight:600;white-space:nowrap;line-height:1.25;';
+const uijangGroupHeaderStyle = 'background:#2f3237;color:#fff;border:1px solid #4a4e53;border-top:3px solid #ed7100;padding:4px 8px;font-weight:700;';
+const uijangCell = (value, align = 'center', groupStart = false) =>
+  `<td style="border:1px solid #e6e8ea;${groupStart ? 'border-left:2px solid #c9cdd1;' : ''}padding:5px 8px;text-align:${align};color:#3a3e43;font-variant-numeric:tabular-nums;">${value ?? ''}</td>`;
+const uijangStatusPill = (status) => status
+  ? `<span style="display:inline-block;background:#7a7f85;color:#fff;font-size:10px;font-weight:700;padding:2px 9px;border-radius:2px;">${status}</span>`
+  : '<span style="color:#9aa0a6;">-</span>';
+const uijangStaticRows = uijangRowsData.map((r, i) => `<tr style="height:26px;background:${r.child ? '#fff' : '#f4f6f8'};">
+                  <td style="border:1px solid #e6e8ea;padding:4px 6px;text-align:center;height:26px;">${detailCheckbox(`{{ detailToggle${i} }}`, `{{ detailBoxBg${i} }}`, `{{ detailOn${i} }}`)}</td>
                   ${uijangCell(r.seq)}
-                  ${uijangCell(r.wf ? `<span style="color:${r.wf === '점검 필요' ? '#ed4b4b' : '#2d2d2d'};font-weight:700;">${r.wf}</span>` : '')}
+                  ${uijangCell(r.wf === '점검 필요' ? detailWfBadge({ wfNeed:true }) : '')}
                   ${uijangCell(r.project)}
                   ${uijangCell(r.block)}
-                  ${uijangCell(r.actNo, 'left')}
-                  ${uijangCell(r.actName)}
-                  ${uijangCell(r.rep, 'left')}
+                  ${uijangCell(r.actNo ? `<span style="font-weight:600;color:#2d2d2d;">${r.actNo}</span>` : '', 'left')}
+                  ${uijangCell(r.actName ? `<span style="font-weight:700;color:#2d2d2d;">${r.actName}</span>` : '')}
+                  ${uijangCell(r.rep ? `<span style="color:#5a5f65;">${r.rep}</span>` : '', 'left')}
                   ${uijangCell(r.work, 'left')}
-                  ${uijangCell(r.rate)}
-                  ${uijangCell(r.status)}
+                  ${uijangCell(detailRateBar(r.rate))}
+                  ${uijangCell(uijangStatusPill(r.status))}
                   ${uijangCell(r.preRate)}
                   ${uijangCell(r.preEnd)}
-                  ${uijangCell(r.planStart)}
+                  ${uijangCell(r.planStart, 'center', true)}
                   ${uijangCell(r.planEnd)}
-                  ${uijangCell(r.postStart)}
-                  ${uijangCell(r.actualStart)}
+                  ${uijangCell(r.postStart, 'center', true)}
+                  ${uijangCell(r.actualStart, 'center', true)}
                   ${uijangCell(r.actualEnd)}
-                  ${uijangCell(r.due)}
-                  ${uijangCell(r.workplace)}
+                  ${uijangCell(r.due, 'center', true)}
+                  ${uijangCell(r.workplace, 'left', true)}
                 </tr>`).join('\n                ');
 
 const uijangTableBlock = `<div style="flex:1;display:flex;flex-direction:column;min-height:0;border:1px solid #c9cdd1;border-top:none;background:#fff;">
@@ -676,6 +683,7 @@ const uijangTableBlock = `<div style="flex:1;display:flex;flex-direction:column;
             <table style="border-collapse:collapse;font-size:11px;width:100%;white-space:nowrap;">
               <thead style="position:sticky;top:0;z-index:2;">
                 <tr>
+                  <th rowspan="2" style="${uijangHeaderStyle}padding:5px 6px;">${detailCheckbox('{{ uijangToggleAll }}', '{{ uijangAllBoxBg }}', '{{ uijangAllOn }}')}</th>
                   <th rowspan="2" style="${uijangHeaderStyle}">순번</th>
                   <th rowspan="2" style="${uijangHeaderStyle}">W/F점검<br>상태</th>
                   <th rowspan="2" style="${uijangHeaderStyle}">프로젝트</th>
@@ -705,8 +713,9 @@ const uijangTableBlock = `<div style="flex:1;display:flex;flex-direction:column;
               <tbody>${uijangStaticRows}</tbody>
             </table>
           </div>
-          <div style="display:flex;align-items:center;background:#e7eaed;border-top:1px solid #cfd3d7;padding:4px 12px;flex-shrink:0;font-size:11px;color:#4a4f55;">
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#e7eaed;border-top:1px solid #cfd3d7;padding:4px 12px;flex-shrink:0;font-size:11px;color:#4a4f55;">
             <span>총 ${uijangRowsData.length}행</span>
+            <span style="font-weight:600;">{{ uijangSelectedText }}</span>
           </div>
         </div>`;
 workfrontDetailUijangView = assertReplace(
@@ -718,7 +727,7 @@ workfrontDetailUijangView = assertReplace(
 
 const uijangEmptyRows = Array.from(
   { length: 15 },
-  () => `<tr style="height:26px;">${'<td style="border:1px solid #e6e8ea;"></td>'.repeat(19)}</tr>`,
+  () => `<tr style="height:26px;">${'<td style="border:1px solid #e6e8ea;"></td>'.repeat(20)}</tr>`,
 ).join('\n                ');
 let uijangFacilityBlock = uijangTableBlock;
 uijangFacilityBlock = assertReplace(uijangFacilityBlock, uijangStaticRows, uijangEmptyRows, '작업장&설비 탭 행 비우기');
@@ -728,6 +737,7 @@ uijangFacilityBlock = assertReplace(
   '<span>총 0행</span>',
   '작업장&설비 탭 행 수 표시',
 );
+uijangFacilityBlock = assertReplace(uijangFacilityBlock, '{{ uijangSelectedText }}', '0건 선택됨', '작업장&설비 탭 선택 수 표시');
 
 workfrontDetailUijangView = assertReplace(
   workfrontDetailUijangView,
@@ -928,6 +938,15 @@ const componentSource = `class Component extends DCLogic {
 
   ${toggleMethod}
   ${toggleAllMethod}
+
+  toggleUijangAll() {
+    this.setState((state) => {
+      const checked = { ...state.checked };
+      const allOn = Array.from({ length: 11 }, (_, index) => !!checked[index]).every(Boolean);
+      for (let index = 0; index < 11; index += 1) checked[index] = !allOn;
+      return { checked };
+    });
+  }
 
   renderVals() {
     const view = this.state.view;

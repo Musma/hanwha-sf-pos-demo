@@ -170,6 +170,19 @@ if (values.detailOn0 !== true || values.detailBoxBg0 !== '#0067c0') {
 if (typeof values.detailToggle1 !== 'function') {
   throw new Error('워크프론트 상세 행별 토글 바인딩이 없습니다.');
 }
+if (values.uijangSelectedText !== '1건 선택됨' || typeof values.uijangToggleAll !== 'function') {
+  throw new Error('의장 워크프론트 선택 상태 바인딩이 올바르지 않습니다.');
+}
+values.uijangToggleAll();
+values = app.renderVals();
+if (!values.uijangAllOn || values.uijangSelectedText !== '11건 선택됨') {
+  throw new Error('의장 워크프론트 전체 선택이 동작하지 않습니다.');
+}
+values.uijangToggleAll();
+values = app.renderVals();
+if (values.uijangAllOn || values.uijangSelectedText !== '0건 선택됨') {
+  throw new Error('의장 워크프론트 전체 선택 해제가 동작하지 않습니다.');
+}
 
 values = app.renderVals();
 if (values.weeklyRowDisplay !== '') throw new Error('초기 상태에서 주간 작업 물량 표가 표시되지 않습니다.');
