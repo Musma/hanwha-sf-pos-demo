@@ -55,7 +55,8 @@ const required = [
   'data-work-type="내업"',
   'data-work-type="외업"',
   '{{ weeklyVolumeSortClick }}',
-  'aria-hidden="true">↕</span>',
+  'id="weekly-volume-sort-up"',
+  'id="weekly-volume-sort-down"',
   "this.weeklyVolumeSortMode === 'asc' ? 'none' : 'desc'",
 ];
 

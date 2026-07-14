@@ -124,7 +124,7 @@ const weeklyVolumeRows = [
 const weeklyVolumeHeader = weeklyVolumeColumns
   .map((label) => {
     const content = label === '내입/외업<br>구분'
-      ? `<span style="display:inline-flex;align-items:center;justify-content:center;gap:4px;"><span>${label}</span><span id="weekly-volume-sort-button" data-weekly-sort="" role="button" tabIndex="0" aria-label="내업 외업 정렬: 기본 순서" title="정렬: 기본 순서" onClick="{{ weeklyVolumeSortClick }}" onKeyDown="{{ weeklyVolumeSortKey }}" style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:22px;background:transparent;border:0;border-radius:2px;color:#333;cursor:pointer;font-family:Arial,sans-serif;font-size:16px;font-weight:700;line-height:1;"><span id="weekly-volume-sort-icon" aria-hidden="true">↕</span></span></span>`
+      ? `<span style="display:inline-flex;align-items:center;justify-content:center;gap:4px;"><span>${label}</span><span id="weekly-volume-sort-button" data-weekly-sort="" role="button" tabIndex="0" aria-label="내업 외업 정렬: 기본 순서" title="정렬: 기본 순서" onClick="{{ weeklyVolumeSortClick }}" onKeyDown="{{ weeklyVolumeSortKey }}" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:18px;height:22px;background:transparent;border:0;outline:none;color:#333;cursor:pointer;"><span id="weekly-volume-sort-up" aria-hidden="true" style="display:block;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-bottom:5px solid currentColor;"></span><span id="weekly-volume-sort-down" aria-hidden="true" style="display:block;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid currentColor;"></span></span></span>`
       : label;
     const attrs = label === '내입/외업<br>구분' ? ' id="weekly-volume-work-type-header" aria-sort="none"' : '';
     return `<th${attrs} style="background:#ffff00;border:1px solid #b9b9b9;padding:3px 6px;color:#111;font-weight:700;line-height:1.25;position:sticky;top:0;">${content}</th>`;
@@ -1120,7 +1120,8 @@ const componentSource = `class Component extends DCLogic {
       : this.weeklyVolumeSortMode === 'asc' ? 'none' : 'desc';
     this.weeklyVolumeSortMode = nextMode;
     const tbody = document.getElementById('weekly-volume-table-body');
-    const icon = document.getElementById('weekly-volume-sort-icon');
+    const upCaret = document.getElementById('weekly-volume-sort-up');
+    const downCaret = document.getElementById('weekly-volume-sort-down');
     const button = document.getElementById('weekly-volume-sort-button');
     const header = document.getElementById('weekly-volume-work-type-header');
     if (!tbody) return;
@@ -1133,7 +1134,8 @@ const componentSource = `class Component extends DCLogic {
       return typeOrder || Number(left.dataset.originalOrder) - Number(right.dataset.originalOrder);
     });
     rows.forEach((row) => tbody.appendChild(row));
-    if (icon) icon.textContent = nextMode === 'desc' ? '↓' : nextMode === 'asc' ? '↑' : '↕';
+    if (upCaret) upCaret.style.display = nextMode === 'desc' ? 'none' : 'block';
+    if (downCaret) downCaret.style.display = nextMode === 'asc' ? 'none' : 'block';
     if (header) header.setAttribute('aria-sort', nextMode === 'desc' ? 'descending' : nextMode === 'asc' ? 'ascending' : 'none');
     if (button) {
       const label = nextMode === 'desc'
