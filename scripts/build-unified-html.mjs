@@ -674,12 +674,12 @@ const uijangStaticRows = uijangRowsData.map((r, i) => `<tr style="height:26px;ba
                   ${uijangCell(r.workplace, 'left', true)}
                 </tr>`).join('\n                ');
 
-const uijangTableBlock = `<div style="flex:1;display:flex;flex-direction:column;min-height:0;border:1px solid #c9cdd1;border-top:none;background:#fff;">
+const uijangTableBlock = `<div style="display:flex;flex-direction:column;border:1px solid #c9cdd1;border-top:none;background:#fff;flex-shrink:0;">
           <div style="display:flex;align-items:center;justify-content:space-between;background:#e7eaed;border-bottom:1px solid #cfd3d7;padding:5px 12px;flex-shrink:0;">
             <span style="font-size:12px;font-weight:700;color:#3a3e43;">작업지시 점검 목록</span>
             <span style="font-size:11px;color:#7a7f85;">액티비티 8건 · 작업지시 3건 · 실행계획 | 실적 | 납기일 순</span>
           </div>
-          <div style="flex:1;overflow:auto;min-height:0;">
+          <div style="overflow:auto;max-height:390px;">
             <table style="border-collapse:collapse;font-size:11px;width:100%;white-space:nowrap;">
               <thead style="position:sticky;top:0;z-index:2;">
                 <tr>
@@ -718,6 +718,23 @@ const uijangTableBlock = `<div style="flex:1;display:flex;flex-direction:column;
             <span style="font-weight:600;">{{ uijangSelectedText }}</span>
           </div>
         </div>`;
+const uijangReviewPanel = `<div style="margin-top:10px;background:#fff;border:1px solid #c9cdd1;border-radius:3px;overflow:hidden;flex-shrink:0;">
+          <div style="display:flex;align-items:center;gap:7px;background:#e7eaed;border-bottom:1px solid #cfd3d7;padding:7px 12px;">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:rgba(237,113,0,.12);border-radius:50%;color:#d76400;"><i class="ti ti-alert-triangle" style="font-size:13px;"></i></span>
+            <span style="font-size:12px;font-weight:800;color:#3a3e43;">작업계획 검토 사항</span>
+            <span style="font-size:10.5px;color:#7a7f85;">의장 W/F 점검 결과에 따른 사전 검토 항목</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:9px 10px;">
+            <div style="display:flex;align-items:center;gap:10px;min-width:0;background:#fffaf6;border:1px solid #f0d2b8;border-left:3px solid #ed7100;border-radius:3px;padding:9px 11px;">
+              <span style="display:inline-flex;align-items:center;justify-content:center;min-width:82px;height:26px;background:#ed7100;color:#fff;border-radius:2px;font-size:11px;font-weight:800;">검토 요소 1</span>
+              <span style="font-size:12px;font-weight:600;color:#3a3e43;line-height:1.4;">납기일까지 버퍼가 충분치 않아, 내업 작업으로 검토</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;min-width:0;background:#f7fbff;border:1px solid #c9dcef;border-left:3px solid #0a72f2;border-radius:3px;padding:9px 11px;">
+              <span style="display:inline-flex;align-items:center;justify-content:center;min-width:82px;height:26px;background:#0a72f2;color:#fff;border-radius:2px;font-size:11px;font-weight:800;">검토 요소 2</span>
+              <span style="font-size:12px;font-weight:600;color:#3a3e43;line-height:1.4;">인력을 더 투입하여, 비오기 전 작업 완료 검토</span>
+            </div>
+          </div>
+        </div>`;
 workfrontDetailUijangView = assertReplace(
   workfrontDetailUijangView,
   originalUijangTableBlock,
@@ -742,7 +759,7 @@ uijangFacilityBlock = assertReplace(uijangFacilityBlock, '{{ uijangSelectedText 
 workfrontDetailUijangView = assertReplace(
   workfrontDetailUijangView,
   uijangTableBlock,
-  `<sc-if value="{{ isUijangPlanTab }}" hint-placeholder-val="{{ true }}">${uijangTableBlock}</sc-if>
+  `<sc-if value="{{ isUijangPlanTab }}" hint-placeholder-val="{{ true }}">${uijangTableBlock}${uijangReviewPanel}</sc-if>
         <sc-if value="{{ isUijangFacilityTab }}" hint-placeholder-val="{{ false }}">${uijangFacilityBlock}</sc-if>`,
   '의장 상세 탭 콘텐츠 분기',
 );

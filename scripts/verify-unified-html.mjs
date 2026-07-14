@@ -225,6 +225,10 @@ const uijangSampleMarkers = [
   'S241W511GC10F10F01',
   'S241W511GC10F10W03',
   '총 11행',
+  '작업계획 검토 사항',
+  '납기일까지 버퍼가 충분치 않아, 내업 작업으로 검토',
+  '인력을 더 투입하여, 비오기 전 작업 완료 검토',
+  'overflow:auto;max-height:390px;',
 ];
 if (uijangSampleMarkers.some((marker) => !template.includes(marker))) {
   throw new Error('의장 W/F 점검 샘플 데이터가 올바르게 생성되지 않았습니다.');
