@@ -205,6 +205,17 @@ if (template.includes('<sc-for list="{{ wfRows }}"') || template.includes('<sc-f
 if (template.includes('<sc-for list="{{ detailRows }}"')) {
   throw new Error('워크프론트 상세 표가 정적으로 전개되지 않았습니다.');
 }
+const uijangSampleMarkers = [
+  '액티비티 8건 · 작업지시 3건 · 실행계획 | 실적 | 납기일 순',
+  '2579W511GC10C10',
+  '2602W508GC10C10',
+  'S241W511GC10F10F01',
+  'S241W511GC10F10W03',
+  '총 11행',
+];
+if (uijangSampleMarkers.some((marker) => !template.includes(marker))) {
+  throw new Error('의장 W/F 점검 샘플 데이터가 올바르게 생성되지 않았습니다.');
+}
 const wfOkRowA = values.wfRows[0].groups.map((group) => group.ok).join(',');
 const wfOkRowB = values.wfRows[1].groups.map((group) => group.ok).join(',');
 if (wfOkRowA !== '20,18,22,10,25,26,27') throw new Error(`워크프론트 정상 수치(홀수 행)가 시안과 다릅니다: ${wfOkRowA}`);
@@ -221,5 +232,6 @@ console.log('env checkbox toggles: ok');
 console.log('routing bindings: ok');
 console.log('single-document views: ok');
 console.log('navigation state transitions: ok');
+console.log('uijang sample data: ok');
 console.log('single-file hosting layout: ok');
 console.log('external file dependencies: 0');

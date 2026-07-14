@@ -582,6 +582,30 @@ workfrontDetailUijangView = assertReplace(
   '<div style="background:#ed7100;color:#fff;font-size:12.5px;font-weight:700;padding:7px 20px;border-left:1px solid #d8dbdf;">의장 W/F 점검</div>',
   '의장 상세 의장 탭 활성',
 );
+workfrontDetailUijangView = assertReplace(
+  workfrontDetailUijangView,
+  detailKpiCard('점검 대상 액티비티', detailActCount, '#ed7100'),
+  detailKpiCard('점검 대상 액티비티', 8, '#ed7100'),
+  '의장 상세 액티비티 건수',
+);
+workfrontDetailUijangView = assertReplace(
+  workfrontDetailUijangView,
+  detailKpiCard('작업지시', detailRepCount, '#0a72f2'),
+  detailKpiCard('작업지시', 3, '#0a72f2'),
+  '의장 상세 작업지시 건수',
+);
+workfrontDetailUijangView = assertReplace(
+  workfrontDetailUijangView,
+  detailKpiCard('정상', detailOkCount, '#2e9e57'),
+  detailKpiCard('정상', 0, '#2e9e57'),
+  '의장 상세 정상 건수',
+);
+workfrontDetailUijangView = assertReplace(
+  workfrontDetailUijangView,
+  detailKpiCard('비정상', detailBadCount, '#d63b3b'),
+  detailKpiCard('비정상', 0, '#d63b3b'),
+  '의장 상세 비정상 건수',
+);
 
 // ── 의장 상세: 계획 ↔ 작업장&설비 탭 전환 ──
 // 계획/작업장&설비 탭을 클릭 가능하게 바꾸고, 작업장&설비 탭에는 계획 탭과
@@ -602,21 +626,108 @@ workfrontDetailUijangView = assertReplace(
 const uijangTableMarker = '<div style="flex:1;display:flex;flex-direction:column;min-height:0;border:1px solid #c9cdd1;border-top:none;background:#fff;">';
 const uijangTableStart = workfrontDetailUijangView.indexOf(uijangTableMarker);
 if (uijangTableStart < 0) throw new Error('의장 상세 표 블록을 찾지 못했습니다.');
-const uijangTableBlock = extractBalanced(workfrontDetailUijangView, uijangTableStart, /<div\b[^>]*>/, /<\/div>/);
+const originalUijangTableBlock = extractBalanced(workfrontDetailUijangView, uijangTableStart, /<div\b[^>]*>/, /<\/div>/);
+
+const uijangRowsData = [
+  { seq:'1', wf:'점검 필요', project:'2579', block:'511', actNo:'2579W511GC10C10', actName:'중조의장', rate:'0%', status:'미착수', preRate:'80%', preEnd:'07/25', planStart:'07/27', planEnd:'08/01', postStart:'08/05', actualStart:'-', actualEnd:'-', due:'11/07', workplace:'내업1공장 2bay 서편' },
+  { seq:'2', wf:'점검 필요', project:'2579', block:'512', actNo:'2579W512GC10C10', actName:'중조의장', rate:'0%', status:'미착수', preRate:'80%', preEnd:'07/25', planStart:'07/27', planEnd:'08/01', postStart:'08/05', actualStart:'-', actualEnd:'-', due:'11/07', workplace:'내업1공장 2bay 서편' },
+  { seq:'3', wf:'점검 필요', project:'2579', block:'501', actNo:'2579W501GA10A10', actName:'대조의장', rate:'0%', status:'미착수', preRate:'90%', preEnd:'07/25', planStart:'07/27', planEnd:'08/15', postStart:'08/16', actualStart:'-', actualEnd:'-', due:'09/01', workplace:'외업1공장' },
+  { seq:'4', wf:'점검 필요', project:'2579', block:'502', actNo:'2579W502GA10A10', actName:'대조의장', rate:'0%', status:'미착수', preRate:'90%', preEnd:'07/25', planStart:'07/28', planEnd:'08/06', postStart:'08/07', actualStart:'-', actualEnd:'-', due:'09/01', workplace:'외업1공장' },
+  { seq:'5', wf:'점검 필요', project:'2583', block:'50A', actNo:'2583W50AGP10P10', actName:'PE의장', rate:'0%', status:'미착수', preRate:'100%', preEnd:'06/25', planStart:'06/28', planEnd:'07/28', postStart:'08/01', actualStart:'-', actualEnd:'-', due:'08/15', workplace:'PE 2장' },
+  { seq:'6', wf:'점검 필요', project:'2583', block:'50B', actNo:'2839W50BGP10P10', actName:'PE의장', rate:'0%', status:'미착수', preRate:'90%', preEnd:'07/28', planStart:'07/30', planEnd:'09/05', postStart:'09/08', actualStart:'-', actualEnd:'-', due:'10/31', workplace:'PE 2장' },
+  { seq:'7', wf:'점검 필요', project:'2602', block:'507', actNo:'2602W507GC10C10', actName:'중조의장', rate:'0%', status:'미착수', preRate:'70%', preEnd:'07/28', planStart:'07/30', planEnd:'08/07', postStart:'08/09', actualStart:'-', actualEnd:'-', due:'10/15', workplace:'내업2공장' },
+  { seq:'8', wf:'점검 필요', project:'2602', block:'508', actNo:'2602W508GC10C10', actName:'중조의장', rate:'0%', status:'미착수', preRate:'70%', preEnd:'07/28', planStart:'08/01', planEnd:'08/10', postStart:'08/09', actualStart:'-', actualEnd:'-', due:'10/15', workplace:'내업2공장' },
+  { seq:'-', wf:'-', project:'2602', block:'508', rep:'S241W511GC10F10F01', work:'SUPPORT/철의 설치', rate:'0%', preRate:'-', planStart:'08/01', planEnd:'08/03', actualStart:'-', actualEnd:'-', due:'10/15', child:true },
+  { seq:'-', wf:'-', project:'2602', block:'508', rep:'S241W511GC10F10F02', work:'PIPE 설치', rate:'0%', preRate:'-', planStart:'08/03', planEnd:'08/07', actualStart:'-', actualEnd:'-', due:'10/15', child:true },
+  { seq:'-', wf:'-', project:'2602', block:'508', rep:'S241W511GC10F10W03', work:'용접/사상', rate:'0%', preRate:'-', planStart:'08/07', planEnd:'08/10', actualStart:'-', actualEnd:'-', due:'10/15', child:true },
+];
+const uijangHeaderStyle = 'background:#2f3237;color:#fff;border:1px solid #696d72;padding:5px 7px;font-weight:700;white-space:nowrap;line-height:1.25;';
+const uijangGroupHeaderStyle = 'background:#f87317;color:#fff;border:1px solid #d85e0d;padding:3px 7px;font-weight:700;';
+const uijangCell = (value, align = 'center') =>
+  `<td style="border:1px solid #9da1a5;padding:3px 7px;text-align:${align};color:#2d2d2d;font-variant-numeric:tabular-nums;">${value ?? ''}</td>`;
+const uijangStaticRows = uijangRowsData.map((r) => `<tr style="height:23px;background:${r.child ? '#c7c8ca' : '#fff'};">
+                  ${uijangCell(r.seq)}
+                  ${uijangCell(r.wf ? `<span style="color:${r.wf === '점검 필요' ? '#ed4b4b' : '#2d2d2d'};font-weight:700;">${r.wf}</span>` : '')}
+                  ${uijangCell(r.project)}
+                  ${uijangCell(r.block)}
+                  ${uijangCell(r.actNo, 'left')}
+                  ${uijangCell(r.actName)}
+                  ${uijangCell(r.rep, 'left')}
+                  ${uijangCell(r.work, 'left')}
+                  ${uijangCell(r.rate)}
+                  ${uijangCell(r.status)}
+                  ${uijangCell(r.preRate)}
+                  ${uijangCell(r.preEnd)}
+                  ${uijangCell(r.planStart)}
+                  ${uijangCell(r.planEnd)}
+                  ${uijangCell(r.postStart)}
+                  ${uijangCell(r.actualStart)}
+                  ${uijangCell(r.actualEnd)}
+                  ${uijangCell(r.due)}
+                  ${uijangCell(r.workplace)}
+                </tr>`).join('\n                ');
+
+const uijangTableBlock = `<div style="flex:1;display:flex;flex-direction:column;min-height:0;border:1px solid #c9cdd1;border-top:none;background:#fff;">
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#e7eaed;border-bottom:1px solid #cfd3d7;padding:5px 12px;flex-shrink:0;">
+            <span style="font-size:12px;font-weight:700;color:#3a3e43;">작업지시 점검 목록</span>
+            <span style="font-size:11px;color:#7a7f85;">액티비티 8건 · 작업지시 3건 · 실행계획 | 실적 | 납기일 순</span>
+          </div>
+          <div style="flex:1;overflow:auto;min-height:0;">
+            <table style="border-collapse:collapse;font-size:11px;width:100%;white-space:nowrap;">
+              <thead style="position:sticky;top:0;z-index:2;">
+                <tr>
+                  <th rowspan="2" style="${uijangHeaderStyle}">순번</th>
+                  <th rowspan="2" style="${uijangHeaderStyle}">W/F점검<br>상태</th>
+                  <th rowspan="2" style="${uijangHeaderStyle}">프로젝트</th>
+                  <th rowspan="2" style="${uijangHeaderStyle}">블록</th>
+                  <th rowspan="2" style="${uijangHeaderStyle}">실행계획 액티비티 번호</th>
+                  <th rowspan="2" style="${uijangHeaderStyle}">액티비티 명칭</th>
+                  <th rowspan="2" style="${uijangHeaderStyle}">작업지시 번호</th>
+                  <th rowspan="2" style="${uijangHeaderStyle}">작업지시 내용</th>
+                  <th rowspan="2" style="${uijangHeaderStyle}">실적<br>공정률<br>(%)</th>
+                  <th rowspan="2" style="${uijangHeaderStyle}">상태</th>
+                  <th rowspan="2" style="${uijangHeaderStyle}">선공정<br>진행율</th>
+                  <th rowspan="2" style="${uijangHeaderStyle}">선공정<br>계획<br>완료일</th>
+                  <th colspan="2" style="${uijangGroupHeaderStyle}">실행계획</th>
+                  <th rowspan="2" style="${uijangHeaderStyle}">후공정<br>계획<br>착수일</th>
+                  <th colspan="2" style="${uijangGroupHeaderStyle}">실적</th>
+                  <th style="${uijangGroupHeaderStyle}">납기일</th>
+                  <th rowspan="2" style="${uijangHeaderStyle}">작업장</th>
+                </tr>
+                <tr>
+                  <th style="${uijangHeaderStyle}">착수</th>
+                  <th style="${uijangHeaderStyle}">완료</th>
+                  <th style="${uijangHeaderStyle}">착수</th>
+                  <th style="${uijangHeaderStyle}">완료</th>
+                  <th style="${uijangHeaderStyle}">오션<br>납기일</th>
+                </tr>
+              </thead>
+              <tbody>${uijangStaticRows}</tbody>
+            </table>
+          </div>
+          <div style="display:flex;align-items:center;background:#e7eaed;border-top:1px solid #cfd3d7;padding:4px 12px;flex-shrink:0;font-size:11px;color:#4a4f55;">
+            <span>총 ${uijangRowsData.length}행</span>
+          </div>
+        </div>`;
+workfrontDetailUijangView = assertReplace(
+  workfrontDetailUijangView,
+  originalUijangTableBlock,
+  uijangTableBlock,
+  '의장 상세 샘플 데이터 표',
+);
 
 const uijangEmptyRows = Array.from(
   { length: 15 },
-  () => `<tr style="height:26px;">${'<td style="border:1px solid #e6e8ea;"></td>'.repeat(21)}</tr>`,
+  () => `<tr style="height:26px;">${'<td style="border:1px solid #e6e8ea;"></td>'.repeat(19)}</tr>`,
 ).join('\n                ');
 let uijangFacilityBlock = uijangTableBlock;
-uijangFacilityBlock = assertReplace(uijangFacilityBlock, detailStaticRows, uijangEmptyRows, '작업장&설비 탭 행 비우기');
+uijangFacilityBlock = assertReplace(uijangFacilityBlock, uijangStaticRows, uijangEmptyRows, '작업장&설비 탭 행 비우기');
 uijangFacilityBlock = assertReplace(
   uijangFacilityBlock,
-  `<span>총 ${detailRowsData.length}행</span>`,
+  `<span>총 ${uijangRowsData.length}행</span>`,
   '<span>총 0행</span>',
   '작업장&설비 탭 행 수 표시',
 );
-uijangFacilityBlock = assertReplace(uijangFacilityBlock, '{{ detailSelectedText }}', '0건 선택됨', '작업장&설비 탭 선택 수 표시');
 
 workfrontDetailUijangView = assertReplace(
   workfrontDetailUijangView,
