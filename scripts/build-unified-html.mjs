@@ -127,7 +127,7 @@ const weeklyVolumeHeader = weeklyVolumeColumns
       ? `<span style="display:inline-flex;align-items:center;justify-content:center;gap:4px;"><span>${label}</span><span id="weekly-volume-sort-button" data-weekly-sort="" role="button" tabIndex="0" aria-label="내업 외업 정렬: 기본 순서" title="정렬: 기본 순서" onClick="{{ weeklyVolumeSortClick }}" onKeyDown="{{ weeklyVolumeSortKey }}" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:18px;height:22px;background:transparent;border:0;outline:none;color:#333;cursor:pointer;"><span id="weekly-volume-sort-up" aria-hidden="true" style="display:block;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-bottom:5px solid currentColor;"></span><span id="weekly-volume-sort-down" aria-hidden="true" style="display:block;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid currentColor;"></span></span></span>`
       : label;
     const attrs = label === '내입/외업<br>구분' ? ' id="weekly-volume-work-type-header" aria-sort="none"' : '';
-    return `<th${attrs} style="background:#ffff00;border:1px solid #b9b9b9;padding:3px 6px;color:#111;font-size:14px;font-weight:700;line-height:1.25;position:sticky;top:0;">${content}</th>`;
+    return `<th${attrs} style="background:#ffff00;border:1px solid #b9b9b9;padding:3px 6px;color:#111;font-size:13px;font-weight:700;line-height:1.25;position:sticky;top:0;">${content}</th>`;
   })
   .join('');
 const weeklyVolumeBody = weeklyVolumeRows
