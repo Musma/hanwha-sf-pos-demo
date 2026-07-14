@@ -122,10 +122,16 @@ const weeklyVolumeRows = [
   ['2602', '508', '중조의장', '08/01', '08/10', '07/01', '07/10', '-', '-', '17', '22', '-', '132', '내업', '내업2공장'],
 ];
 const weeklyVolumeHeader = weeklyVolumeColumns
-  .map((label) => `<th style="background:#ffff00;border:1px solid #b9b9b9;padding:3px 6px;color:#111;font-weight:700;line-height:1.25;position:sticky;top:0;">${label}</th>`)
+  .map((label) => {
+    const content = label === '내입/외업<br>구분'
+      ? `<span style="display:inline-flex;align-items:center;justify-content:center;gap:5px;"><span>${label}</span><span id="weekly-volume-sort-button" data-weekly-sort="" role="button" tabIndex="0" aria-label="내업 외업 정렬: 기본 순서" title="내업/외업 정렬" onClick="{{ weeklyVolumeSortClick }}" onKeyDown="{{ weeklyVolumeSortKey }}" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#fff;border:1px solid #b9b9b9;border-radius:3px;color:#4a4f55;cursor:pointer;"><i id="weekly-volume-sort-icon" class="ti ti-arrows-sort" style="font-size:14px;"></i></span></span>`
+      : label;
+    const attrs = label === '내입/외업<br>구분' ? ' id="weekly-volume-work-type-header" aria-sort="none"' : '';
+    return `<th${attrs} style="background:#ffff00;border:1px solid #b9b9b9;padding:3px 6px;color:#111;font-weight:700;line-height:1.25;position:sticky;top:0;">${content}</th>`;
+  })
   .join('');
 const weeklyVolumeBody = weeklyVolumeRows
-  .map((row) => `<tr style="height:22px;">${row.map((value) => `<td style="border:1px solid #b9b9b9;padding:3px 6px;color:#222;">${value}</td>`).join('')}</tr>`)
+  .map((row, index) => `<tr data-work-type="${row[13]}" data-original-order="${index}" style="height:22px;">${row.map((value) => `<td style="border:1px solid #b9b9b9;padding:3px 6px;color:#222;">${value}</td>`).join('')}</tr>`)
   .join('\n');
 const weeklyVolumeModalStart = chairMain.indexOf('<div id="wwv-modal"');
 const weeklyVolumeTableStart = chairMain.indexOf('<table ', weeklyVolumeModalStart);
@@ -137,7 +143,7 @@ chairMain =
   chairMain.slice(0, weeklyVolumeTableStart) +
   `<table style="border-collapse:collapse;font-size:11px;width:100%;white-space:nowrap;text-align:center;">
             <thead><tr>${weeklyVolumeHeader}</tr></thead>
-            <tbody>${weeklyVolumeBody}</tbody>
+            <tbody id="weekly-volume-table-body">${weeklyVolumeBody}</tbody>
           </table>` +
   chairMain.slice(weeklyVolumeTableEnd);
 
@@ -1108,6 +1114,38 @@ const componentSource = `class Component extends DCLogic {
   ${toggleMethod}
   ${toggleAllMethod}
 
+  toggleWeeklyVolumeSort() {
+    const nextMode = this.weeklyVolumeSortMode === 'desc' ? 'asc' : 'desc';
+    this.weeklyVolumeSortMode = nextMode;
+    const tbody = document.getElementById('weekly-volume-table-body');
+    const icon = document.getElementById('weekly-volume-sort-icon');
+    const button = document.getElementById('weekly-volume-sort-button');
+    const header = document.getElementById('weekly-volume-work-type-header');
+    if (!tbody) return;
+    const priority = nextMode === 'desc' ? { '내업': 0, '외업': 1 } : { '외업': 0, '내업': 1 };
+    const rows = Array.from(tbody.querySelectorAll('tr[data-work-type]'));
+    rows.sort((left, right) => {
+      const typeOrder = priority[left.dataset.workType] - priority[right.dataset.workType];
+      return typeOrder || Number(left.dataset.originalOrder) - Number(right.dataset.originalOrder);
+    });
+    rows.forEach((row) => tbody.appendChild(row));
+    if (icon) icon.className = nextMode === 'desc' ? 'ti ti-sort-descending' : 'ti ti-sort-ascending';
+    if (header) header.setAttribute('aria-sort', nextMode === 'desc' ? 'descending' : 'ascending');
+    if (button) {
+      button.setAttribute('aria-label', nextMode === 'desc'
+        ? '내업 우선 정렬됨: 클릭하면 외업 우선으로 변경'
+        : '외업 우선 정렬됨: 클릭하면 내업 우선으로 변경');
+      button.setAttribute('title', nextMode === 'desc' ? '내업 → 외업' : '외업 → 내업');
+    }
+  }
+
+  handleWeeklyVolumeSortKey(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.toggleWeeklyVolumeSort();
+    }
+  }
+
   toggleUijangAll() {
     this.setState((state) => {
       const checked = { ...state.checked };
@@ -1142,6 +1180,8 @@ const componentSource = `class Component extends DCLogic {
       openWorkfrontDetailKey: (event) => this.handleRouteKey(event, 'workfront-detail'),
       openWorkfrontDetailUijang: () => this.navigate('workfront-detail-uijang'),
       openWorkfrontDetailUijangKey: (event) => this.handleRouteKey(event, 'workfront-detail-uijang'),
+      weeklyVolumeSortClick: () => this.toggleWeeklyVolumeSort(),
+      weeklyVolumeSortKey: (event) => this.handleWeeklyVolumeSortKey(event),
     };
   }
 
@@ -1248,6 +1288,14 @@ if (!unifiedTemplate.includes('[data-env]:focus-visible')) {
     '포커스 링 스타일',
   );
 }
+if (!unifiedTemplate.includes('[data-weekly-sort]:focus-visible')) {
+  unifiedTemplate = assertReplace(
+    unifiedTemplate,
+    '[data-route]:focus-visible,[data-env]:focus-visible{outline:2px solid #0a72f2;outline-offset:-2px;}',
+    '[data-route]:focus-visible,[data-env]:focus-visible,[data-weekly-sort]:focus-visible{outline:2px solid #0a72f2;outline-offset:-2px;}',
+    '주간 작업 물량 정렬 버튼 포커스 링',
+  );
+}
 
 // ── 디자인 폴리시: 데스크톱 애플리케이션 질감 ──
 // 공통 명령 버튼에 클래스를 부여해 hover/active 상태를 CSS로 제어한다.
@@ -1291,8 +1339,8 @@ tbody tr:hover td{background-color:rgba(10,114,242,.05);}
 if (!unifiedTemplate.includes('desktop-polish')) {
   unifiedTemplate = assertReplace(
     unifiedTemplate,
-    '[data-route]:focus-visible,[data-env]:focus-visible{outline:2px solid #0a72f2;outline-offset:-2px;}',
-    `[data-route]:focus-visible,[data-env]:focus-visible{outline:2px solid #0a72f2;outline-offset:-2px;}${polishCss}`,
+    '[data-route]:focus-visible,[data-env]:focus-visible,[data-weekly-sort]:focus-visible{outline:2px solid #0a72f2;outline-offset:-2px;}',
+    `[data-route]:focus-visible,[data-env]:focus-visible,[data-weekly-sort]:focus-visible{outline:2px solid #0a72f2;outline-offset:-2px;}${polishCss}`,
     '데스크톱 폴리시 스타일',
   );
 }

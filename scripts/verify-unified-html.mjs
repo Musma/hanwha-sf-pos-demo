@@ -50,6 +50,12 @@ const required = [
   'id="plan-load-progress-bar"',
   'role="progressbar"',
   'Gantt Chart 배치를 계산하고 있습니다.',
+  'id="weekly-volume-sort-button"',
+  'id="weekly-volume-table-body"',
+  'data-work-type="내업"',
+  'data-work-type="외업"',
+  '{{ weeklyVolumeSortClick }}',
+  'ti ti-arrows-sort',
 ];
 
 for (const token of required) {
