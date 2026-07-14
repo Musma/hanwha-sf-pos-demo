@@ -57,7 +57,7 @@ const required = [
   '{{ weeklyVolumeSortClick }}',
   'id="weekly-volume-sort-up"',
   'id="weekly-volume-sort-down"',
-  'font-size:12px;font-weight:700;line-height:1.25',
+  'font-size:14px;font-weight:700;line-height:1.25',
   "this.weeklyVolumeSortMode === 'asc' ? 'none' : 'desc'",
 ];
 
