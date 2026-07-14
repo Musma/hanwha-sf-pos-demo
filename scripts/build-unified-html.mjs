@@ -99,6 +99,13 @@ let chairMain = alreadyUnified
   ? chair.template.match(/<!-- unified:chair:start -->([\s\S]*?)<!-- unified:chair:end -->/)[1].trim()
   : extractMain(chair.template);
 
+chairMain = assertReplace(
+  chairMain,
+  '>실행계획 착수일<span style="color:#7a7f85;">▾</span>',
+  '>실행계획 착수/완료일<span style="color:#7a7f85;">▾</span>',
+  '주간 작업 물량 조회조건 라벨',
+);
+
 const weeklyVolumeColumns = [
   '프로젝트', '블록', '실행계획 액티비티', '실행계획<br>착수일', '실행계획<br>완료일',
   '기준계획<br>착수일', '기준계획<br>완료일', '실적<br>착수일', '실적<br>완료일',
