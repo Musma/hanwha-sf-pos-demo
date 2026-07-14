@@ -46,6 +46,10 @@ const required = [
   '{{ showGantt }}',
   '{{ ltRecordText }}',
   '{{ isHome }}',
+  'id="plan-load-progress"',
+  'id="plan-load-progress-bar"',
+  'role="progressbar"',
+  'Gantt Chart 배치를 계산하고 있습니다.',
 ];
 
 for (const token of required) {
@@ -126,6 +130,20 @@ if (!values.isChair || app.state.view !== 'chair') {
 if (!app.state.openGroups['의장']) {
   throw new Error('의장 화면 진입 시 의장 대메뉴가 자동으로 펼쳐지지 않습니다.');
 }
+const initialGantt = values.gantt.map((row) => row.bars.map((bar) => `${bar.left}:${bar.width}:${bar.label}`).join('|')).join('||');
+app.state.chairPlanVersion = 1;
+values = app.renderVals();
+const loadedGanttA = values.gantt.map((row) => row.bars.map((bar) => `${bar.left}:${bar.width}:${bar.label}`).join('|')).join('||');
+if (loadedGanttA === initialGantt || !loadedGanttA.includes('2579-501') || !loadedGanttA.includes('2602-508')) {
+  throw new Error('계획 불러오기 후 첫 번째 Gantt 변경 데이터가 적용되지 않습니다.');
+}
+app.state.chairPlanVersion = 2;
+values = app.renderVals();
+const loadedGanttB = values.gantt.map((row) => row.bars.map((bar) => `${bar.left}:${bar.width}:${bar.label}`).join('|')).join('||');
+if (loadedGanttB === initialGantt || loadedGanttB === loadedGanttA || !loadedGanttB.includes('2583-50B')) {
+  throw new Error('계획 재불러오기 후 대체 Gantt 변경 데이터가 적용되지 않습니다.');
+}
+app.state.chairPlanVersion = 0;
 
 app.navigate('workfront-main');
 values = app.renderVals();

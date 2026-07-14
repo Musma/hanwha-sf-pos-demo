@@ -141,6 +141,41 @@ chairMain =
           </table>` +
   chairMain.slice(weeklyVolumeTableEnd);
 
+const planLoadingOverlay = `  <!-- 계획 불러오기 진행 오버레이 -->
+  <div id="plan-load-progress" role="dialog" aria-modal="true" aria-label="계획 불러오는 중" style="display:none;position:fixed;inset:0;background:rgba(238,240,242,.84);backdrop-filter:blur(1.5px);z-index:1100;align-items:center;justify-content:center;">
+    <style>@keyframes plan-load-spin{to{transform:rotate(360deg)}}</style>
+    <div style="width:420px;background:#fff;border:1px solid #aeb4ba;border-radius:6px;box-shadow:0 16px 48px rgba(32,34,42,.22);overflow:hidden;">
+      <div style="height:4px;background:#ed7100;"></div>
+      <div style="padding:24px 26px 22px;">
+        <div style="display:flex;align-items:center;gap:13px;">
+          <span style="width:28px;height:28px;border:3px solid #dfe4e8;border-top-color:#ed7100;border-radius:50%;animation:plan-load-spin .8s linear infinite;flex-shrink:0;"></span>
+          <div>
+            <div style="font-size:14px;font-weight:800;color:#2d2d2d;">계획을 불러오고 있습니다</div>
+            <div id="plan-load-progress-status" aria-live="polite" style="margin-top:3px;font-size:11px;color:#7a7f85;">선택한 시나리오를 준비하고 있습니다.</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:20px;">
+          <div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="plan-load-progress-track" style="flex:1;height:10px;background:#e7eaed;border:1px solid #d1d5d9;border-radius:6px;overflow:hidden;">
+            <div id="plan-load-progress-bar" style="width:0%;height:100%;background:linear-gradient(90deg,#ed7100,#f5a33f);border-radius:5px;transition:width .28s ease;"></div>
+          </div>
+          <span id="plan-load-progress-text" style="width:36px;text-align:right;font-size:11px;font-weight:800;color:#d76400;font-variant-numeric:tabular-nums;">0%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;margin-top:13px;padding-top:12px;border-top:1px solid #eceef0;font-size:10.5px;color:#8a9096;">
+          <i class="ti ti-layout-grid" style="font-size:13px;color:#0a72f2;"></i>
+          일정 검증 후 Gantt Chart 배치까지 자동으로 반영됩니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+`;
+chairMain = assertReplace(
+  chairMain,
+  '  <!-- 계획 불러오기 성공 알림 모달 -->',
+  planLoadingOverlay + '  <!-- 계획 불러오기 성공 알림 모달 -->',
+  '계획 불러오기 진행 오버레이',
+);
+
 const envLabelsMarkup = `<label style="display:flex;align-items:center;gap:3px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:#ed7100;border:1px solid #c95d00;border-radius:2px;color:#fff;font-size:10px;">✓</span>주간작업물량</label>
         <label style="display:flex;align-items:center;gap:3px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:#ed7100;border:1px solid #c95d00;border-radius:2px;color:#fff;font-size:10px;">✓</span>Gantt Chart</label>
         <label style="display:flex;align-items:center;gap:3px;color:#7a7f85;"><span style="display:inline-block;width:14px;height:14px;background:#fff;border:1px solid var(--line);border-radius:2px;"></span>부하 그래프</label>
@@ -243,6 +278,78 @@ let chairData = extractMethod(chair.template, alreadyUnified ? 'buildChairData' 
   .replace(/,\s*sideItems:\s*this\.buildSideItems\(\)/, '');
 // 간트 막대·정반 블록의 원색 노랑을 한 단계 차분한 노랑으로 완화한다.
 chairData = chairData.replaceAll("'#ffe000'", "'#f5d647'");
+chairData = assertReplace(
+  chairData,
+  "    const DK='#85888c', LT='#b4b7bb';",
+  `    const planVersion = this.state && this.state.chairPlanVersion ? this.state.chairPlanVersion : 0;
+    if (planVersion % 2 === 1) {
+      gantt[0].bars = [
+        { top:'8px', left:'72px', width:'432px', height:'44px', bg:GRN, color:'#123', label:'2579-501' },
+        { top:'60px', left:'360px', width:'504px', height:'44px', bg:YEL, color:'#2d2d2d', label:'2579-502' },
+      ];
+      gantt[1].bars = [
+        { top:'4px', left:'144px', width:'360px', height:'104px', bg:BLU, color:'#fff', label:'2583-50A' },
+        { top:'4px', left:'504px', width:'360px', height:'104px', bg:YEL, color:'#2d2d2d', label:'2583-50B' },
+      ];
+      gantt[2].bars = [
+        { top:'4px', left:'216px', width:'504px', height:'50px', bg:GRN, color:'#123', label:'2602-507' },
+        { top:'58px', left:'432px', width:'432px', height:'50px', bg:BLU, color:'#fff', label:'2602-508' },
+      ];
+      gantt[3].bars = [
+        { top:'4px', left:'72px', width:'648px', height:'104px', bg:YEL, color:'#2d2d2d', label:'2579-511' },
+      ];
+    } else if (planVersion > 0) {
+      gantt[0].bars = [
+        { top:'8px', left:'288px', width:'576px', height:'44px', bg:YEL, color:'#2d2d2d', label:'2602-508' },
+        { top:'60px', left:'72px', width:'432px', height:'44px', bg:BLU, color:'#fff', label:'2579-512' },
+      ];
+      gantt[1].bars = [
+        { top:'4px', left:'0px', width:'432px', height:'104px', bg:GRN, color:'#123', label:'2579-501' },
+        { top:'4px', left:'576px', width:'360px', height:'104px', bg:YEL, color:'#2d2d2d', label:'2583-50A' },
+      ];
+      gantt[2].bars = [
+        { top:'4px', left:'144px', width:'360px', height:'50px', bg:YEL, color:'#2d2d2d', label:'2602-507' },
+        { top:'58px', left:'576px', width:'288px', height:'50px', bg:BLU, color:'#fff', label:'2579-502' },
+      ];
+      gantt[3].bars = [
+        { top:'4px', left:'360px', width:'504px', height:'104px', bg:GRN, color:'#123', label:'2583-50B' },
+      ];
+    }
+
+    const DK='#85888c', LT='#b4b7bb';`,
+  '계획 불러오기 후 Gantt 변경 데이터',
+);
+chairData = assertReplace(
+  chairData,
+  "loadPlanConfirm: () => { modalDisplay('plan-load-modal', 'none')(); modalDisplay('plan-load-success', 'flex')(); },",
+  `loadPlanConfirm: () => {
+        modalDisplay('plan-load-modal', 'none')();
+        modalDisplay('plan-load-progress', 'flex')();
+        const bar = document.getElementById('plan-load-progress-bar');
+        const track = document.getElementById('plan-load-progress-track');
+        const text = document.getElementById('plan-load-progress-text');
+        const status = document.getElementById('plan-load-progress-status');
+        const updateProgress = (value, message) => {
+          if (bar) bar.style.width = value + '%';
+          if (track) track.setAttribute('aria-valuenow', String(value));
+          if (text) text.textContent = value + '%';
+          if (status) status.textContent = message;
+        };
+        updateProgress(8, '선택한 시나리오를 준비하고 있습니다.');
+        window.setTimeout(() => updateProgress(32, '계획 데이터를 조회하고 있습니다.'), 260);
+        window.setTimeout(() => updateProgress(58, '일정 충돌과 작업 조건을 검증하고 있습니다.'), 560);
+        window.setTimeout(() => updateProgress(82, 'Gantt Chart 배치를 계산하고 있습니다.'), 900);
+        window.setTimeout(() => {
+          updateProgress(100, '새 계획을 화면에 반영했습니다.');
+          if (this.setState) this.setState({ chairPlanVersion: (this.state.chairPlanVersion || 0) + 1 });
+          window.setTimeout(() => {
+            modalDisplay('plan-load-progress', 'none')();
+            modalDisplay('plan-load-success', 'flex')();
+          }, 280);
+        }, 1240);
+      },`,
+  '계획 불러오기 진행 흐름',
+);
 
 let workfrontMainData = extractMethod(workfrontMain.template, 'renderVals')
   .replace('renderVals()', 'buildWorkfrontMainData()');
@@ -837,6 +944,7 @@ const componentSource = `class Component extends DCLogic {
     openGroups: {},
     uijangTab: 'plan',
     uijangReview: null,
+    chairPlanVersion: 0,
   };
 
   ownerGroup(view) {
