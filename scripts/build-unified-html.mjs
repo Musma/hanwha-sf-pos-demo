@@ -99,6 +99,41 @@ let chairMain = alreadyUnified
   ? chair.template.match(/<!-- unified:chair:start -->([\s\S]*?)<!-- unified:chair:end -->/)[1].trim()
   : extractMain(chair.template);
 
+const weeklyVolumeColumns = [
+  '프로젝트', '블록', '실행계획 액티비티', '실행계획<br>착수일', '실행계획<br>완료일',
+  '기준계획<br>착수일', '기준계획<br>완료일', '실적<br>착수일', '실적<br>완료일',
+  '블록<br>L', '블록<br>B', '블록<br>H', '중량', '내입/외업<br>구분', '작업장',
+];
+const weeklyVolumeRows = [
+  ['2579', '511', '중조의장', '07/27', '08/01', '06/27', '07/01', '-', '-', '19', '22', '-', '144.6', '내업', '내업1공장 2bay 서편'],
+  ['2579', '512', '중조의장', '07/27', '08/01', '06/27', '07/01', '-', '-', '18', '13', '-', '168.3', '내업', '내업1공장 2bay 서편'],
+  ['2579', '501', '대조의장', '07/27', '08/15', '06/27', '07/15', '-', '-', '18', '22', '-', '144', '외업', '외업1공장'],
+  ['2579', '502', '대조의장', '07/28', '08/06', '06/28', '07/06', '-', '-', '18', '22', '-', '170', '외업', '외업1공장'],
+  ['2583', '50A', 'PE의장', '06/28', '07/28', '05/28', '06/28', '-', '-', '-', '-', '-', '-', '외업', 'PE 2장'],
+  ['2583', '50B', 'PE의장', '07/30', '09/05', '06/30', '08/05', '-', '-', '-', '-', '-', '-', '외업', 'PE 2장'],
+  ['2602', '507', '중조의장', '07/30', '08/07', '06/30', '07/07', '-', '-', '19', '22', '-', '163', '내업', '내업2공장'],
+  ['2602', '508', '중조의장', '08/01', '08/10', '07/01', '07/10', '-', '-', '17', '22', '-', '132', '내업', '내업2공장'],
+];
+const weeklyVolumeHeader = weeklyVolumeColumns
+  .map((label) => `<th style="background:#ffff00;border:1px solid #b9b9b9;padding:3px 6px;color:#111;font-weight:700;line-height:1.25;position:sticky;top:0;">${label}</th>`)
+  .join('');
+const weeklyVolumeBody = weeklyVolumeRows
+  .map((row) => `<tr style="height:22px;">${row.map((value) => `<td style="border:1px solid #b9b9b9;padding:3px 6px;color:#222;">${value}</td>`).join('')}</tr>`)
+  .join('\n');
+const weeklyVolumeModalStart = chairMain.indexOf('<div id="wwv-modal"');
+const weeklyVolumeTableStart = chairMain.indexOf('<table ', weeklyVolumeModalStart);
+const weeklyVolumeTableEnd = chairMain.indexOf('</table>', weeklyVolumeTableStart) + '</table>'.length;
+if (weeklyVolumeModalStart < 0 || weeklyVolumeTableStart < 0 || weeklyVolumeTableEnd < '</table>'.length) {
+  throw new Error('주간 작업 물량 모달 표를 찾지 못했습니다.');
+}
+chairMain =
+  chairMain.slice(0, weeklyVolumeTableStart) +
+  `<table style="border-collapse:collapse;font-size:11px;width:100%;white-space:nowrap;text-align:center;">
+            <thead><tr>${weeklyVolumeHeader}</tr></thead>
+            <tbody>${weeklyVolumeBody}</tbody>
+          </table>` +
+  chairMain.slice(weeklyVolumeTableEnd);
+
 const envLabelsMarkup = `<label style="display:flex;align-items:center;gap:3px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:#ed7100;border:1px solid #c95d00;border-radius:2px;color:#fff;font-size:10px;">✓</span>주간작업물량</label>
         <label style="display:flex;align-items:center;gap:3px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;background:#ed7100;border:1px solid #c95d00;border-radius:2px;color:#fff;font-size:10px;">✓</span>Gantt Chart</label>
         <label style="display:flex;align-items:center;gap:3px;color:#7a7f85;"><span style="display:inline-block;width:14px;height:14px;background:#fff;border:1px solid var(--line);border-radius:2px;"></span>부하 그래프</label>
