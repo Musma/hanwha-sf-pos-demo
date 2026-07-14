@@ -841,6 +841,63 @@ workfrontDetailUijangView = assertReplace(
   '의장 상세 미착수 건수',
 );
 
+const uijangWfConfirmButton = '<span class="sf-btn" style="display:inline-flex;align-items:center;gap:5px;background:#ed7100;border:1px solid #c95d00;color:#fff;border-radius:3px;padding:6px 16px;font-size:12px;font-weight:700;"><i class="ti ti-clipboard-check" style="font-size:15px;"></i>W/F 점검 확정</span>';
+const interactiveUijangWfConfirmButton = '<span class="sf-btn" data-uijang-wf-confirm-open="" role="button" tabIndex="0" aria-haspopup="dialog" onClick="{{ openUijangWfConfirm }}" onKeyDown="{{ openUijangWfConfirmKey }}" style="display:inline-flex;align-items:center;gap:5px;background:#ed7100;border:1px solid #c95d00;color:#fff;border-radius:3px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer;"><i class="ti ti-clipboard-check" style="font-size:15px;"></i>W/F 점검 확정</span>';
+workfrontDetailUijangView = assertReplace(
+  workfrontDetailUijangView,
+  uijangWfConfirmButton,
+  interactiveUijangWfConfirmButton,
+  '의장 W/F 점검 확정 버튼',
+);
+
+const uijangWfConfirmModals = `  <!-- 의장 W/F 점검 확정 확인 모달 -->
+  <div id="uijang-wf-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="uijang-wf-confirm-title" style="display:none;position:fixed;inset:0;background:rgba(32,34,42,.45);z-index:1200;align-items:center;justify-content:center;">
+    <div style="width:370px;display:flex;flex-direction:column;background:#f4f6f8;border:1px solid #8a9096;border-radius:5px 5px 0 0;box-shadow:0 14px 44px rgba(0,0,0,.4);overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:6px;background:linear-gradient(#fdfdfe,#e6eaef);border-bottom:1px solid #c4c9ce;padding:5px 8px;">
+        <i class="ti ti-clipboard-check" style="font-size:15px;color:#ed7100;"></i>
+        <span id="uijang-wf-confirm-title" style="font-size:12px;font-weight:700;color:#2d2d2d;">W/F 점검 확정</span>
+        <span role="button" tabIndex="0" aria-label="W/F 점검 확정 창 닫기" onClick="{{ closeUijangWfConfirm }}" style="margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:24px;height:20px;border:1px solid #d9a0a0;border-radius:3px;background:#fff;color:#d63b3b;cursor:pointer;"><i class="ti ti-x" style="font-size:13px;"></i></span>
+      </div>
+      <div style="padding:26px 22px 20px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+        <div style="display:flex;align-items:center;gap:9px;">
+          <i class="ti ti-help-circle" style="font-size:22px;color:#ed7100;"></i>
+          <span style="font-size:14px;font-weight:700;color:#2d2d2d;">W/F 점검을 확정하시겠습니까?</span>
+        </div>
+        <div style="display:flex;justify-content:center;gap:8px;width:100%;">
+          <span data-uijang-wf-confirm-submit="" role="button" tabIndex="0" onClick="{{ submitUijangWfConfirm }}" style="min-width:84px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(#f68b27,#ed7100);border:1px solid #cb5d00;border-radius:3px;padding:6px 18px;color:#fff;font-weight:700;cursor:pointer;">확인</span>
+          <span data-uijang-wf-confirm-cancel="" role="button" tabIndex="0" onClick="{{ closeUijangWfConfirm }}" style="min-width:84px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line,#b9bec3);border-radius:3px;padding:6px 18px;color:#3a3e43;font-weight:700;cursor:pointer;">취소</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 의장 W/F 점검 확정 완료 모달 -->
+  <div id="uijang-wf-confirm-success" role="dialog" aria-modal="true" aria-label="W/F 점검 확정 완료" style="display:none;position:fixed;inset:0;background:rgba(32,34,42,.45);z-index:1201;align-items:center;justify-content:center;">
+    <div style="width:340px;display:flex;flex-direction:column;background:#f4f6f8;border:1px solid #8a9096;border-radius:5px 5px 0 0;box-shadow:0 14px 44px rgba(0,0,0,.4);overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:6px;background:linear-gradient(#fdfdfe,#e6eaef);border-bottom:1px solid #c4c9ce;padding:5px 8px;">
+        <i class="ti ti-info-circle" style="font-size:15px;color:#0a72f2;"></i>
+        <span style="font-size:12px;font-weight:700;color:#2d2d2d;">알림</span>
+        <span role="button" tabIndex="0" aria-label="확정 완료 창 닫기" onClick="{{ closeUijangWfConfirmSuccess }}" style="margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:24px;height:20px;border:1px solid #d9a0a0;border-radius:3px;background:#fff;color:#d63b3b;cursor:pointer;"><i class="ti ti-x" style="font-size:13px;"></i></span>
+      </div>
+      <div style="padding:24px 16px 18px;display:flex;flex-direction:column;align-items:center;gap:16px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="ti ti-circle-check" style="font-size:22px;color:#2e9e57;"></i>
+          <span style="font-size:13px;font-weight:700;color:#2d2d2d;">확정되었습니다</span>
+        </div>
+        <span data-uijang-wf-confirm-success-close="" role="button" tabIndex="0" onClick="{{ closeUijangWfConfirmSuccess }}" style="display:inline-flex;align-items:center;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line,#b9bec3);border-radius:3px;padding:4px 24px;cursor:pointer;">확인</span>
+      </div>
+    </div>
+  </div>
+
+`;
+const uijangStatusBar = '<div style="height:22px;background:#1e1f22;border-top:1px solid #000;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#d8dadd;flex-shrink:0;">워크프론트 점검</div>';
+workfrontDetailUijangView = assertReplace(
+  workfrontDetailUijangView,
+  uijangStatusBar,
+  uijangWfConfirmModals + uijangStatusBar,
+  '의장 W/F 점검 확정 모달',
+);
+
 // ── 의장 상세: 계획 ↔ 작업장&설비 탭 전환 ──
 // 계획/작업장&설비 탭을 클릭 가능하게 바꾸고, 작업장&설비 탭에는 계획 탭과
 // 동일한 표 인터페이스를 행 데이터만 비운 상태로 보여준다.
@@ -1287,6 +1344,10 @@ const componentSource = `class Component extends DCLogic {
     const env = this.state.env;
     const chairVals = this.buildChairData();
     const weeklyTotal = chairVals.ltrows.length;
+    const uijangWfModalDisplay = (id, display) => () => {
+      const element = document.getElementById(id);
+      if (element) element.style.display = display;
+    };
     return {
       ...chairVals,
       ...this.buildWorkfrontMainData(),
@@ -1307,6 +1368,19 @@ const componentSource = `class Component extends DCLogic {
       openWorkfrontDetailKey: (event) => this.handleRouteKey(event, 'workfront-detail'),
       openWorkfrontDetailUijang: () => this.navigate('workfront-detail-uijang'),
       openWorkfrontDetailUijangKey: (event) => this.handleRouteKey(event, 'workfront-detail-uijang'),
+      openUijangWfConfirm: uijangWfModalDisplay('uijang-wf-confirm-modal', 'flex'),
+      openUijangWfConfirmKey: (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          uijangWfModalDisplay('uijang-wf-confirm-modal', 'flex')();
+        }
+      },
+      closeUijangWfConfirm: uijangWfModalDisplay('uijang-wf-confirm-modal', 'none'),
+      submitUijangWfConfirm: () => {
+        uijangWfModalDisplay('uijang-wf-confirm-modal', 'none')();
+        uijangWfModalDisplay('uijang-wf-confirm-success', 'flex')();
+      },
+      closeUijangWfConfirmSuccess: uijangWfModalDisplay('uijang-wf-confirm-success', 'none'),
       weeklyVolumeSortClick: () => this.toggleWeeklyVolumeSort(),
       weeklyVolumeSortKey: (event) => this.handleWeeklyVolumeSortKey(event),
     };
