@@ -58,7 +58,10 @@ const required = [
   'id="uijang-wf-confirm-success"',
   '>확정되었습니다</span>',
   '{{ submitUijangWfConfirm }}',
-  "view: ['chair', 'workfront-main', 'workfront-detail', 'workfront-detail-uijang']",
+  "view: ['chair', 'workfront-main', 'workfront-detail', 'workfront-detail-uijang', 'quality-self-inspection']",
+  "'에코텍 자체 품질지표': 'quality-self-inspection'",
+  '{{ isQualitySelfInspection }}',
+  'class="quality-input"',
   "'의장 주간작업계획 수립': 'chair'",
   "'워크프론트 점검': 'workfront-main'",
   '{{ envItems }}',
@@ -134,7 +137,7 @@ const app = new Component();
 
 let values = app.renderVals();
 const enabledRoutes = values.sideItems.filter((item) => item.route).map((item) => item.route);
-if (enabledRoutes.join(',') !== 'chair,workfront-main') {
+if (enabledRoutes.join(',') !== 'chair,workfront-main,quality-self-inspection') {
   throw new Error(`활성 사이드바 메뉴가 올바르지 않습니다: ${enabledRoutes.join(',')}`);
 }
 if (!values.isHome || values.isChair || values.isWorkfrontMain || values.isWorkfrontDetail || values.isWorkfrontDetailUijang) {

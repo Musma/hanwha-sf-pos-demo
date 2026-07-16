@@ -1073,6 +1073,9 @@ workfrontDetailUijangView = assertReplace(
 
 // ── 자체 품질 검사 화면: 워크프론트 상세 표 디자인을 기준으로 컬럼만 품질 검사항목으로 교체 ──
 const qualityColumns = [
+  { key: 'hullNo', label: 'HULL NO.', rowspan: true, width: 72 },
+  { key: 'blkNo', label: 'BLK NO.', rowspan: true, width: 72 },
+  { key: 'project', label: 'PROJECT', rowspan: true, width: 86 },
   { key: 'qualityResult', label: '품질<br>검사 결과', rowspan: true, width: 58 },
   { key: 'punchOpen', label: 'Punch<br>Open<br>Status', rowspan: true, width: 58 },
   { key: 'hullOwner', label: '선각<br>선주 위임<br>(O/X)', width: 72 },
@@ -1094,14 +1097,17 @@ const qualityColumns = [
 ];
 const qualityRowsData = [
   {
+    hullNo: 'G090',
+    blkNo: '225',
+    project: '한화오션',
     qualityResult: 'AA',
     punchOpen: '1',
     hullOwner: 'O',
     prepStatus: '0',
     selfQuality: '0',
     safetyInspection: '0',
-    zt: '',
-    wrongCutting: '',
+    zt: '0',
+    wrongCutting: '1',
     specialGr: '1',
     fairingLow: '1',
     fairingHigh: '1',
@@ -1115,7 +1121,7 @@ const qualityRowsData = [
   },
 ];
 const qualityHeaderBase = 'box-sizing:border-box;background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 4px;font-size:10px;font-weight:600;white-space:normal;word-break:normal;overflow-wrap:anywhere;overflow:hidden;line-height:1.22;text-align:center;vertical-align:middle;';
-const qualityGroupHeader = 'box-sizing:border-box;background:#2f3237;color:#fff;border:1px solid #4a4e53;border-top:3px solid #ed7100;padding:2px 8px;height:22px;font-size:10px;font-weight:800;text-align:center;vertical-align:middle;';
+const qualityGroupHeader = 'box-sizing:border-box;background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:2px 8px;height:22px;font-size:10px;font-weight:800;text-align:center;vertical-align:middle;';
 const qualityHeaderStyle = (column, secondRow = false) => {
   const sticky = secondRow ? 'position:sticky;top:22px;z-index:3;' : 'position:sticky;top:0;z-index:4;';
   const width = `width:${column.width}px;`;
@@ -1123,6 +1129,10 @@ const qualityHeaderStyle = (column, secondRow = false) => {
   if (column.accent === 'warning') return qualityHeaderBase + sticky + width + 'background:#f5d647;color:#222;';
   return qualityHeaderBase + sticky + width;
 };
+const qualityLeadingColumnCount = 5;
+const qualityGroupStartIndex = qualityLeadingColumnCount;
+const qualityGroupEndIndex = qualityColumns.length - 1;
+const qualityTrailingColumns = qualityColumns.slice(qualityGroupEndIndex);
 const qualityTd = (value, column) => {
   const tone = column.accent === 'warning' && value ? 'color:#d63b3b;font-weight:800;background:#fff0f0;' : 'color:#3a3e43;';
   const inputColor = column.accent === 'warning' && value ? '#d63b3b' : '#3a3e43';
@@ -1149,43 +1159,43 @@ const qualityView = `<div style="flex:1;display:flex;flex-direction:column;min-w
           <div style="margin-left:auto;font-size:11px;color:#7a7f85;">Last Updated: 2026.07.16 09:00</div>
         </div>
 
-        <div style="margin-top:12px;flex-shrink:0;background:#eef0f2;border:1px solid #c9cdd1;border-radius:3px;padding:9px 12px 10px;">
-          <div style="font-size:15px;font-weight:800;color:#111;line-height:1.1;">조회조건</div>
-          <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-            <label style="display:flex;align-items:center;gap:8px;margin:0;">
-              <select aria-label="검사계획일 조건" defaultValue="검사계획일" style="width:160px;height:28px;border:2px solid #4a4f55;background:#e8eaec;color:#111;padding:2px 28px 2px 16px;font-size:15px;font-weight:600;line-height:1.05;">
-                <option>검사계획일</option>
-              </select>
-            </label>
-            <input type="text" aria-label="검사계획 시작일" data-initial-value="2025-07-07" style="width:140px;height:28px;box-sizing:border-box;border:1px solid #c4cbd2;border-radius:2px;background:#fff;color:#305d8c;padding:3px 8px;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;">
-            <span style="font-size:13px;color:#5a5f65;">~</span>
-            <input type="text" aria-label="검사계획 종료일" data-initial-value="2025-08-10" style="width:140px;height:28px;box-sizing:border-box;border:1px solid #c4cbd2;border-radius:2px;background:#fff;color:#6a4a25;padding:3px 8px;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;">
-            <span class="sf-btn" role="button" tabIndex="0" style="display:inline-flex;align-items:center;justify-content:center;height:30px;min-width:82px;background:#3f4247;border:1px solid #35383d;border-radius:5px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;">조회</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:2px;margin-top:8px;">
-            <span role="button" tabIndex="0" style="display:inline-flex;align-items:center;justify-content:center;min-width:156px;height:43px;background:#6e5c4c;border:2px solid #fff;border-radius:7px;color:#fff;font-size:18px;font-weight:800;box-shadow:0 0 0 1px #d4d7da;">선각 품질</span>
-            <span role="button" tabIndex="0" style="display:inline-flex;align-items:center;justify-content:center;min-width:156px;height:43px;background:#7f7f7d;border:2px solid #fff;border-radius:7px;color:#fff;font-size:18px;font-weight:800;box-shadow:0 0 0 1px #d4d7da;">의장 품질</span>
-            <span role="button" tabIndex="0" style="display:inline-flex;align-items:center;justify-content:center;min-width:156px;height:43px;background:#7f7f7d;border:2px solid #fff;border-radius:7px;color:#fff;font-size:18px;font-weight:800;box-shadow:0 0 0 1px #d4d7da;">도장 품질</span>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:12px;flex-shrink:0;">
+          <div style="display:inline-flex;border:1px solid #b9bec3;border-radius:4px;overflow:hidden;background:#fff;">
+            <div role="button" tabIndex="0" style="background:#ed7100;color:#fff;font-size:12.5px;font-weight:700;padding:7px 20px;">선각 품질</div>
+            <div role="button" tabIndex="0" style="color:#5a5f65;font-size:12.5px;font-weight:600;padding:7px 20px;border-left:1px solid #d8dbdf;cursor:pointer;">의장 품질</div>
+            <div role="button" tabIndex="0" style="color:#5a5f65;font-size:12.5px;font-weight:600;padding:7px 20px;border-left:1px solid #d8dbdf;cursor:pointer;">도장 품질</div>
           </div>
         </div>
 
-        <div style="flex:1;display:flex;flex-direction:column;min-height:0;border:1px solid #c9cdd1;background:#fff;margin-top:12px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;background:#e7eaed;border-bottom:1px solid #cfd3d7;padding:5px 12px;flex-shrink:0;">
-            <span style="font-size:12px;font-weight:700;color:#3a3e43;">에코텍 자체 품질지표 목록</span>
-            <span style="font-size:11px;color:#7a7f85;">품질 검사 결과 · 선각/의장 검사 항목</span>
+        <div style="margin-top:12px;flex-shrink:0;background:var(--panel,#eef0f2);border:1px solid #c9cdd1;border-radius:3px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 12px;border-bottom:1px solid #d6dade;">
+            <span style="font-size:11px;color:#7a7f85;font-weight:600;">조회조건</span>
+            <span style="font-size:11px;color:#7a7f85;">화면확장</span>
           </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 12px 7px;font-size:12px;color:#2d2d2d;">
+            <span style="display:inline-block;width:4px;height:12px;background:#ed7100;border-radius:1px;"></span><span style="white-space:nowrap;">검사기간</span>
+            <select aria-label="검사계획일 조건" defaultValue="검사계획일" style="height:24px;box-sizing:border-box;background:#fff;border:1px solid var(--line,#b9bec3);border-radius:2px;padding:2px 6px;font-size:12px;color:#2d2d2d;width:132px;">
+              <option>검사계획일</option>
+            </select>
+            <input type="text" aria-label="검사계획 시작일" data-initial-value="2025-07-07" style="width:106px;height:24px;box-sizing:border-box;background:#fff;border:1px solid var(--line,#b9bec3);border-radius:2px;padding:3px 6px;font-size:12px;color:#2d2d2d;font-variant-numeric:tabular-nums;">
+            <span style="color:#7a7f85;">~</span>
+            <input type="text" aria-label="검사계획 종료일" data-initial-value="2025-08-10" style="width:106px;height:24px;box-sizing:border-box;background:#fff;border:1px solid var(--line,#b9bec3);border-radius:2px;padding:3px 6px;font-size:12px;color:#2d2d2d;font-variant-numeric:tabular-nums;">
+            <span class="sf-btn" role="button" tabIndex="0" style="margin-left:auto;display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line,#b9bec3);border-radius:3px;padding:4px 14px;font-size:12px;"><i class="ti ti-zoom-check" style="font-size:15px;color:#0a72f2;"></i>조회</span>
+          </div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;min-height:0;border:1px solid #c9cdd1;border-top:none;background:#fff;margin-top:0;">
           <div style="flex:1;overflow:auto;min-height:0;">
-            <table style="border-collapse:collapse;font-size:10.5px;width:100%;table-layout:fixed;">
+            <table style="border-collapse:collapse;font-size:10.5px;width:100%;min-width:${qualityColumnTotal}px;table-layout:fixed;">
               ${qualityColGroup}
               <thead>
                 <tr>
-                  <th rowspan="2" style="${qualityHeaderStyle(qualityColumns[0])}">${qualityColumns[0].label}</th>
-                  <th rowspan="2" style="${qualityHeaderStyle(qualityColumns[1])}">${qualityColumns[1].label}</th>
-                  <th colspan="15" style="${qualityGroupHeader}position:sticky;top:0;z-index:4;">선각</th>
-                  <th rowspan="2" style="${qualityHeaderStyle(qualityColumns[17])}">${qualityColumns[17].label}</th>
+                  ${qualityColumns.slice(0, qualityLeadingColumnCount).map((column) => `<th rowspan="2" style="${qualityHeaderStyle(column)}">${column.label}</th>`).join('\n                  ')}
+                  <th colspan="${qualityGroupEndIndex - qualityGroupStartIndex}" style="${qualityGroupHeader}position:sticky;top:0;z-index:4;">선각</th>
+                  ${qualityTrailingColumns.map((column) => `<th rowspan="2" style="${qualityHeaderStyle(column)}">${column.label}</th>`).join('\n                  ')}
                 </tr>
                 <tr>
-                  ${qualityColumns.slice(2, 17).map((column) => `<th style="${qualityHeaderStyle(column, true)}">${column.label}</th>`).join('\n                  ')}
+                  ${qualityColumns.slice(qualityGroupStartIndex, qualityGroupEndIndex).map((column) => `<th style="${qualityHeaderStyle(column, true)}">${column.label}</th>`).join('\n                  ')}
                 </tr>
               </thead>
               <tbody>
