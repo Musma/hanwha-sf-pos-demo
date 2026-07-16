@@ -1127,19 +1127,19 @@ const qualityRatioCard = `<div style="min-width:148px;background:#fff;border:1px
             </div>`;
 const qualityView = `<div style="flex:1;display:flex;flex-direction:column;min-width:0;background:#eef0f2;">
       <div style="height:30px;background:#fff;display:flex;align-items:flex-end;padding:0 0 0 6px;flex-shrink:0;border-bottom:1px solid #b6bbc0;">
-        <div style="background:#eef0f2;color:#2d2d2d;font-size:12px;font-weight:500;padding:6px 12px 7px 14px;border:1px solid #b6bbc0;border-bottom:1px solid #eef0f2;border-radius:3px 3px 0 0;display:flex;align-items:center;gap:16px;position:relative;top:1px;">자체 품질 검사<i class="ti ti-x" style="font-size:13px;color:#555;"></i></div>
+        <div style="background:#eef0f2;color:#2d2d2d;font-size:12px;font-weight:500;padding:6px 12px 7px 14px;border:1px solid #b6bbc0;border-bottom:1px solid #eef0f2;border-radius:3px 3px 0 0;display:flex;align-items:center;gap:16px;position:relative;top:1px;">에코텍 자체 품질지표<i class="ti ti-x" style="font-size:13px;color:#555;"></i></div>
       </div>
 
       <div style="flex:1;display:flex;flex-direction:column;min-height:0;padding:14px 20px 12px;">
         <div style="display:flex;align-items:baseline;gap:12px;flex-shrink:0;">
-          <div style="font-size:20px;font-weight:800;color:#222;">자체 품질 검사</div>
-          <div style="font-size:12px;color:#7a7f85;">품질 · 에코텍 자체품질검사 항목 검토</div>
+          <div style="font-size:20px;font-weight:800;color:#222;">에코텍 자체 품질지표</div>
+          <div style="font-size:12px;color:#7a7f85;">워크프론트 · 에코텍 자체품질검사 항목 검토</div>
           <div style="margin-left:auto;font-size:11px;color:#7a7f85;">Last Updated: 2026.07.16 09:00</div>
         </div>
 
         <div style="display:flex;align-items:center;gap:12px;margin-top:12px;flex-shrink:0;">
           <div style="display:inline-flex;border:1px solid #b9bec3;border-radius:4px;overflow:hidden;background:#fff;">
-            <div style="background:#ed7100;color:#fff;font-size:12.5px;font-weight:700;padding:7px 20px;">자체 품질 검사</div>
+            <div style="background:#ed7100;color:#fff;font-size:12.5px;font-weight:700;padding:7px 20px;">에코텍 자체 품질지표</div>
           </div>
           <div style="margin-left:auto;display:flex;gap:6px;">
             <span class="sf-btn" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line,#b9bec3);border-radius:3px;padding:6px 14px;font-size:12px;"><i class="ti ti-search" style="font-size:15px;color:#0a72f2;"></i>조회</span>
@@ -1156,7 +1156,7 @@ const qualityView = `<div style="flex:1;display:flex;flex-direction:column;min-w
 
         <div style="flex:1;display:flex;flex-direction:column;min-height:0;border:1px solid #c9cdd1;background:#fff;margin-top:14px;">
           <div style="display:flex;align-items:center;justify-content:space-between;background:#e7eaed;border-bottom:1px solid #cfd3d7;padding:5px 12px;flex-shrink:0;">
-            <span style="font-size:12px;font-weight:700;color:#3a3e43;">자체 품질 검사 목록</span>
+            <span style="font-size:12px;font-weight:700;color:#3a3e43;">에코텍 자체 품질지표 목록</span>
             <span style="font-size:11px;color:#7a7f85;">품질 검사 결과 · 선각/의장 검사 항목</span>
           </div>
           <div style="flex:1;overflow:auto;min-height:0;">
@@ -1184,7 +1184,7 @@ const qualityView = `<div style="flex:1;display:flex;flex-direction:column;min-w
           </div>
         </div>
       </div>
-  <div style="height:22px;background:#1e1f22;border-top:1px solid #000;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#d8dadd;flex-shrink:0;">자체 품질 검사</div>
+  <div style="height:22px;background:#1e1f22;border-top:1px solid #000;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#d8dadd;flex-shrink:0;">에코텍 자체 품질지표</div>
     </div>`;
 
 const toggleMethod = extractMethod(workfrontDetail.template, 'toggle');
@@ -1193,7 +1193,7 @@ const toggleAllMethod = extractMethod(workfrontDetail.template, 'toggleAll');
 // 사이드바: 대메뉴 아코디언. 목록 길이를 고정하고 하위 메뉴는
 // display 스타일 바인딩으로만 숨겨 구조 변경 없이 토글한다.
 const sideItemsMethod = `buildSideItems() {
-    const routes = { '의장 주간작업계획 수립': 'chair', '워크프론트 점검': 'workfront-main', '자체 품질 검사': 'quality-self-inspection' };
+    const routes = { '의장 주간작업계획 수립': 'chair', '워크프론트 점검': 'workfront-main', '에코텍 자체 품질지표': 'quality-self-inspection' };
     const groups = [
       ['실행계획 관리', [['실행계획 조회', 14], ['실행계획 배포 현황', 14]]],
       ['소조', [['소조 기본정보관리', 14], ['소조 Case별 Layout 관리', 20], ['소조 Case별 생산 달력', 20], ['소조 작업계획 수립분석', 14], ['소조 주간작업계획 수립', 20], ['소조 주간작업계획 조회', 20, true], ['소조 정반배치도 조회', 20, true], ['소조 일일 계획 관리', 20, true]]],
@@ -1203,12 +1203,11 @@ const sideItemsMethod = `buildSideItems() {
       ['의장', [['의장 기본정보관리', 14], ['의장 Case별 Layout 관리', 20], ['의장 Case별 생산 실적', 20], ['의장 작업계획 수립분석', 14], ['의장 주간작업계획 수립', 20], ['의장 주간작업계획 조회', 20, true], ['의장 장반배치도 조회', 20, true], ['의장 일일 계획 관리', 20, true]]],
       ['도장', [['도장 기본정보관리', 14], ['도장 작업계획 수립분석', 14], ['도장 주간작업계획 수립', 20], ['도장 주간작업계획 조회', 20, true], ['도장 장반배치도 조회', 20, true], ['도장 일일 계획 관리', 20, true]]],
       ['PE', [['PE 기본정보관리', 14], ['PE 작업계획 수립분석', 14], ['PE 일일 계획 관리', 20, true]]],
-      ['품질', [['자체 품질 검사', 14]]],
-      ['워크프론트', [['워크프론트 점검', 14]]],
+      ['워크프론트', [['워크프론트 점검', 14], ['에코텍 자체 품질지표', 14]]],
       ['시스템 관리', [['공통코드 관리', 14], ['사용자 관리', 14], ['메뉴 관리', 14], ['롤 관리', 14], ['프로그램 사용 현황', 14], ['프로그램 사용 집계', 14]]],
     ];
     const view = this.state.view;
-    const active = view === 'chair' ? '의장 주간작업계획 수립' : view.startsWith('workfront') ? '워크프론트 점검' : view.startsWith('quality') ? '자체 품질 검사' : '';
+    const active = view === 'chair' ? '의장 주간작업계획 수립' : view.startsWith('workfront') ? '워크프론트 점검' : view.startsWith('quality') ? '에코텍 자체 품질지표' : '';
     const items = [];
     for (const [group, children] of groups) {
       const open = !!this.state.openGroups[group];
@@ -1262,7 +1261,7 @@ const componentSource = `class Component extends DCLogic {
   ownerGroup(view) {
     if (view === 'chair') return '의장';
     if (view.startsWith('workfront')) return '워크프론트';
-    if (view.startsWith('quality')) return '품질';
+    if (view.startsWith('quality')) return '워크프론트';
     return null;
   }
 
@@ -1495,7 +1494,7 @@ const componentSource = `class Component extends DCLogic {
       isWorkfrontDetailUijang: view === 'workfront-detail-uijang',
       isQualitySelfInspection: view === 'quality-self-inspection',
       ...this.buildUijangTabVals(),
-      footerTitle: view === 'chair' ? '의장 주간작업계획 수립(PPHA_C210)' : view === 'home' ? 'SF-POS' : view.startsWith('quality') ? '자체 품질 검사' : '워크프론트 점검',
+      footerTitle: view === 'chair' ? '의장 주간작업계획 수립(PPHA_C210)' : view === 'home' ? 'SF-POS' : view.startsWith('quality') ? '에코텍 자체 품질지표' : '워크프론트 점검',
       sideItems: this.buildSideItems(),
       openWorkfrontDetail: () => this.navigate('workfront-detail'),
       openWorkfrontDetailKey: (event) => this.handleRouteKey(event, 'workfront-detail'),
