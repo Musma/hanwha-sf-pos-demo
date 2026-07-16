@@ -1122,6 +1122,7 @@ const qualityRowsData = Array.from({ length: 13 }, (_, index) => ({
   ...qualityPatternRow,
   hullNo: `G${String(90 + index).padStart(3, '0')}`,
   blkNo: String(225 + index),
+  qualityResult: index % 2 === 0 ? 'AA' : 'AC',
 }));
 const qualityHeaderBase = 'box-sizing:border-box;background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 4px;font-size:10px;font-weight:600;white-space:normal;word-break:normal;overflow-wrap:anywhere;overflow:hidden;line-height:1.22;text-align:center;vertical-align:middle;';
 const qualityGroupHeader = 'box-sizing:border-box;background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:2px 8px;height:22px;font-size:10px;font-weight:800;text-align:center;vertical-align:middle;';
