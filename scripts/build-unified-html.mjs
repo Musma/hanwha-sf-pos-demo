@@ -1110,7 +1110,8 @@ const qualityHeaderStyle = (column, secondRow = false) => {
 };
 const qualityTd = (value, column) => {
   const tone = column.accent === 'warning' && value ? 'color:#d63b3b;font-weight:800;background:#fff0f0;' : 'color:#3a3e43;';
-  return `<td style="border:1px solid #e6e8ea;padding:5px 8px;text-align:center;font-variant-numeric:tabular-nums;${tone}">${value ?? ''}</td>`;
+  const inputColor = column.accent === 'warning' && value ? '#d63b3b' : '#3a3e43';
+  return `<td style="border:1px solid #e6e8ea;padding:0;text-align:center;font-variant-numeric:tabular-nums;${tone}"><input class="quality-input" data-quality-key="${column.key}" aria-label="${column.label.replace(/<br>/g, ' ')}" defaultValue="${value ?? ''}" style="width:100%;height:27px;min-width:52px;box-sizing:border-box;border:0;background:transparent;padding:4px 8px;text-align:center;font:inherit;color:${inputColor};font-weight:${column.accent === 'warning' && value ? '800' : '500'};outline:none;"></td>`;
 };
 const qualityStaticRows = qualityRowsData
   .map((row) => `<tr style="height:28px;background:#fff;">${qualityColumns.map((column) => qualityTd(row[column.key], column)).join('')}</tr>`)
@@ -1673,6 +1674,8 @@ body{letter-spacing:-0.1px;}
 [data-weekly-sort]:hover{background:rgba(0,0,0,.08)!important;}
 [data-weekly-sort]:active{background:rgba(0,0,0,.14)!important;}
 tbody tr:hover td{background-color:rgba(10,114,242,.05);}
+.quality-input:focus{background:#fff!important;box-shadow:inset 0 0 0 2px #0a72f2;}
+td:focus-within{background:#fff!important;}
 `;
 if (!unifiedTemplate.includes('desktop-polish')) {
   unifiedTemplate = assertReplace(
