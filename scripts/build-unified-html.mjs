@@ -1095,31 +1095,30 @@ const qualityColumns = [
   { key: 'totalRatio', label: '선각<br>Total<br>(Ratio)', accent: 'warning', width: 66 },
   { key: 'outfitOwner', label: '의장<br>선주 위임<br>(O/X)', rowspan: true, width: 66 },
 ];
-const qualityRowsData = [
-  {
-    hullNo: 'G090',
-    blkNo: '225',
-    project: '한화오션',
-    qualityResult: 'AA',
-    punchOpen: '1',
-    hullOwner: 'O',
-    prepStatus: '0',
-    selfQuality: '0',
-    safetyInspection: '0',
-    zt: '0',
-    wrongCutting: '1',
-    specialGr: '1',
-    fairingLow: '1',
-    fairingHigh: '1',
-    misReFit: '1',
-    misPassWelding: '0',
-    missingWelding: '0',
-    weldingDefects: '1',
-    safetyCleaning: '0',
-    totalRatio: '14.08%',
-    outfitOwner: 'O',
-  },
-];
+const qualityPatternRow = {
+  hullNo: 'G090',
+  blkNo: '225',
+  project: '한화오션',
+  qualityResult: 'AA',
+  punchOpen: '1',
+  hullOwner: 'O',
+  prepStatus: '0',
+  selfQuality: '0',
+  safetyInspection: '0',
+  zt: '0',
+  wrongCutting: '1',
+  specialGr: '1',
+  fairingLow: '1',
+  fairingHigh: '1',
+  misReFit: '1',
+  misPassWelding: '0',
+  missingWelding: '0',
+  weldingDefects: '1',
+  safetyCleaning: '0',
+  totalRatio: '14.08%',
+  outfitOwner: 'O',
+};
+const qualityRowsData = Array.from({ length: 13 }, () => ({ ...qualityPatternRow }));
 const qualityHeaderBase = 'box-sizing:border-box;background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 4px;font-size:10px;font-weight:600;white-space:normal;word-break:normal;overflow-wrap:anywhere;overflow:hidden;line-height:1.22;text-align:center;vertical-align:middle;';
 const qualityGroupHeader = 'box-sizing:border-box;background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:2px 8px;height:22px;font-size:10px;font-weight:800;text-align:center;vertical-align:middle;';
 const qualityHeaderStyle = (column, secondRow = false) => {
@@ -1143,10 +1142,7 @@ const qualityColGroup = `<colgroup>${qualityColumns.map((column) => `<col style=
 const qualityStaticRows = qualityRowsData
   .map((row) => `<tr style="height:28px;background:#fff;">${qualityColumns.map((column) => qualityTd(row[column.key], column)).join('')}</tr>`)
   .join('\n                ');
-const qualityEmptyRows = Array.from(
-  { length: 12 },
-  () => `<tr style="height:28px;">${qualityColumns.map((column) => qualityTd('', column)).join('')}</tr>`,
-).join('\n                ');
+const qualityEmptyRows = '';
 const qualityView = `<div style="flex:1;display:flex;flex-direction:column;min-width:0;background:#eef0f2;">
       <div style="height:30px;background:#fff;display:flex;align-items:flex-end;padding:0 0 0 6px;flex-shrink:0;border-bottom:1px solid #b6bbc0;">
         <div style="background:#eef0f2;color:#2d2d2d;font-size:12px;font-weight:500;padding:6px 12px 7px 14px;border:1px solid #b6bbc0;border-bottom:1px solid #eef0f2;border-radius:3px 3px 0 0;display:flex;align-items:center;gap:16px;position:relative;top:1px;">에코텍 자체 품질지표<i class="ti ti-x" style="font-size:13px;color:#555;"></i></div>
