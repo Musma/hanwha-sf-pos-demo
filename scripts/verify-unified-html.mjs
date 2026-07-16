@@ -18,7 +18,7 @@ if (!bundle.includes('<script type="__bundler/manifest">')) {
 if (!bundle.includes('rel="icon" type="image/svg+xml"')) {
   throw new Error('index.html에 SF-POS 파비콘이 없습니다.');
 }
-if (!bundle.includes('name="theme-color" content="#22262c"')) {
+if (!bundle.includes('name="theme-color" content="#f37321"')) {
   throw new Error('index.html에 브라우저 테마 색상이 없습니다.');
 }
 const templateMatch = bundle.match(/<script type="__bundler\/template">\s*([\s\S]*?)\s*<\/script>/);
@@ -28,7 +28,7 @@ const template = JSON.parse(templateMatch[1]);
 if (!template.includes('rel="icon" type="image/svg+xml"')) {
   throw new Error('통합 템플릿에 SF-POS 파비콘이 없습니다.');
 }
-if (!template.includes('name="theme-color" content="#22262c"')) {
+if (!template.includes('name="theme-color" content="#f37321"')) {
   throw new Error('통합 템플릿에 브라우저 테마 색상이 없습니다.');
 }
 const fileReferences = [...template.matchAll(/(?:src|href)="([^"]+)"/g)].map((match) => match[1]);

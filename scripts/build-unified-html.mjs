@@ -20,7 +20,7 @@ const faviconPath = path.join(root, 'favicon.svg');
 const faviconHref = `data:image/svg+xml,${encodeURIComponent(fs.readFileSync(faviconPath, 'utf8').trim())}`;
 const sfPosHeadBranding = [
   `<link rel="icon" type="image/svg+xml" href="${faviconHref}">`,
-  '<meta name="theme-color" content="#22262c">',
+  '<meta name="theme-color" content="#f37321">',
 ].join('\n');
 
 function decodeBundle(filePath) {
