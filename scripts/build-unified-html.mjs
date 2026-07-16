@@ -1057,13 +1057,142 @@ workfrontDetailUijangView = assertReplace(
   '의장 상세 탭 콘텐츠 분기',
 );
 
+// ── 자체 품질 검사 화면: 워크프론트 상세 표 디자인을 기준으로 컬럼만 품질 검사항목으로 교체 ──
+const qualityColumns = [
+  { key: 'qualityResult', label: '품질<br>검사 결과', rowspan: true },
+  { key: 'punchOpen', label: 'Punch<br>Open<br>Status', rowspan: true },
+  { key: 'hullOwner', label: '선각<br>선주 위임<br>(O/X)' },
+  { key: 'prepStatus', label: '선각<br>검사준비<br>상태<br>100' },
+  { key: 'selfQuality', label: '선각<br>자주품질<br>이행도<br>100' },
+  { key: 'safetyInspection', label: '선각<br>검사안전<br>100' },
+  { key: 'zt', label: '선각<br>Z/T<br>1', accent: 'danger' },
+  { key: 'wrongCutting', label: 'Wrong<br>cutting<br>2' },
+  { key: 'specialGr', label: 'Special GR<br>(TGR/FGR/CM/3C)' },
+  { key: 'fairingLow', label: 'Fairing<br>0~15mm<br>8' },
+  { key: 'fairingHigh', label: 'Fairing<br>16mm&lt;~<br>2' },
+  { key: 'misReFit', label: 'Mis-a<br>Re-fit<br>2' },
+  { key: 'misPassWelding', label: 'Mis-a<br>Pass<br>welding<br>4' },
+  { key: 'missingWelding', label: 'Missing<br>Welding<br>&amp;<br>Members<br>3' },
+  { key: 'weldingDefects', label: 'Welding<br>defects<br>30' },
+  { key: 'safetyCleaning', label: 'Safety<br>&amp;<br>Cleaning<br>5' },
+  { key: 'totalRatio', label: '선각<br>Total<br>(Ratio)', accent: 'warning' },
+  { key: 'outfitOwner', label: '의장<br>선주 위임<br>(O/X)', rowspan: true },
+];
+const qualityRowsData = [
+  {
+    qualityResult: 'AA',
+    punchOpen: '1',
+    hullOwner: 'O',
+    prepStatus: '0',
+    selfQuality: '0',
+    safetyInspection: '0',
+    zt: '',
+    wrongCutting: '',
+    specialGr: '1',
+    fairingLow: '1',
+    fairingHigh: '1',
+    misReFit: '1',
+    misPassWelding: '0',
+    missingWelding: '0',
+    weldingDefects: '1',
+    safetyCleaning: '0',
+    totalRatio: '14.08%',
+    outfitOwner: 'O',
+  },
+];
+const qualityHeaderBase = 'background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:6px 8px;font-weight:600;white-space:nowrap;line-height:1.25;text-align:center;';
+const qualityGroupHeader = 'background:#2f3237;color:#fff;border:1px solid #4a4e53;border-top:3px solid #ed7100;padding:4px 8px;font-weight:800;text-align:center;';
+const qualityHeaderStyle = (column, secondRow = false) => {
+  const sticky = secondRow ? 'position:sticky;top:29px;z-index:3;' : 'position:sticky;top:0;z-index:4;';
+  if (column.accent === 'danger') return qualityHeaderBase + sticky + 'background:#c0261d;color:#fff;';
+  if (column.accent === 'warning') return qualityHeaderBase + sticky + 'background:#f5d647;color:#222;';
+  return qualityHeaderBase + sticky;
+};
+const qualityTd = (value, column) => {
+  const tone = column.accent === 'warning' && value ? 'color:#d63b3b;font-weight:800;background:#fff0f0;' : 'color:#3a3e43;';
+  return `<td style="border:1px solid #e6e8ea;padding:5px 8px;text-align:center;font-variant-numeric:tabular-nums;${tone}">${value ?? ''}</td>`;
+};
+const qualityStaticRows = qualityRowsData
+  .map((row) => `<tr style="height:28px;background:#fff;">${qualityColumns.map((column) => qualityTd(row[column.key], column)).join('')}</tr>`)
+  .join('\n                ');
+const qualityEmptyRows = Array.from(
+  { length: 12 },
+  () => `<tr style="height:28px;">${qualityColumns.map((column) => qualityTd('', column)).join('')}</tr>`,
+).join('\n                ');
+const qualityKpiCount = (key, value) => qualityRowsData.filter((row) => row[key] === value).length;
+const qualityRatioCard = `<div style="min-width:148px;background:#fff;border:1px solid #c9cdd1;border-left:3px solid #d63b3b;border-radius:3px;padding:7px 14px 8px;">
+              <div style="font-size:11px;color:#7a7f85;">Total Ratio</div>
+              <div style="font-size:19px;font-weight:800;color:#d63b3b;line-height:1.25;font-variant-numeric:tabular-nums;">${qualityRowsData[0].totalRatio}</div>
+            </div>`;
+const qualityView = `<div style="flex:1;display:flex;flex-direction:column;min-width:0;background:#eef0f2;">
+      <div style="height:30px;background:#fff;display:flex;align-items:flex-end;padding:0 0 0 6px;flex-shrink:0;border-bottom:1px solid #b6bbc0;">
+        <div style="background:#eef0f2;color:#2d2d2d;font-size:12px;font-weight:500;padding:6px 12px 7px 14px;border:1px solid #b6bbc0;border-bottom:1px solid #eef0f2;border-radius:3px 3px 0 0;display:flex;align-items:center;gap:16px;position:relative;top:1px;">자체 품질 검사<i class="ti ti-x" style="font-size:13px;color:#555;"></i></div>
+      </div>
+
+      <div style="flex:1;display:flex;flex-direction:column;min-height:0;padding:14px 20px 12px;">
+        <div style="display:flex;align-items:baseline;gap:12px;flex-shrink:0;">
+          <div style="font-size:20px;font-weight:800;color:#222;">자체 품질 검사</div>
+          <div style="font-size:12px;color:#7a7f85;">품질 · 에코텍 자체품질검사 항목 검토</div>
+          <div style="margin-left:auto;font-size:11px;color:#7a7f85;">Last Updated: 2026.07.16 09:00</div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;margin-top:12px;flex-shrink:0;">
+          <div style="display:inline-flex;border:1px solid #b9bec3;border-radius:4px;overflow:hidden;background:#fff;">
+            <div style="background:#ed7100;color:#fff;font-size:12.5px;font-weight:700;padding:7px 20px;">자체 품질 검사</div>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:6px;">
+            <span class="sf-btn" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line,#b9bec3);border-radius:3px;padding:6px 14px;font-size:12px;"><i class="ti ti-search" style="font-size:15px;color:#0a72f2;"></i>조회</span>
+            <span class="sf-btn" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line,#b9bec3);border-radius:3px;padding:6px 14px;font-size:12px;"><i class="ti ti-device-floppy" style="font-size:15px;color:#0a72f2;"></i>저장</span>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:12px;flex-shrink:0;">
+          ${detailKpiCard('검사 행', qualityRowsData.length, '#ed7100')}
+          ${detailKpiCard('AA 결과', qualityKpiCount('qualityResult', 'AA'), '#2e9e57')}
+          ${detailKpiCard('Punch Open', qualityRowsData.reduce((sum, row) => sum + Number(row.punchOpen || 0), 0), '#0a72f2')}
+          ${qualityRatioCard}
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;min-height:0;border:1px solid #c9cdd1;background:#fff;margin-top:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#e7eaed;border-bottom:1px solid #cfd3d7;padding:5px 12px;flex-shrink:0;">
+            <span style="font-size:12px;font-weight:700;color:#3a3e43;">자체 품질 검사 목록</span>
+            <span style="font-size:11px;color:#7a7f85;">품질 검사 결과 · 선각/의장 검사 항목</span>
+          </div>
+          <div style="flex:1;overflow:auto;min-height:0;">
+            <table style="border-collapse:collapse;font-size:11px;width:100%;white-space:nowrap;">
+              <thead>
+                <tr>
+                  <th rowspan="2" style="${qualityHeaderStyle(qualityColumns[0])}">${qualityColumns[0].label}</th>
+                  <th rowspan="2" style="${qualityHeaderStyle(qualityColumns[1])}">${qualityColumns[1].label}</th>
+                  <th colspan="15" style="${qualityGroupHeader}position:sticky;top:0;z-index:4;">선각</th>
+                  <th rowspan="2" style="${qualityHeaderStyle(qualityColumns[17])}">${qualityColumns[17].label}</th>
+                </tr>
+                <tr>
+                  ${qualityColumns.slice(2, 17).map((column) => `<th style="${qualityHeaderStyle(column, true)}">${column.label}</th>`).join('\n                  ')}
+                </tr>
+              </thead>
+              <tbody>
+                ${qualityStaticRows}
+                ${qualityEmptyRows}
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#e7eaed;border-top:1px solid #cfd3d7;padding:4px 12px;flex-shrink:0;font-size:11px;color:#4a4f55;">
+            <span>총 ${qualityRowsData.length}행</span>
+            <span style="font-weight:600;">컬럼 ${qualityColumns.length}개</span>
+          </div>
+        </div>
+      </div>
+  <div style="height:22px;background:#1e1f22;border-top:1px solid #000;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#d8dadd;flex-shrink:0;">자체 품질 검사</div>
+    </div>`;
+
 const toggleMethod = extractMethod(workfrontDetail.template, 'toggle');
 const toggleAllMethod = extractMethod(workfrontDetail.template, 'toggleAll');
 
-// 사이드바: 대메뉴 10개 아코디언. 목록 길이를 고정하고 하위 메뉴는
+// 사이드바: 대메뉴 아코디언. 목록 길이를 고정하고 하위 메뉴는
 // display 스타일 바인딩으로만 숨겨 구조 변경 없이 토글한다.
 const sideItemsMethod = `buildSideItems() {
-    const routes = { '의장 주간작업계획 수립': 'chair', '워크프론트 점검': 'workfront-main' };
+    const routes = { '의장 주간작업계획 수립': 'chair', '워크프론트 점검': 'workfront-main', '자체 품질 검사': 'quality-self-inspection' };
     const groups = [
       ['실행계획 관리', [['실행계획 조회', 14], ['실행계획 배포 현황', 14]]],
       ['소조', [['소조 기본정보관리', 14], ['소조 Case별 Layout 관리', 20], ['소조 Case별 생산 달력', 20], ['소조 작업계획 수립분석', 14], ['소조 주간작업계획 수립', 20], ['소조 주간작업계획 조회', 20, true], ['소조 정반배치도 조회', 20, true], ['소조 일일 계획 관리', 20, true]]],
@@ -1073,11 +1202,12 @@ const sideItemsMethod = `buildSideItems() {
       ['의장', [['의장 기본정보관리', 14], ['의장 Case별 Layout 관리', 20], ['의장 Case별 생산 실적', 20], ['의장 작업계획 수립분석', 14], ['의장 주간작업계획 수립', 20], ['의장 주간작업계획 조회', 20, true], ['의장 장반배치도 조회', 20, true], ['의장 일일 계획 관리', 20, true]]],
       ['도장', [['도장 기본정보관리', 14], ['도장 작업계획 수립분석', 14], ['도장 주간작업계획 수립', 20], ['도장 주간작업계획 조회', 20, true], ['도장 장반배치도 조회', 20, true], ['도장 일일 계획 관리', 20, true]]],
       ['PE', [['PE 기본정보관리', 14], ['PE 작업계획 수립분석', 14], ['PE 일일 계획 관리', 20, true]]],
+      ['품질', [['자체 품질 검사', 14]]],
       ['워크프론트', [['워크프론트 점검', 14]]],
       ['시스템 관리', [['공통코드 관리', 14], ['사용자 관리', 14], ['메뉴 관리', 14], ['롤 관리', 14], ['프로그램 사용 현황', 14], ['프로그램 사용 집계', 14]]],
     ];
     const view = this.state.view;
-    const active = view === 'chair' ? '의장 주간작업계획 수립' : view.startsWith('workfront') ? '워크프론트 점검' : '';
+    const active = view === 'chair' ? '의장 주간작업계획 수립' : view.startsWith('workfront') ? '워크프론트 점검' : view.startsWith('quality') ? '자체 품질 검사' : '';
     const items = [];
     for (const [group, children] of groups) {
       const open = !!this.state.openGroups[group];
@@ -1117,7 +1247,7 @@ const sideItemsMethod = `buildSideItems() {
 
 const componentSource = `class Component extends DCLogic {
   state = {
-    view: ['chair', 'workfront-main', 'workfront-detail', 'workfront-detail-uijang'].includes(window.location.hash.slice(1))
+    view: ['chair', 'workfront-main', 'workfront-detail', 'workfront-detail-uijang', 'quality-self-inspection'].includes(window.location.hash.slice(1))
       ? window.location.hash.slice(1)
       : 'home',
     checked: {},
@@ -1131,6 +1261,7 @@ const componentSource = `class Component extends DCLogic {
   ownerGroup(view) {
     if (view === 'chair') return '의장';
     if (view.startsWith('workfront')) return '워크프론트';
+    if (view.startsWith('quality')) return '품질';
     return null;
   }
 
@@ -1142,7 +1273,7 @@ const componentSource = `class Component extends DCLogic {
   componentDidMount() {
     this.syncFromLocation = () => {
       const hash = window.location.hash.slice(1);
-      const view = ['chair', 'workfront-main', 'workfront-detail', 'workfront-detail-uijang'].includes(hash) ? hash : 'home';
+      const view = ['chair', 'workfront-main', 'workfront-detail', 'workfront-detail-uijang', 'quality-self-inspection'].includes(hash) ? hash : 'home';
       if (view !== this.state.view) {
         this.setState({ view, openGroups: this.openGroupsFor(view, this.state.openGroups) });
       }
@@ -1361,8 +1492,9 @@ const componentSource = `class Component extends DCLogic {
       isWorkfrontMain: view === 'workfront-main',
       isWorkfrontDetail: view === 'workfront-detail',
       isWorkfrontDetailUijang: view === 'workfront-detail-uijang',
+      isQualitySelfInspection: view === 'quality-self-inspection',
       ...this.buildUijangTabVals(),
-      footerTitle: view === 'chair' ? '의장 주간작업계획 수립(PPHA_C210)' : view === 'home' ? 'SF-POS' : '워크프론트 점검',
+      footerTitle: view === 'chair' ? '의장 주간작업계획 수립(PPHA_C210)' : view === 'home' ? 'SF-POS' : view.startsWith('quality') ? '자체 품질 검사' : '워크프론트 점검',
       sideItems: this.buildSideItems(),
       openWorkfrontDetail: () => this.navigate('workfront-detail'),
       openWorkfrontDetailKey: (event) => this.handleRouteKey(event, 'workfront-detail'),
@@ -1444,6 +1576,9 @@ const unifiedViews = `<!-- unified-navigation:start -->
       <!-- unified:chair:start -->
       ${chairMain}
       <!-- unified:chair:end -->
+    </sc-if>
+    <sc-if value="{{ isQualitySelfInspection }}" hint-placeholder-val="{{ false }}">
+      ${qualityView}
     </sc-if>
     <sc-if value="{{ isWorkfrontMain }}" hint-placeholder-val="{{ false }}">
       ${workfrontMainView}
