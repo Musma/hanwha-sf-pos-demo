@@ -15,10 +15,22 @@ if (bundle.includes('http-equiv="refresh"')) throw new Error('index.html이 아�
 if (!bundle.includes('<script type="__bundler/manifest">')) {
   throw new Error('index.html에 자체 포함 리소스 번들이 없습니다.');
 }
+if (!bundle.includes('rel="icon" type="image/svg+xml"')) {
+  throw new Error('index.html에 SF-POS 파비콘이 없습니다.');
+}
+if (!bundle.includes('name="theme-color" content="#22262c"')) {
+  throw new Error('index.html에 브라우저 테마 색상이 없습니다.');
+}
 const templateMatch = bundle.match(/<script type="__bundler\/template">\s*([\s\S]*?)\s*<\/script>/);
 if (!templateMatch) throw new Error('번들 템플릿을 찾을 수 없습니다.');
 
 const template = JSON.parse(templateMatch[1]);
+if (!template.includes('rel="icon" type="image/svg+xml"')) {
+  throw new Error('통합 템플릿에 SF-POS 파비콘이 없습니다.');
+}
+if (!template.includes('name="theme-color" content="#22262c"')) {
+  throw new Error('통합 템플릿에 브라우저 테마 색상이 없습니다.');
+}
 const fileReferences = [...template.matchAll(/(?:src|href)="([^"]+)"/g)].map((match) => match[1]);
 const externalFileReferences = fileReferences.filter((reference) => /^(?:https?:|\.\.?\/)/.test(reference));
 if (externalFileReferences.length > 0) {

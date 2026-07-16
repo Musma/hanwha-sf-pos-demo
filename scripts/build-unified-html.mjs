@@ -16,6 +16,12 @@ const chairPath = findFile('의장 주간작업계획 수립.html');
 const workfrontMainPath = findFile('워크프론트 점검 메인.html');
 const workfrontDetailPath = findFile('워크프론트 점검 서브.html');
 const outputPath = path.join(root, 'index.html');
+const faviconPath = path.join(root, 'favicon.svg');
+const faviconHref = `data:image/svg+xml,${encodeURIComponent(fs.readFileSync(faviconPath, 'utf8').trim())}`;
+const sfPosHeadBranding = [
+  `<link rel="icon" type="image/svg+xml" href="${faviconHref}">`,
+  '<meta name="theme-color" content="#22262c">',
+].join('\n');
 
 function decodeBundle(filePath) {
   const bundle = fs.readFileSync(filePath, 'utf8');
@@ -27,6 +33,14 @@ function decodeBundle(filePath) {
 function assertReplace(source, searchValue, replacement, label) {
   if (!source.includes(searchValue)) throw new Error(`교체 대상을 찾을 수 없습니다: ${label}`);
   return source.replace(searchValue, replacement);
+}
+
+function injectSfPosHeadBranding(html, label) {
+  const headEnd = html.indexOf('</head>');
+  if (headEnd < 0) throw new Error(`head를 찾을 수 없습니다: ${label}`);
+  const head = html.slice(0, headEnd);
+  if (head.includes('rel="icon"') && head.includes('name="theme-color"')) return html;
+  return html.slice(0, headEnd) + sfPosHeadBranding + '\n' + html.slice(headEnd);
 }
 
 function extractBalanced(source, start, openPattern, closePattern) {
@@ -1723,11 +1737,13 @@ if (!unifiedTemplate.includes('__sf_boot_cover')) {
   unifiedTemplate = assertReplace(unifiedTemplate, '<body>', `<body>${bootCover}`, '부트 커버');
 }
 
+unifiedTemplate = injectSfPosHeadBranding(unifiedTemplate, '통합 템플릿');
 unifiedTemplate = replaceComponentScript(unifiedTemplate, componentSource);
 
 const encodedTemplate = JSON.stringify(unifiedTemplate).replace(/<\/script/gi, '<\\/script');
 let output = chair.bundle.replace(chair.json, encodedTemplate);
 output = output.replace('<title>Bundled Page</title>', '<title>SF-POS</title>');
+output = injectSfPosHeadBranding(output, '번들 문서');
 
 // ── 로딩 화면: 색 블록 SVG 스케치 → 다크 배경 + 은은한 스피너 ──
 output = assertReplace(
