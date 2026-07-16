@@ -1059,24 +1059,24 @@ workfrontDetailUijangView = assertReplace(
 
 // ── 자체 품질 검사 화면: 워크프론트 상세 표 디자인을 기준으로 컬럼만 품질 검사항목으로 교체 ──
 const qualityColumns = [
-  { key: 'qualityResult', label: '품질<br>검사 결과', rowspan: true },
-  { key: 'punchOpen', label: 'Punch<br>Open<br>Status', rowspan: true },
-  { key: 'hullOwner', label: '선각<br>선주 위임<br>(O/X)' },
-  { key: 'prepStatus', label: '선각<br>검사준비<br>상태<br>100' },
-  { key: 'selfQuality', label: '선각<br>자주품질<br>이행도<br>100' },
-  { key: 'safetyInspection', label: '선각<br>검사안전<br>100' },
-  { key: 'zt', label: '선각<br>Z/T<br>1', accent: 'danger' },
-  { key: 'wrongCutting', label: 'Wrong<br>cutting<br>2' },
-  { key: 'specialGr', label: 'Special GR<br>(TGR/FGR/CM/3C)' },
-  { key: 'fairingLow', label: 'Fairing<br>0~15mm<br>8' },
-  { key: 'fairingHigh', label: 'Fairing<br>16mm&lt;~<br>2' },
-  { key: 'misReFit', label: 'Mis-a<br>Re-fit<br>2' },
-  { key: 'misPassWelding', label: 'Mis-a<br>Pass<br>welding<br>4' },
-  { key: 'missingWelding', label: 'Missing<br>Welding<br>&amp;<br>Members<br>3' },
-  { key: 'weldingDefects', label: 'Welding<br>defects<br>30' },
-  { key: 'safetyCleaning', label: 'Safety<br>&amp;<br>Cleaning<br>5' },
-  { key: 'totalRatio', label: '선각<br>Total<br>(Ratio)', accent: 'warning' },
-  { key: 'outfitOwner', label: '의장<br>선주 위임<br>(O/X)', rowspan: true },
+  { key: 'qualityResult', label: '품질<br>검사 결과', rowspan: true, width: 58 },
+  { key: 'punchOpen', label: 'Punch<br>Open<br>Status', rowspan: true, width: 58 },
+  { key: 'hullOwner', label: '선각<br>선주 위임<br>(O/X)', width: 72 },
+  { key: 'prepStatus', label: '선각<br>검사준비<br>상태<br>100', width: 72 },
+  { key: 'selfQuality', label: '선각<br>자주품질<br>이행도<br>100', width: 72 },
+  { key: 'safetyInspection', label: '선각<br>검사안전<br>100', width: 72 },
+  { key: 'zt', label: '선각<br>Z/T<br>1', accent: 'danger', width: 56 },
+  { key: 'wrongCutting', label: 'Wrong<br>cutting<br>2', width: 64 },
+  { key: 'specialGr', label: 'Special GR<br>(TGR/FGR/CM/3C)', width: 126 },
+  { key: 'fairingLow', label: 'Fairing<br>0~15mm<br>8', width: 72 },
+  { key: 'fairingHigh', label: 'Fairing<br>16mm&lt;~<br>2', width: 72 },
+  { key: 'misReFit', label: 'Mis-a<br>Re-fit<br>2', width: 62 },
+  { key: 'misPassWelding', label: 'Mis-a<br>Pass<br>welding<br>4', width: 70 },
+  { key: 'missingWelding', label: 'Missing<br>Welding<br>&amp;<br>Members<br>3', width: 82 },
+  { key: 'weldingDefects', label: 'Welding<br>defects<br>30', width: 72 },
+  { key: 'safetyCleaning', label: 'Safety<br>&amp;<br>Cleaning<br>5', width: 72 },
+  { key: 'totalRatio', label: '선각<br>Total<br>(Ratio)', accent: 'warning', width: 66 },
+  { key: 'outfitOwner', label: '의장<br>선주 위임<br>(O/X)', rowspan: true, width: 66 },
 ];
 const qualityRowsData = [
   {
@@ -1100,19 +1100,22 @@ const qualityRowsData = [
     outfitOwner: 'O',
   },
 ];
-const qualityHeaderBase = 'background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:6px 8px;font-weight:600;white-space:nowrap;line-height:1.25;text-align:center;';
-const qualityGroupHeader = 'background:#2f3237;color:#fff;border:1px solid #4a4e53;border-top:3px solid #ed7100;padding:4px 8px;font-weight:800;text-align:center;';
+const qualityHeaderBase = 'box-sizing:border-box;background:#2f3237;color:#fff;border:1px solid #4a4e53;padding:5px 4px;font-size:10px;font-weight:600;white-space:normal;word-break:normal;overflow-wrap:anywhere;overflow:hidden;line-height:1.22;text-align:center;vertical-align:middle;';
+const qualityGroupHeader = 'box-sizing:border-box;background:#2f3237;color:#fff;border:1px solid #4a4e53;border-top:3px solid #ed7100;padding:2px 8px;height:22px;font-size:10px;font-weight:800;text-align:center;vertical-align:middle;';
 const qualityHeaderStyle = (column, secondRow = false) => {
-  const sticky = secondRow ? 'position:sticky;top:29px;z-index:3;' : 'position:sticky;top:0;z-index:4;';
-  if (column.accent === 'danger') return qualityHeaderBase + sticky + 'background:#c0261d;color:#fff;';
-  if (column.accent === 'warning') return qualityHeaderBase + sticky + 'background:#f5d647;color:#222;';
-  return qualityHeaderBase + sticky;
+  const sticky = secondRow ? 'position:sticky;top:22px;z-index:3;' : 'position:sticky;top:0;z-index:4;';
+  const width = `width:${column.width}px;`;
+  if (column.accent === 'danger') return qualityHeaderBase + sticky + width + 'background:#c0261d;color:#fff;';
+  if (column.accent === 'warning') return qualityHeaderBase + sticky + width + 'background:#f5d647;color:#222;';
+  return qualityHeaderBase + sticky + width;
 };
 const qualityTd = (value, column) => {
   const tone = column.accent === 'warning' && value ? 'color:#d63b3b;font-weight:800;background:#fff0f0;' : 'color:#3a3e43;';
   const inputColor = column.accent === 'warning' && value ? '#d63b3b' : '#3a3e43';
-  return `<td style="border:1px solid #e6e8ea;padding:0;text-align:center;font-variant-numeric:tabular-nums;${tone}"><input class="quality-input" data-quality-key="${column.key}" data-initial-value="${value ?? ''}" aria-label="${column.label.replace(/<br>/g, ' ')}" style="width:100%;height:27px;min-width:52px;box-sizing:border-box;border:0;background:transparent;padding:4px 8px;text-align:center;font:inherit;color:${inputColor};font-weight:${column.accent === 'warning' && value ? '800' : '500'};outline:none;"></td>`;
+  return `<td style="border:1px solid #e6e8ea;padding:0;text-align:center;font-variant-numeric:tabular-nums;${tone}"><input class="quality-input" data-quality-key="${column.key}" data-initial-value="${value ?? ''}" aria-label="${column.label.replace(/<br>/g, ' ')}" style="width:100%;height:27px;box-sizing:border-box;border:0;background:transparent;padding:4px 6px;text-align:center;font:inherit;color:${inputColor};font-weight:${column.accent === 'warning' && value ? '800' : '500'};outline:none;"></td>`;
 };
+const qualityColumnTotal = qualityColumns.reduce((sum, column) => sum + column.width, 0);
+const qualityColGroup = `<colgroup>${qualityColumns.map((column) => `<col style="width:${((column.width / qualityColumnTotal) * 100).toFixed(4)}%;">`).join('')}</colgroup>`;
 const qualityStaticRows = qualityRowsData
   .map((row) => `<tr style="height:28px;background:#fff;">${qualityColumns.map((column) => qualityTd(row[column.key], column)).join('')}</tr>`)
   .join('\n                ');
@@ -1158,7 +1161,8 @@ const qualityView = `<div style="flex:1;display:flex;flex-direction:column;min-w
             <span style="font-size:11px;color:#7a7f85;">품질 검사 결과 · 선각/의장 검사 항목</span>
           </div>
           <div style="flex:1;overflow:auto;min-height:0;">
-            <table style="border-collapse:collapse;font-size:11px;width:100%;white-space:nowrap;">
+            <table style="border-collapse:collapse;font-size:10.5px;width:100%;table-layout:fixed;">
+              ${qualityColGroup}
               <thead>
                 <tr>
                   <th rowspan="2" style="${qualityHeaderStyle(qualityColumns[0])}">${qualityColumns[0].label}</th>
