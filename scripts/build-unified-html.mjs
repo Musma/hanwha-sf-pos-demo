@@ -1111,7 +1111,7 @@ const qualityHeaderStyle = (column, secondRow = false) => {
 const qualityTd = (value, column) => {
   const tone = column.accent === 'warning' && value ? 'color:#d63b3b;font-weight:800;background:#fff0f0;' : 'color:#3a3e43;';
   const inputColor = column.accent === 'warning' && value ? '#d63b3b' : '#3a3e43';
-  return `<td style="border:1px solid #e6e8ea;padding:0;text-align:center;font-variant-numeric:tabular-nums;${tone}"><input class="quality-input" data-quality-key="${column.key}" aria-label="${column.label.replace(/<br>/g, ' ')}" defaultValue="${value ?? ''}" style="width:100%;height:27px;min-width:52px;box-sizing:border-box;border:0;background:transparent;padding:4px 8px;text-align:center;font:inherit;color:${inputColor};font-weight:${column.accent === 'warning' && value ? '800' : '500'};outline:none;"></td>`;
+  return `<td style="border:1px solid #e6e8ea;padding:0;text-align:center;font-variant-numeric:tabular-nums;${tone}"><input class="quality-input" data-quality-key="${column.key}" data-initial-value="${value ?? ''}" aria-label="${column.label.replace(/<br>/g, ' ')}" style="width:100%;height:27px;min-width:52px;box-sizing:border-box;border:0;background:transparent;padding:4px 8px;text-align:center;font:inherit;color:${inputColor};font-weight:${column.accent === 'warning' && value ? '800' : '500'};outline:none;"></td>`;
 };
 const qualityStaticRows = qualityRowsData
   .map((row) => `<tr style="height:28px;background:#fff;">${qualityColumns.map((column) => qualityTd(row[column.key], column)).join('')}</tr>`)
@@ -1120,11 +1120,6 @@ const qualityEmptyRows = Array.from(
   { length: 12 },
   () => `<tr style="height:28px;">${qualityColumns.map((column) => qualityTd('', column)).join('')}</tr>`,
 ).join('\n                ');
-const qualityKpiCount = (key, value) => qualityRowsData.filter((row) => row[key] === value).length;
-const qualityRatioCard = `<div style="min-width:148px;background:#fff;border:1px solid #c9cdd1;border-left:3px solid #d63b3b;border-radius:3px;padding:7px 14px 8px;">
-              <div style="font-size:11px;color:#7a7f85;">Total Ratio</div>
-              <div style="font-size:19px;font-weight:800;color:#d63b3b;line-height:1.25;font-variant-numeric:tabular-nums;">${qualityRowsData[0].totalRatio}</div>
-            </div>`;
 const qualityView = `<div style="flex:1;display:flex;flex-direction:column;min-width:0;background:#eef0f2;">
       <div style="height:30px;background:#fff;display:flex;align-items:flex-end;padding:0 0 0 6px;flex-shrink:0;border-bottom:1px solid #b6bbc0;">
         <div style="background:#eef0f2;color:#2d2d2d;font-size:12px;font-weight:500;padding:6px 12px 7px 14px;border:1px solid #b6bbc0;border-bottom:1px solid #eef0f2;border-radius:3px 3px 0 0;display:flex;align-items:center;gap:16px;position:relative;top:1px;">에코텍 자체 품질지표<i class="ti ti-x" style="font-size:13px;color:#555;"></i></div>
@@ -1137,24 +1132,27 @@ const qualityView = `<div style="flex:1;display:flex;flex-direction:column;min-w
           <div style="margin-left:auto;font-size:11px;color:#7a7f85;">Last Updated: 2026.07.16 09:00</div>
         </div>
 
-        <div style="display:flex;align-items:center;gap:12px;margin-top:12px;flex-shrink:0;">
-          <div style="display:inline-flex;border:1px solid #b9bec3;border-radius:4px;overflow:hidden;background:#fff;">
-            <div style="background:#ed7100;color:#fff;font-size:12.5px;font-weight:700;padding:7px 20px;">에코텍 자체 품질지표</div>
+        <div style="margin-top:12px;flex-shrink:0;background:#eef0f2;border:1px solid #c9cdd1;border-radius:3px;padding:9px 12px 10px;">
+          <div style="font-size:15px;font-weight:800;color:#111;line-height:1.1;">조회조건</div>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+            <label style="display:flex;align-items:center;gap:8px;margin:0;">
+              <select aria-label="검사계획일 조건" defaultValue="검사계획일" style="width:160px;height:28px;border:2px solid #4a4f55;background:#e8eaec;color:#111;padding:2px 28px 2px 16px;font-size:15px;font-weight:600;line-height:1.05;">
+                <option>검사계획일</option>
+              </select>
+            </label>
+            <input type="text" aria-label="검사계획 시작일" data-initial-value="2025-07-07" style="width:140px;height:28px;box-sizing:border-box;border:1px solid #c4cbd2;border-radius:2px;background:#fff;color:#305d8c;padding:3px 8px;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;">
+            <span style="font-size:13px;color:#5a5f65;">~</span>
+            <input type="text" aria-label="검사계획 종료일" data-initial-value="2025-08-10" style="width:140px;height:28px;box-sizing:border-box;border:1px solid #c4cbd2;border-radius:2px;background:#fff;color:#6a4a25;padding:3px 8px;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;">
+            <span class="sf-btn" role="button" tabIndex="0" style="display:inline-flex;align-items:center;justify-content:center;height:30px;min-width:82px;background:#3f4247;border:1px solid #35383d;border-radius:5px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;">조회</span>
           </div>
-          <div style="margin-left:auto;display:flex;gap:6px;">
-            <span class="sf-btn" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line,#b9bec3);border-radius:3px;padding:6px 14px;font-size:12px;"><i class="ti ti-search" style="font-size:15px;color:#0a72f2;"></i>조회</span>
-            <span class="sf-btn" style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#fcfdfe,#e9edf1);border:1px solid var(--line,#b9bec3);border-radius:3px;padding:6px 14px;font-size:12px;"><i class="ti ti-device-floppy" style="font-size:15px;color:#0a72f2;"></i>저장</span>
+          <div style="display:flex;align-items:center;gap:2px;margin-top:8px;">
+            <span role="button" tabIndex="0" style="display:inline-flex;align-items:center;justify-content:center;min-width:156px;height:43px;background:#6e5c4c;border:2px solid #fff;border-radius:7px;color:#fff;font-size:18px;font-weight:800;box-shadow:0 0 0 1px #d4d7da;">선각 품질</span>
+            <span role="button" tabIndex="0" style="display:inline-flex;align-items:center;justify-content:center;min-width:156px;height:43px;background:#7f7f7d;border:2px solid #fff;border-radius:7px;color:#fff;font-size:18px;font-weight:800;box-shadow:0 0 0 1px #d4d7da;">의장 품질</span>
+            <span role="button" tabIndex="0" style="display:inline-flex;align-items:center;justify-content:center;min-width:156px;height:43px;background:#7f7f7d;border:2px solid #fff;border-radius:7px;color:#fff;font-size:18px;font-weight:800;box-shadow:0 0 0 1px #d4d7da;">도장 품질</span>
           </div>
         </div>
 
-        <div style="display:flex;gap:10px;margin-top:12px;flex-shrink:0;">
-          ${detailKpiCard('검사 행', qualityRowsData.length, '#ed7100')}
-          ${detailKpiCard('AA 결과', qualityKpiCount('qualityResult', 'AA'), '#2e9e57')}
-          ${detailKpiCard('Punch Open', qualityRowsData.reduce((sum, row) => sum + Number(row.punchOpen || 0), 0), '#0a72f2')}
-          ${qualityRatioCard}
-        </div>
-
-        <div style="flex:1;display:flex;flex-direction:column;min-height:0;border:1px solid #c9cdd1;background:#fff;margin-top:14px;">
+        <div style="flex:1;display:flex;flex-direction:column;min-height:0;border:1px solid #c9cdd1;background:#fff;margin-top:12px;">
           <div style="display:flex;align-items:center;justify-content:space-between;background:#e7eaed;border-bottom:1px solid #cfd3d7;padding:5px 12px;flex-shrink:0;">
             <span style="font-size:12px;font-weight:700;color:#3a3e43;">에코텍 자체 품질지표 목록</span>
             <span style="font-size:11px;color:#7a7f85;">품질 검사 결과 · 선각/의장 검사 항목</span>
@@ -1270,6 +1268,16 @@ const componentSource = `class Component extends DCLogic {
     return owner ? { ...openGroups, [owner]: true } : openGroups;
   }
 
+  initializeInitialInputs() {
+    window.requestAnimationFrame(() => {
+      document.querySelectorAll('input[data-initial-value]').forEach((input) => {
+        if (input.dataset.initialized === 'true') return;
+        input.value = input.getAttribute('data-initial-value') || '';
+        input.dataset.initialized = 'true';
+      });
+    });
+  }
+
   componentDidMount() {
     this.syncFromLocation = () => {
       const hash = window.location.hash.slice(1);
@@ -1282,6 +1290,11 @@ const componentSource = `class Component extends DCLogic {
     if (this.state.view !== 'home') {
       this.setState({ openGroups: this.openGroupsFor(this.state.view, this.state.openGroups) });
     }
+    this.initializeInitialInputs();
+  }
+
+  componentDidUpdate() {
+    this.initializeInitialInputs();
   }
 
   componentWillUnmount() {
