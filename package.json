@@ -1,0 +1,10 @@
+{
+  "name": "hanwha-sf-pos",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-static-site.mjs",
+    "serve": "node scripts/serve.mjs",
+    "start": "node scripts/build-static-site.mjs && node scripts/serve.mjs"
+  }
+}
