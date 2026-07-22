@@ -1736,9 +1736,11 @@ if (!unifiedTemplate.includes('desktop-polish')) {
 const bootCover = [
   '<div id="__sf_boot_cover" style="position:fixed;inset:0;z-index:100000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:#17181b;opacity:1;transition:opacity .18s ease;">',
   '<div style="font:italic 800 40px/1 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:-1px;color:#ed7100;">SF-POS</div>',
-  '<div style="box-sizing:border-box;width:26px;height:26px;border-radius:50%;border:3px solid rgba(255,255,255,.1);border-top-color:rgba(237,113,0,.75);animation:__sf_boot_spin .9s linear infinite;"></div>',
+  '<div style="width:220px;height:3px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;">',
+  '<div style="width:40%;height:100%;border-radius:999px;background:rgba(237,113,0,.75);animation:__sf_boot_bar 1.1s linear infinite;"></div>',
   '</div>',
-  '<style>@keyframes __sf_boot_spin{to{transform:rotate(360deg)}}</style>',
+  '</div>',
+  '<style>@keyframes __sf_boot_bar{from{transform:translateX(-100%)}to{transform:translateX(250%)}}</style>',
   '<script>(function(){',
   'var cover=document.getElementById("__sf_boot_cover");if(!cover)return;var done=false;',
   'function hide(){if(done)return;done=true;requestAnimationFrame(function(){requestAnimationFrame(function(){cover.style.opacity="0";setTimeout(function(){cover.remove();},220);});});}',
@@ -1777,8 +1779,9 @@ output = assertReplace(
   [
     '#__bundler_thumbnail { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; background: #17181b; z-index: 9999; }',
     '    #__bundler_thumbnail .__bundler_logo { font: italic 800 40px/1 -apple-system, BlinkMacSystemFont, sans-serif; letter-spacing: -1px; color: #ed7100; }',
-    '    #__bundler_thumbnail .__bundler_spinner { width: 26px; height: 26px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.1); border-top-color: rgba(237,113,0,0.75); animation: __bundler_spin 0.9s linear infinite; }',
-    '    @keyframes __bundler_spin { to { transform: rotate(360deg); } }',
+    '    #__bundler_thumbnail .__bundler_spinner { width: 220px; height: 3px; border-radius: 999px; background: rgba(255,255,255,0.1); overflow: hidden; }',
+    '    #__bundler_thumbnail .__bundler_spinner::after { content: ""; display: block; width: 40%; height: 100%; border-radius: 999px; background: rgba(237,113,0,0.75); animation: __bundler_spin 1.1s linear infinite; }',
+    '    @keyframes __bundler_spin { from { transform: translateX(-100%); } to { transform: translateX(250%); } }',
   ].join('\n'),
   '로딩 썸네일 스타일',
 );
